@@ -6,6 +6,7 @@ import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Promise;
 import io.vertx.core.http.HttpServer;
 import io.vertx.ext.web.Router;
+import io.vertx.ext.web.handler.BodyHandler;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,7 +19,7 @@ public class FugitiveDarknessApp extends AbstractVerticle {
      * Start app.
      */
     @Override
-    public void start(Promise<Void> startPromise) throws Exception {
+    public void start(Promise<Void> startPromise) {
         HttpServer server = vertx.createHttpServer();
         Router router = Router.router(vertx);
 
@@ -46,8 +47,16 @@ public class FugitiveDarknessApp extends AbstractVerticle {
      * @param router Primary request processor router.
      */
     private static void installingRouterAPI(final @NotNull Router router) {
-        router.post("/api/v1/git/repo/install").handler(new ControllerApiGitRepoInstall());
-        router.delete("/api/v1/git/repo/delete").handler(new ControllerApiGitRepoDelete());
+        router
+                .post("/api/v1/git/repo/install")
+                .consumes("application/json")
+                .handler(BodyHandler
+                        .create()
+                        .setHandleFileUploads(false))
+                .handler(new ControllerApiGitRepoInstall());
+        router
+                .delete("/api/v1/git/repo/delete")
+                .handler(new ControllerApiGitRepoDelete());
     }
 
 }

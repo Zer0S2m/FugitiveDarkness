@@ -1,5 +1,6 @@
 package com.zer0s2m.fugitivedarkness.api.handlers;
 
+import com.zer0s2m.fugitivedarkness.common.dto.ContainerGitRepoInstall;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.vertx.core.Handler;
 import io.vertx.core.http.HttpHeaders;
@@ -19,8 +20,13 @@ final public class ControllerApiGitRepoInstall implements Handler<RoutingContext
      */
     @Override
     public void handle(@NotNull RoutingContext event) {
+        final ContainerGitRepoInstall containerGitRepoInstall = event
+                .body()
+                .asJsonObject()
+                .mapTo(ContainerGitRepoInstall.class);
+
         JsonObject object = new JsonObject();
-        object.put("key", "value");
+        object.put("success", true);
 
         event.response()
                 .putHeader(HttpHeaders.CONTENT_LENGTH, String.valueOf(object.toString().length()))
