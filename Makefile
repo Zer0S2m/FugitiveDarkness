@@ -1,2 +1,3 @@
 run:
-	mvn clean compile exec:java -pl fugitive-darkness-api
+	@mvn clean package
+	@mvn exec:java -pl fugitive-darkness-api
