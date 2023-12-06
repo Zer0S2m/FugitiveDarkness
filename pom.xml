@@ -4,14 +4,54 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <groupId>com.zer0s2m.fugitivedarkness</groupId>
-  <artifactId>FugitiveDarkness</artifactId>
+  <groupId>com.zer0s2m.fugitive-darkness</groupId>
+  <artifactId>fugitive-darkness</artifactId>
   <version>0.0.1-SNAPSHOT</version>
+  <packaging>pom</packaging>
+  <modules>
+    <module>fugitive-darkness-api</module>
+  </modules>
+
+  <developers>
+    <developer>
+      <name>Aleksandr</name>
+      <email>ZeroDay9898@gmail.com</email>
+      <organization>FugitiveDarkness</organization>
+    </developer>
+  </developers>
 
   <properties>
+    <java.version>21</java.version>
     <maven.compiler.source>21</maven.compiler.source>
     <maven.compiler.target>21</maven.compiler.target>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <main.class>com.zer0s2m.fugitivedarkness.api.Main</main.class>
+
+    <jgit.version>6.7.0.202309050840-r</jgit.version>
+    <exec-maven-plugin.version>3.1.1</exec-maven-plugin.version>
   </properties>
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>org.eclipse.jgit</groupId>
+        <artifactId>org.eclipse.jgit</artifactId>
+        <version>${jgit.version}</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>exec-maven-plugin</artifactId>
+        <version>${exec-maven-plugin.version}</version>
+        <configuration>
+          <mainClass>${main.class}</mainClass>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
 
 </project>
