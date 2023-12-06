@@ -3,30 +3,21 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
-
   <parent>
     <groupId>com.zer0s2m.fugitive-darkness</groupId>
     <artifactId>fugitive-darkness</artifactId>
     <version>0.0.1-SNAPSHOT</version>
   </parent>
 
-  <artifactId>fugitive-darkness-api</artifactId>
+  <artifactId>fugitive-darkness-provider</artifactId>
   <version>0.0.1-SNAPSHOT</version>
-  <name>fugitive-darkness-api</name>
-  <description>fugitive-darkness-api</description>
+  <name>fugitive-darkness-provider</name>
+  <description>fugitive-darkness-provider</description>
 
   <properties>
-    <java.version>21</java.version>
     <maven.compiler.source>21</maven.compiler.source>
     <maven.compiler.target>21</maven.compiler.target>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
-
-  <dependencies>
-    <dependency>
-      <groupId>com.zer0s2m.fugitive-darkness</groupId>
-      <artifactId>fugitive-darkness-common</artifactId>
-    </dependency>
-  </dependencies>
 
 </project>

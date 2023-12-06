@@ -10,6 +10,8 @@
   <packaging>pom</packaging>
   <modules>
     <module>fugitive-darkness-api</module>
+    <module>fugitive-darkness-common</module>
+    <module>fugitive-darkness-provider</module>
   </modules>
 
   <developers>
@@ -25,10 +27,12 @@
     <maven.compiler.source>21</maven.compiler.source>
     <maven.compiler.target>21</maven.compiler.target>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <main.class>com.zer0s2m.fugitivedarkness.api.Main</main.class>
+    <main.class>com.zer0s2m.fugitivedarkness.api.FugitiveDarknessApp</main.class>
 
     <jgit.version>6.7.0.202309050840-r</jgit.version>
     <exec-maven-plugin.version>3.1.1</exec-maven-plugin.version>
+    <fugitive-darkness-common.version>0.0.1-SNAPSHOT</fugitive-darkness-common.version>
+    <fugitive-darkness-provider.version>0.0.1-SNAPSHOT</fugitive-darkness-provider.version>
   </properties>
 
   <dependencyManagement>
@@ -37,6 +41,16 @@
         <groupId>org.eclipse.jgit</groupId>
         <artifactId>org.eclipse.jgit</artifactId>
         <version>${jgit.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.zer0s2m.fugitive-darkness</groupId>
+        <artifactId>fugitive-darkness-common</artifactId>
+        <version>${fugitive-darkness-common.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.zer0s2m.fugitive-darkness</groupId>
+        <artifactId>fugitive-darkness-provider</artifactId>
+        <version>${fugitive-darkness-provider.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
