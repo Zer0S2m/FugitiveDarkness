@@ -4,9 +4,13 @@ import com.zer0s2m.fugitivedarkness.api.handlers.ControllerApiGitRepoDelete;
 import com.zer0s2m.fugitivedarkness.api.handlers.ControllerApiGitRepoInstall;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Promise;
+import io.vertx.core.buffer.Buffer;
+import io.vertx.core.http.HttpHeaders;
 import io.vertx.core.http.HttpServer;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.handler.BodyHandler;
+import io.vertx.ext.web.validation.BadRequestException;
+import io.vertx.ext.web.validation.BodyProcessorException;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,6 +28,7 @@ public class FugitiveDarknessApp extends AbstractVerticle {
         Router router = Router.router(vertx);
 
         installingRouterAPI(router);
+        installingHandlerErrorsAPI(router);
 
         server
                 .requestHandler(router)
@@ -46,17 +51,39 @@ public class FugitiveDarknessApp extends AbstractVerticle {
      * Install handlers for the router.
      * @param router Primary request processor router.
      */
-    private static void installingRouterAPI(final @NotNull Router router) {
+    private void installingRouterAPI(final @NotNull Router router) {
         router
                 .post("/api/v1/git/repo/install")
                 .consumes("application/json")
                 .handler(BodyHandler
                         .create()
                         .setHandleFileUploads(false))
+                .handler(ControllerApiGitRepoInstall.GitRepoInstallValidation.validator(vertx))
                 .handler(new ControllerApiGitRepoInstall());
         router
                 .delete("/api/v1/git/repo/delete")
                 .handler(new ControllerApiGitRepoDelete());
+    }
+
+    /**
+     * Install handlers errors for the router.
+     * @param router Primary request processor router.
+     */
+    private void installingHandlerErrorsAPI(final @NotNull Router router) {
+        router.errorHandler(400, ctx -> {
+            if (ctx.failure() instanceof BadRequestException) {
+                if (ctx.failure() instanceof BodyProcessorException) {
+                    Buffer errorMsg = ((BodyProcessorException) ctx.failure()).toJson().toBuffer();
+                    ctx
+                            .response()
+                            .putHeader(HttpHeaders.CONTENT_LENGTH, String.valueOf(errorMsg.length()))
+                            .write(errorMsg);
+                    ctx
+                            .response()
+                            .end();
+                }
+            }
+        });
     }
 
 }
