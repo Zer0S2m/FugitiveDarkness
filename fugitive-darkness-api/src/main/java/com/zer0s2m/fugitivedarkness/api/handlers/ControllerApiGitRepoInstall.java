@@ -1,9 +1,10 @@
 package com.zer0s2m.fugitivedarkness.api.handlers;
 
 import com.zer0s2m.fugitivedarkness.common.dto.ContainerGitRepoInstall;
+import com.zer0s2m.fugitivedarkness.provider.ContainerInfoRepo;
+import com.zer0s2m.fugitivedarkness.provider.GitRepo;
 import io.netty.handler.codec.http.HttpResponseStatus;
-import io.vertx.core.Handler;
-import io.vertx.core.Vertx;
+import io.vertx.core.*;
 import io.vertx.core.http.HttpHeaders;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.RoutingContext;
@@ -14,6 +15,7 @@ import io.vertx.json.schema.SchemaParser;
 import io.vertx.json.schema.SchemaRepository;
 import io.vertx.json.schema.SchemaRouter;
 import io.vertx.json.schema.SchemaRouterOptions;
+import org.eclipse.jgit.api.errors.GitAPIException;
 import org.jetbrains.annotations.NotNull;
 
 import static io.vertx.json.schema.common.dsl.Schemas.objectSchema;
@@ -24,6 +26,10 @@ import static io.vertx.json.schema.common.dsl.Schemas.stringSchema;
  */
 final public class ControllerApiGitRepoInstall implements Handler<RoutingContext> {
 
+    private final GitRepo serviceGit = GitRepo.create();
+
+    ContainerGitRepoInstall containerGitRepoInstall;
+
     /**
      * Install the repository on the system.
      *
@@ -31,13 +37,27 @@ final public class ControllerApiGitRepoInstall implements Handler<RoutingContext
      */
     @Override
     public void handle(@NotNull RoutingContext event) {
-        final ContainerGitRepoInstall containerGitRepoInstall = event
+        containerGitRepoInstall = event
                 .body()
                 .asJsonObject()
                 .mapTo(ContainerGitRepoInstall.class);
 
         JsonObject object = new JsonObject();
         object.put("success", true);
+
+
+        event.vertx()
+                .executeBlocking(promise -> {
+                    try {
+                        final ContainerInfoRepo infoRepo = serviceGit.gClone(containerGitRepoInstall.remote());
+                        promise.complete(infoRepo);
+                    } catch (GitAPIException e) {
+                        throw new RuntimeException(e);
+                    }
+                })
+                .onSuccess(obj -> {
+                    final ContainerInfoRepo infoRepo = (ContainerInfoRepo) obj;
+                });
 
         event.response()
                 .putHeader(HttpHeaders.CONTENT_LENGTH, String.valueOf(object.toString().length()))
@@ -57,6 +77,7 @@ final public class ControllerApiGitRepoInstall implements Handler<RoutingContext
 
         /**
          * Get validation handler for incoming body.
+         *
          * @param vertx App.
          * @return Incoming body handler.
          */

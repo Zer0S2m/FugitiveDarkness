@@ -2,6 +2,7 @@ package com.zer0s2m.fugitivedarkness.api;
 
 import com.zer0s2m.fugitivedarkness.api.handlers.ControllerApiGitRepoDelete;
 import com.zer0s2m.fugitivedarkness.api.handlers.ControllerApiGitRepoInstall;
+import com.zer0s2m.fugitivedarkness.common.Environment;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Promise;
 import io.vertx.core.buffer.Buffer;
@@ -40,6 +41,9 @@ public class FugitiveDarknessApp extends AbstractVerticle {
                                 Setting routes:
                                 \tPOST [/api/v1/git/repo/install]
                                 \tDELETE [/api/v1/git/repo/delete]""");
+                        logger.info("""
+                                Setting ENV:
+                                \tFD_ROOT_PATH - %s""".formatted(Environment.ROOT_PATH_REPO));
                     } else {
                         logger.error("Failed to bind");
                         startPromise.fail(http.cause());

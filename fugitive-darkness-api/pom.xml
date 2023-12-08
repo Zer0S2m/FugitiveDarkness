@@ -51,6 +51,10 @@
       <groupId>com.zer0s2m.fugitive-darkness</groupId>
       <artifactId>fugitive-darkness-common</artifactId>
     </dependency>
+    <dependency>
+      <groupId>com.zer0s2m.fugitive-darkness</groupId>
+      <artifactId>fugitive-darkness-provider</artifactId>
+    </dependency>
   </dependencies>
 
   <build>
