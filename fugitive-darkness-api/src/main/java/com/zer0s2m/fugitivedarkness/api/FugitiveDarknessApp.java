@@ -1,8 +1,10 @@
 package com.zer0s2m.fugitivedarkness.api;
 
+import com.zer0s2m.fugitivedarkness.api.exception.NotFoundException;
 import com.zer0s2m.fugitivedarkness.api.handlers.ControllerApiGitRepoDelete;
 import com.zer0s2m.fugitivedarkness.api.handlers.ControllerApiGitRepoInstall;
 import com.zer0s2m.fugitivedarkness.common.Environment;
+import io.netty.handler.codec.http.HttpResponseStatus;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Promise;
 import io.vertx.core.buffer.Buffer;
@@ -66,6 +68,11 @@ public class FugitiveDarknessApp extends AbstractVerticle {
                 .handler(new ControllerApiGitRepoInstall());
         router
                 .delete("/api/v1/git/repo/delete")
+                .consumes("application/json")
+                .handler(BodyHandler
+                        .create()
+                        .setHandleFileUploads(false))
+                .handler(ControllerApiGitRepoDelete.GitRepoDeleteValidation.validator(vertx))
                 .handler(new ControllerApiGitRepoDelete());
     }
 
@@ -81,11 +88,25 @@ public class FugitiveDarknessApp extends AbstractVerticle {
                     ctx
                             .response()
                             .putHeader(HttpHeaders.CONTENT_LENGTH, String.valueOf(errorMsg.length()))
+                            .setStatusCode(HttpResponseStatus.BAD_REQUEST.code())
                             .write(errorMsg);
                     ctx
                             .response()
                             .end();
                 }
+            }
+        });
+        router.errorHandler(404, ctx -> {
+            if (ctx.failure() instanceof NotFoundException) {
+                Buffer errorMsg = ((NotFoundException) ctx.failure()).toJson().toBuffer();
+                ctx
+                        .response()
+                        .putHeader(HttpHeaders.CONTENT_LENGTH, String.valueOf(errorMsg.length()))
+                        .setStatusCode(HttpResponseStatus.NOT_FOUND.code())
+                        .write(errorMsg);
+                ctx
+                        .response()
+                        .end();
             }
         });
     }

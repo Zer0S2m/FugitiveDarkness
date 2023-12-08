@@ -18,7 +18,7 @@ public interface GitRepo {
      */
     ContainerInfoRepo gClone(String URI) throws GitAPIException;
 
-    void gDelete();
+    void gDelete(String group, String project);
 
     static GitRepo create() {
         return new GitRepoImpl();

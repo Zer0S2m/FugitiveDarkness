@@ -52,7 +52,7 @@ public class GitRepoImpl implements GitRepo {
     }
 
     @Override
-    public void gDelete() {
+    public void gDelete(String group, String project) {
 
     }
 

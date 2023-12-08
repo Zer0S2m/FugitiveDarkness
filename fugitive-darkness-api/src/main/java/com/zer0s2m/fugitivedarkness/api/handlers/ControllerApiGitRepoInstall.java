@@ -1,7 +1,6 @@
 package com.zer0s2m.fugitivedarkness.api.handlers;
 
 import com.zer0s2m.fugitivedarkness.common.dto.ContainerGitRepoInstall;
-import com.zer0s2m.fugitivedarkness.provider.ContainerInfoRepo;
 import com.zer0s2m.fugitivedarkness.provider.GitRepo;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.vertx.core.*;
@@ -28,8 +27,6 @@ final public class ControllerApiGitRepoInstall implements Handler<RoutingContext
 
     private final GitRepo serviceGit = GitRepo.create();
 
-    ContainerGitRepoInstall containerGitRepoInstall;
-
     /**
      * Install the repository on the system.
      *
@@ -37,7 +34,7 @@ final public class ControllerApiGitRepoInstall implements Handler<RoutingContext
      */
     @Override
     public void handle(@NotNull RoutingContext event) {
-        containerGitRepoInstall = event
+        ContainerGitRepoInstall containerGitRepoInstall = event
                 .body()
                 .asJsonObject()
                 .mapTo(ContainerGitRepoInstall.class);
@@ -45,19 +42,16 @@ final public class ControllerApiGitRepoInstall implements Handler<RoutingContext
         JsonObject object = new JsonObject();
         object.put("success", true);
 
-
         event.vertx()
-                .executeBlocking(promise -> {
+                .executeBlocking(() -> {
                     try {
-                        final ContainerInfoRepo infoRepo = serviceGit.gClone(containerGitRepoInstall.remote());
-                        promise.complete(infoRepo);
+                        Thread.sleep(2000);
+                        return serviceGit.gClone(containerGitRepoInstall.remote());
                     } catch (GitAPIException e) {
                         throw new RuntimeException(e);
                     }
                 })
-                .onSuccess(obj -> {
-                    final ContainerInfoRepo infoRepo = (ContainerInfoRepo) obj;
-                });
+                .onSuccess(System.out::println);
 
         event.response()
                 .putHeader(HttpHeaders.CONTENT_LENGTH, String.valueOf(object.toString().length()))
