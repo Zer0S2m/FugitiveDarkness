@@ -1,7 +1,10 @@
 package com.zer0s2m.fugitivedarkness.api.handlers;
 
 import com.zer0s2m.fugitivedarkness.common.dto.ContainerGitRepoInstall;
+import com.zer0s2m.fugitivedarkness.models.GitRepoModel;
 import com.zer0s2m.fugitivedarkness.provider.GitRepo;
+import com.zer0s2m.fugitivedarkness.repository.Repository;
+import com.zer0s2m.fugitivedarkness.repository.impl.GitRepoRepository;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.vertx.core.*;
 import io.vertx.core.http.HttpHeaders;
@@ -14,8 +17,12 @@ import io.vertx.json.schema.SchemaParser;
 import io.vertx.json.schema.SchemaRepository;
 import io.vertx.json.schema.SchemaRouter;
 import io.vertx.json.schema.SchemaRouterOptions;
+import io.vertx.sqlclient.Row;
+import io.vertx.sqlclient.RowSet;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static io.vertx.json.schema.common.dsl.Schemas.objectSchema;
 import static io.vertx.json.schema.common.dsl.Schemas.stringSchema;
@@ -26,6 +33,8 @@ import static io.vertx.json.schema.common.dsl.Schemas.stringSchema;
 final public class ControllerApiGitRepoInstall implements Handler<RoutingContext> {
 
     private final GitRepo serviceGit = GitRepo.create();
+
+    static private final Logger logger = LoggerFactory.getLogger(ControllerApiGitRepoInstall.class);
 
     /**
      * Install the repository on the system.
@@ -51,7 +60,21 @@ final public class ControllerApiGitRepoInstall implements Handler<RoutingContext
                         throw new RuntimeException(e);
                     }
                 })
-                .onSuccess(System.out::println);
+                .onSuccess(result -> {
+                    final Repository<RowSet<Row>, GitRepoModel> repositoryGit = new GitRepoRepository(event.vertx());
+
+                    repositoryGit
+                            .save(new GitRepoModel(
+                                    result.group(),
+                                    result.project(),
+                                    result.host()
+                            ))
+                            .onComplete(ar -> {
+                                if (!ar.succeeded()) {
+                                    logger.error("Failure: " + ar.cause());
+                                }
+                            });
+                });
 
         event.response()
                 .putHeader(HttpHeaders.CONTENT_LENGTH, String.valueOf(object.toString().length()))
