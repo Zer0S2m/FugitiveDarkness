@@ -4,6 +4,8 @@ import com.zer0s2m.fugitivedarkness.api.exception.NotFoundException;
 import com.zer0s2m.fugitivedarkness.common.dto.ContainerGitRepoDelete;
 import com.zer0s2m.fugitivedarkness.provider.FileSystemUtils;
 import com.zer0s2m.fugitivedarkness.provider.HelperGitRepo;
+import com.zer0s2m.fugitivedarkness.repository.GitRepoRepository;
+import com.zer0s2m.fugitivedarkness.repository.impl.GitRepoRepositoryImpl;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
@@ -58,6 +60,11 @@ final public class ControllerApiGitRepoDelete implements Handler<RoutingContext>
                         FileSystemUtils.deleteDirectory(sourceGitRepository);
                         logger.info("Finish deleting git repository [" + sourceGitRepository + "]");
                         return null;
+                    })
+                    .onSuccess(handler -> {
+                        final GitRepoRepository repositoryGit = new GitRepoRepositoryImpl(event.vertx());
+                        repositoryGit.deleteByGroupAndProject(
+                                containerGitRepoDelete.group(), containerGitRepoDelete.project());
                     });
             event.response()
                     .setStatusCode(HttpResponseStatus.NO_CONTENT.code())

@@ -3,8 +3,8 @@ package com.zer0s2m.fugitivedarkness.api.handlers;
 import com.zer0s2m.fugitivedarkness.common.dto.ContainerGitRepoInstall;
 import com.zer0s2m.fugitivedarkness.models.GitRepoModel;
 import com.zer0s2m.fugitivedarkness.provider.GitRepo;
-import com.zer0s2m.fugitivedarkness.repository.Repository;
-import com.zer0s2m.fugitivedarkness.repository.impl.GitRepoRepository;
+import com.zer0s2m.fugitivedarkness.repository.GitRepoRepository;
+import com.zer0s2m.fugitivedarkness.repository.impl.GitRepoRepositoryImpl;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.vertx.core.*;
 import io.vertx.core.http.HttpHeaders;
@@ -17,8 +17,6 @@ import io.vertx.json.schema.SchemaParser;
 import io.vertx.json.schema.SchemaRepository;
 import io.vertx.json.schema.SchemaRouter;
 import io.vertx.json.schema.SchemaRouterOptions;
-import io.vertx.sqlclient.Row;
-import io.vertx.sqlclient.RowSet;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
@@ -61,7 +59,7 @@ final public class ControllerApiGitRepoInstall implements Handler<RoutingContext
                     }
                 })
                 .onSuccess(result -> {
-                    final Repository<RowSet<Row>, GitRepoModel> repositoryGit = new GitRepoRepository(event.vertx());
+                    final GitRepoRepository repositoryGit = new GitRepoRepositoryImpl(event.vertx());
 
                     repositoryGit
                             .save(new GitRepoModel(

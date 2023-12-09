@@ -9,7 +9,7 @@ services:
       - data:/var/lib/postgresql/data
     env_file:
       - .env
-    command: postgres -c 'max_connections=250'
+    command: postgres -c 'max_connections=250' -c 'log_statement=all'
 
 volumes:
   data:
