@@ -12,6 +12,8 @@
     <module>fugitive-darkness-api</module>
     <module>fugitive-darkness-common</module>
     <module>fugitive-darkness-provider</module>
+    <module>fugitive-darkness-models</module>
+    <module>fugitive-darkness-repository</module>
   </modules>
 
   <developers>
@@ -28,11 +30,30 @@
     <maven.compiler.target>21</maven.compiler.target>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <main.class>com.zer0s2m.fugitivedarkness.api.FugitiveDarknessApp</main.class>
+    <main.verticle>com.zer0s2m.fugitivedarkness.api.FugitiveDarknessApp</main.verticle>
+    <launcher.class>io.vertx.core.Launcher</launcher.class>
 
     <jgit.version>6.7.0.202309050840-r</jgit.version>
+    <vertx-stack-depchain.version>4.5.0</vertx-stack-depchain.version>
+    <vertx-core.version>4.5.0</vertx-core.version>
+    <vertx-web.version>4.5.0</vertx-web.version>
+    <vertx-web-validation.version>4.5.0</vertx-web-validation.version>
+    <vertx-pg-client.version>4.5.0</vertx-pg-client.version>
+    <slf4j.version>2.0.9</slf4j.version>
     <exec-maven-plugin.version>3.1.1</exec-maven-plugin.version>
+    <maven-compiler-plugin.version>3.11.0</maven-compiler-plugin.version>
+    <maven-surefire-plugin.version>2.22.2</maven-surefire-plugin.version>
+    <maven-shade-plugin.version>3.2.4</maven-shade-plugin.version>
+    <jackson-databind.version>2.16.0</jackson-databind.version>
+    <flyway-maven-plugin.version>10.2.0</flyway-maven-plugin.version>
+    <flyway-database-postgresql.version>10.2.0</flyway-database-postgresql.version>
+    <postgresql.version>42.6.0</postgresql.version>
+    <scram-common.version>2.1</scram-common.version>
+    <scram-client.version>2.1</scram-client.version>
     <fugitive-darkness-common.version>0.0.1-SNAPSHOT</fugitive-darkness-common.version>
     <fugitive-darkness-provider.version>0.0.1-SNAPSHOT</fugitive-darkness-provider.version>
+    <fugitive-darkness-models.version>0.0.1-SNAPSHOT</fugitive-darkness-models.version>
+    <fugitive-darkness-repository.version>0.0.1-SNAPSHOT</fugitive-darkness-repository.version>
   </properties>
 
   <dependencyManagement>
@@ -41,6 +62,79 @@
         <groupId>org.eclipse.jgit</groupId>
         <artifactId>org.eclipse.jgit</artifactId>
         <version>${jgit.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.eclipse.jgit</groupId>
+        <artifactId>org.eclipse.jgit.ssh.jsch</artifactId>
+        <version>${jgit.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jetbrains</groupId>
+        <artifactId>annotations</artifactId>
+        <version>24.0.1</version>
+        <scope>compile</scope>
+      </dependency>
+      <dependency>
+        <groupId>io.vertx</groupId>
+        <artifactId>vertx-stack-depchain</artifactId>
+        <version>${vertx-stack-depchain.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+      <dependency>
+        <groupId>io.vertx</groupId>
+        <artifactId>vertx-core</artifactId>
+        <version>${vertx-core.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.vertx</groupId>
+        <artifactId>vertx-web</artifactId>
+        <version>${vertx-web.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.vertx</groupId>
+        <artifactId>vertx-web-validation</artifactId>
+        <version>${vertx-web-validation.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.vertx</groupId>
+        <artifactId>vertx-pg-client</artifactId>
+        <version>${vertx-pg-client.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-api</artifactId>
+        <version>${slf4j.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-simple</artifactId>
+        <version>${slf4j.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.fasterxml.jackson.core</groupId>
+        <artifactId>jackson-databind</artifactId>
+        <version>${jackson-databind.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.flywaydb</groupId>
+        <artifactId>flyway-database-postgresql</artifactId>
+        <version>${flyway-database-postgresql.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.postgresql</groupId>
+        <artifactId>postgresql</artifactId>
+        <version>${postgresql.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.ongres.scram</groupId>
+        <artifactId>common</artifactId>
+        <version>${scram-common.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.ongres.scram</groupId>
+        <artifactId>client</artifactId>
+        <version>${scram-client.version}</version>
       </dependency>
       <dependency>
         <groupId>com.zer0s2m.fugitive-darkness</groupId>
@@ -52,18 +146,25 @@
         <artifactId>fugitive-darkness-provider</artifactId>
         <version>${fugitive-darkness-provider.version}</version>
       </dependency>
+      <dependency>
+        <groupId>com.zer0s2m.fugitive-darkness</groupId>
+        <artifactId>fugitive-darkness-models</artifactId>
+        <version>${fugitive-darkness-models.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.zer0s2m.fugitive-darkness</groupId>
+        <artifactId>fugitive-darkness-repository</artifactId>
+        <version>${fugitive-darkness-repository.version}</version>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 
   <build>
     <plugins>
       <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>exec-maven-plugin</artifactId>
-        <version>${exec-maven-plugin.version}</version>
-        <configuration>
-          <mainClass>${main.class}</mainClass>
-        </configuration>
+        <groupId>org.flywaydb</groupId>
+        <artifactId>flyway-maven-plugin</artifactId>
+        <version>${flyway-maven-plugin.version}</version>
       </plugin>
     </plugins>
   </build>

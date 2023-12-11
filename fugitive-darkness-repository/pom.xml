@@ -9,10 +9,8 @@
     <version>0.0.1-SNAPSHOT</version>
   </parent>
 
-  <artifactId>fugitive-darkness-provider</artifactId>
+  <artifactId>fugitive-darkness-repository</artifactId>
   <version>0.0.1-SNAPSHOT</version>
-  <name>fugitive-darkness-provider</name>
-  <description>fugitive-darkness-provider</description>
 
   <properties>
     <maven.compiler.source>21</maven.compiler.source>
@@ -22,16 +20,24 @@
 
   <dependencies>
     <dependency>
-      <groupId>org.eclipse.jgit</groupId>
-      <artifactId>org.eclipse.jgit</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.eclipse.jgit</groupId>
-      <artifactId>org.eclipse.jgit.ssh.jsch</artifactId>
+      <groupId>com.zer0s2m.fugitive-darkness</groupId>
+      <artifactId>fugitive-darkness-models</artifactId>
     </dependency>
     <dependency>
       <groupId>com.zer0s2m.fugitive-darkness</groupId>
       <artifactId>fugitive-darkness-common</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.vertx</groupId>
+      <artifactId>vertx-pg-client</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.ongres.scram</groupId>
+      <artifactId>common</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.ongres.scram</groupId>
+      <artifactId>client</artifactId>
     </dependency>
   </dependencies>
 
