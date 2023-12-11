@@ -44,6 +44,7 @@
     <maven-compiler-plugin.version>3.11.0</maven-compiler-plugin.version>
     <maven-surefire-plugin.version>2.22.2</maven-surefire-plugin.version>
     <maven-shade-plugin.version>3.2.4</maven-shade-plugin.version>
+    <jackson-databind.version>2.16.0</jackson-databind.version>
     <flyway-maven-plugin.version>10.2.0</flyway-maven-plugin.version>
     <flyway-database-postgresql.version>10.2.0</flyway-database-postgresql.version>
     <postgresql.version>42.6.0</postgresql.version>
@@ -113,7 +114,7 @@
       <dependency>
         <groupId>com.fasterxml.jackson.core</groupId>
         <artifactId>jackson-databind</artifactId>
-        <version>2.16.0</version>
+        <version>${jackson-databind.version}</version>
       </dependency>
       <dependency>
         <groupId>org.flywaydb</groupId>

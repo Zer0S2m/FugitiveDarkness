@@ -16,9 +16,11 @@ cd ./fugitive-darkness-models && \
 endef
 
 run:
-	@$(run-docker-dev)
 	@$(mvn_bin) clean install package
 	@$(mvn_bin) exec:java -pl fugitive-darkness-api
 
 run-migrate:
 	@$(run-migrate)
+
+run-docker:
+	@$(run-docker-dev)

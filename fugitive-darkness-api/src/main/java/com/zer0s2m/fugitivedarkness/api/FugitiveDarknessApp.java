@@ -2,6 +2,7 @@ package com.zer0s2m.fugitivedarkness.api;
 
 import com.zer0s2m.fugitivedarkness.api.exception.NotFoundException;
 import com.zer0s2m.fugitivedarkness.api.handlers.ControllerApiGitRepoDelete;
+import com.zer0s2m.fugitivedarkness.api.handlers.ControllerApiGitRepoGet;
 import com.zer0s2m.fugitivedarkness.api.handlers.ControllerApiGitRepoInstall;
 import com.zer0s2m.fugitivedarkness.common.Environment;
 import io.netty.handler.codec.http.HttpResponseStatus;
@@ -58,6 +59,9 @@ public class FugitiveDarknessApp extends AbstractVerticle {
      * @param router Primary request processor router.
      */
     private void installingRouterAPI(final @NotNull Router router) {
+        router
+                .get("/api/v1/git/repo")
+                .handler(new ControllerApiGitRepoGet());
         router
                 .post("/api/v1/git/repo/install")
                 .consumes("application/json")

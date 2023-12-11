@@ -4,9 +4,13 @@ import com.zer0s2m.fugitivedarkness.models.GitRepoModel;
 import com.zer0s2m.fugitivedarkness.repository.GitRepoRepository;
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
+import io.vertx.core.json.JsonObject;
 import io.vertx.sqlclient.Row;
 import io.vertx.sqlclient.RowSet;
 import io.vertx.sqlclient.Tuple;
+
+import java.util.List;
+import java.util.stream.StreamSupport;
 
 public class GitRepoRepositoryImpl extends RepositoryImpl implements GitRepoRepository {
 
@@ -28,6 +32,25 @@ public class GitRepoRepositoryImpl extends RepositoryImpl implements GitRepoRepo
     }
 
     /**
+     * Get all entities.
+     * @return entities
+     */
+    @Override
+    public Future<RowSet<Row>> findAll() {
+        return sqlClient(vertx)
+                .query("""
+                        SELECT git_repositories.id,
+                               git_repositories.group_,
+                               git_repositories.project,
+                               git_repositories.host,
+                               git_repositories.created_at,
+                               git_repositories.is_load
+                        FROM git_repositories;
+                        """)
+                .execute();
+    }
+
+    /**
      * Saves a given entity.
      *
      * @param entity Must not be null.
@@ -46,6 +69,18 @@ public class GitRepoRepositoryImpl extends RepositoryImpl implements GitRepoRepo
                                 git_repositories.is_load
                         """)
                 .execute(Tuple.of(entity.getGroup(), entity.getProject(), entity.getHost()));
+    }
+
+    /**
+     * Instantiate a Java object from a {@link JsonObject}.
+     * @param rows The execution result of the row set of a query provided.
+     * @return Result.
+     */
+    @Override
+    public List<GitRepoModel> mapTo(final RowSet<Row> rows) {
+        return StreamSupport.stream(rows.spliterator(), false)
+                .map(row -> row.toJson().mapTo(GitRepoModel.class))
+                .toList();
     }
 
     /**
