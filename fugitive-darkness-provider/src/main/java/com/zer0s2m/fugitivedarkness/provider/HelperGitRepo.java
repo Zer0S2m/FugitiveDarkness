@@ -26,13 +26,14 @@ public interface HelperGitRepo {
             return new ContainerInfoRepo(
                     URISplit[URISplit.length - 3],
                     URISplit[URISplit.length - 2],
-                    URISplit[URISplit.length - 1].replace(".git", "")
+                    URISplit[URISplit.length - 1].replace(".git", ""),
+                    null
             );
         } else if (REMOTE_SSH.matcher(URI).find()) {
             System.out.println(2);
             System.out.println(URI);
         }
-        return new ContainerInfoRepo(null, null, null);
+        return new ContainerInfoRepo(null, null, null, null);
     }
 
     /**

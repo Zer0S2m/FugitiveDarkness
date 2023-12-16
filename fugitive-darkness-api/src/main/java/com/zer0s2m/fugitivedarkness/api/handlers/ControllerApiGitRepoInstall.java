@@ -65,7 +65,8 @@ final public class ControllerApiGitRepoInstall implements Handler<RoutingContext
                             .save(new GitRepoModel(
                                     result.group(),
                                     result.project(),
-                                    result.host()
+                                    result.host(),
+                                    result.source()
                             ))
                             .onComplete(ar -> {
                                 if (!ar.succeeded()) {

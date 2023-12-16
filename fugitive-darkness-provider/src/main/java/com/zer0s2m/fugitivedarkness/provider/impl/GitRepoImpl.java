@@ -29,11 +29,18 @@ public class GitRepoImpl implements GitRepo {
     @Override
     public ContainerInfoRepo gClone(String URI) throws GitAPIException {
         final ContainerInfoRepo infoRepo = HelperGitRepo.getInfoRepo(URI);
-        final File source = Path.of(
+        final Path pathSourceGitRepo = Path.of(
                 Environment.ROOT_PATH_REPO,
                 infoRepo.group(),
-                infoRepo.project()
-        ).toFile();
+                infoRepo.project());
+        final File source = pathSourceGitRepo.toFile();
+
+        final ContainerInfoRepo updatedInfoRepo = new ContainerInfoRepo(
+                infoRepo.host(),
+                infoRepo.group(),
+                infoRepo.project(),
+                Path.of(pathSourceGitRepo.toString(), ".git")
+        );
 
         logger.info("Start cloning the repository: " + source.getPath());
 
@@ -48,11 +55,16 @@ public class GitRepoImpl implements GitRepo {
 
         logger.info("Finish cloning the repository: " + source.getPath());
 
-        return infoRepo;
+        return updatedInfoRepo;
     }
 
     @Override
     public void gDelete(String group, String project) {
+
+    }
+
+    @Override
+    public void search() {
 
     }
 

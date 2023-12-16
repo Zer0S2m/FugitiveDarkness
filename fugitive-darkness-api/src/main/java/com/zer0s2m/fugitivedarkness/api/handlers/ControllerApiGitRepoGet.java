@@ -17,7 +17,7 @@ import java.util.List;
 /**
  * Request handler for fetching git repositories.
  */
-public class ControllerApiGitRepoGet implements Handler<RoutingContext> {
+final public class ControllerApiGitRepoGet implements Handler<RoutingContext> {
 
     static private final Logger logger = LoggerFactory.getLogger(ControllerApiGitRepoGet.class);
 

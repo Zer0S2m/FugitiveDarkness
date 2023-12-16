@@ -20,6 +20,8 @@ public interface GitRepo {
 
     void gDelete(String group, String project);
 
+    void search();
+
     static GitRepo create() {
         return new GitRepoImpl();
     }

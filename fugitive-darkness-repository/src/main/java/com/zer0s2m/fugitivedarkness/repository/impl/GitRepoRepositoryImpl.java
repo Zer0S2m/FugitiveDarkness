@@ -44,6 +44,7 @@ public class GitRepoRepositoryImpl extends RepositoryImpl implements GitRepoRepo
                                git_repositories.project,
                                git_repositories.host,
                                git_repositories.created_at,
+                               git_repositories.source,
                                git_repositories.is_load
                         FROM git_repositories;
                         """)
@@ -60,15 +61,16 @@ public class GitRepoRepositoryImpl extends RepositoryImpl implements GitRepoRepo
     public Future<RowSet<Row>> save(GitRepoModel entity) {
         return sqlClient(vertx)
                 .preparedQuery("""
-                            INSERT INTO git_repositories (group_, project, host)
-                            VALUES ($1, $2, $3)
+                            INSERT INTO git_repositories (group_, project, host, source)
+                            VALUES ($1, $2, $3, $4)
                             RETURNING git_repositories.id,
                                 git_repositories.group_,
                                 git_repositories.project,
                                 git_repositories.created_at,
+                                git_repositories.source,
                                 git_repositories.is_load
                         """)
-                .execute(Tuple.of(entity.getGroup(), entity.getProject(), entity.getHost()));
+                .execute(Tuple.of(entity.getGroup(), entity.getProject(), entity.getHost(), entity.getSource()));
     }
 
     /**
