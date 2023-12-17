@@ -1,7 +1,7 @@
 package com.zer0s2m.fugitivedarkness.api.handlers;
 
 import com.zer0s2m.fugitivedarkness.api.exception.NotFoundException;
-import com.zer0s2m.fugitivedarkness.common.dto.ContainerGitRepoDelete;
+import com.zer0s2m.fugitivedarkness.common.dto.ContainerGitRepoControl;
 import com.zer0s2m.fugitivedarkness.provider.FileSystemUtils;
 import com.zer0s2m.fugitivedarkness.provider.HelperGitRepo;
 import com.zer0s2m.fugitivedarkness.repository.GitRepoRepository;
@@ -40,10 +40,10 @@ final public class ControllerApiGitRepoDelete implements Handler<RoutingContext>
      */
     @Override
     public void handle(@NotNull RoutingContext event) {
-        ContainerGitRepoDelete containerGitRepoDelete = event
+        ContainerGitRepoControl containerGitRepoDelete = event
                 .body()
                 .asJsonObject()
-                .mapTo(ContainerGitRepoDelete.class);
+                .mapTo(ContainerGitRepoControl.class);
         boolean isExistsGitRepository = HelperGitRepo.existsGitRepository(
                 containerGitRepoDelete.group(), containerGitRepoDelete.project());
 

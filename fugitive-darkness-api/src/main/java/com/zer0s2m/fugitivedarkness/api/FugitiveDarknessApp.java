@@ -4,6 +4,7 @@ import com.zer0s2m.fugitivedarkness.api.exception.NotFoundException;
 import com.zer0s2m.fugitivedarkness.api.handlers.ControllerApiGitRepoDelete;
 import com.zer0s2m.fugitivedarkness.api.handlers.ControllerApiGitRepoGet;
 import com.zer0s2m.fugitivedarkness.api.handlers.ControllerApiGitRepoInstall;
+import com.zer0s2m.fugitivedarkness.api.handlers.ControllerApiGitRepoSearch;
 import com.zer0s2m.fugitivedarkness.common.Environment;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.vertx.core.AbstractVerticle;
@@ -42,7 +43,9 @@ public class FugitiveDarknessApp extends AbstractVerticle {
                         logger.info("Starting a server on a port: 8080");
                         logger.info("""
                                 Setting routes:
-                                \tPOST [/api/v1/git/repo/install]
+                                \tPOST   [/api/v1/control/search]
+                                \tGET    [/api/v1/git/repo/]
+                                \tPOST   [/api/v1/git/repo/install]
                                 \tDELETE [/api/v1/git/repo/delete]""");
                         logger.info("""
                                 Setting ENV:
@@ -78,6 +81,14 @@ public class FugitiveDarknessApp extends AbstractVerticle {
                         .setHandleFileUploads(false))
                 .handler(ControllerApiGitRepoDelete.GitRepoDeleteValidation.validator(vertx))
                 .handler(new ControllerApiGitRepoDelete());
+        router
+                .post("/api/v1/operation/search")
+                .consumes("application/json")
+                .handler(BodyHandler
+                        .create()
+                        .setHandleFileUploads(false))
+                .handler(ControllerApiGitRepoSearch.GitRepoSearchValidation.validator(vertx))
+                .handler(new ControllerApiGitRepoSearch());
     }
 
     /**

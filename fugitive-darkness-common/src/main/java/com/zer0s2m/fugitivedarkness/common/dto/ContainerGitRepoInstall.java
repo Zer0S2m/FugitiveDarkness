@@ -6,4 +6,5 @@ public record ContainerGitRepoInstall(
 
         String group
 
-) { }
+) {
+}

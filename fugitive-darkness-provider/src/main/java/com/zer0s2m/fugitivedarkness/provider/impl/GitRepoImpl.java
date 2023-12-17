@@ -1,16 +1,15 @@
 package com.zer0s2m.fugitivedarkness.provider.impl;
 
 import com.zer0s2m.fugitivedarkness.common.Environment;
-import com.zer0s2m.fugitivedarkness.provider.ContainerInfoRepo;
-import com.zer0s2m.fugitivedarkness.provider.GitRepo;
-import com.zer0s2m.fugitivedarkness.provider.HelperGitRepo;
+import com.zer0s2m.fugitivedarkness.provider.*;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
+import java.io.*;
 import java.nio.file.Path;
+import java.util.List;
 
 /**
  * Service for interacting with git repositories
@@ -63,9 +62,16 @@ public class GitRepoImpl implements GitRepo {
 
     }
 
+    /**
+     * Search for matches in files in git repositories by pattern. Git grep command.
+     * @param filterSearch Filter for searching git repositories.
+     * @return Search result in git repository.
+     * @throws IOException IO exception.
+     */
     @Override
-    public void search() {
-
+    public List<ContainerInfoSearchFileGitRepo> searchByGrep(GitRepoFilterSearch filterSearch) throws IOException {
+        return new GitRepoCommandGrep(filterSearch.getPattern(), filterSearch.getSources())
+                .call();
     }
 
 }

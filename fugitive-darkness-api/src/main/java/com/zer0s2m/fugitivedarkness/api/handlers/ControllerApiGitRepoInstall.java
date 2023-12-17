@@ -52,7 +52,6 @@ final public class ControllerApiGitRepoInstall implements Handler<RoutingContext
         event.vertx()
                 .executeBlocking(() -> {
                     try {
-                        Thread.sleep(2000);
                         return serviceGit.gClone(containerGitRepoInstall.remote());
                     } catch (GitAPIException e) {
                         throw new RuntimeException(e);

@@ -1,0 +1,10 @@
+package com.zer0s2m.fugitivedarkness.common.dto;
+
+import java.util.List;
+
+public record ContainerGitRepoSearchFilters(
+
+        List<ContainerGitRepoControl> git
+
+) {
+}
