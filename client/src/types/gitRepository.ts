@@ -6,3 +6,8 @@ export interface GitRepository {
   create_at: string,
   is_load: boolean
 }
+
+export interface DeleteGitRepository {
+  group: string,
+  project: string
+}
