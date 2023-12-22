@@ -6,7 +6,7 @@ import {ref} from "vue";
 
 export const useGitRepositoryState = defineStore('gitRepository', () => {
   const gitRepositories: Ref<IGitRepository[]> = ref([])
-  const isLoading: Ref<boolean> = ref(false)
+  const isLoading: Ref<boolean> = ref(true)
   const isLoadData: Ref<boolean> = ref(false)
 
   const loadGitRepositories = async () => {
@@ -19,8 +19,10 @@ export const useGitRepositoryState = defineStore('gitRepository', () => {
   }
 
   const deleteGitRepository = async (gitRepo: IDeleteGitRepository) => {
+    await api.deleteGitRepository(gitRepo)
+
     gitRepositories.value = gitRepositories.value.filter((gitRepository) => {
-      return !(gitRepository.group_ === gitRepo.group && gitRepo.project === gitRepo.project)
+      return !(gitRepository.group_ === gitRepo.group && gitRepository.project === gitRepo.project)
     })
   }
 

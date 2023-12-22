@@ -11,3 +11,9 @@ import Header from "@/components/common/Header.vue";
     </Suspense>
   </div>
 </template>
+
+<style scoped>
+.app-wrapper {
+  height: 100vh;
+}
+</style>

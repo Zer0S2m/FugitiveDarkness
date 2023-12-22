@@ -14,7 +14,7 @@ defineProps<{ items: IGitRepository[] }>()
 <style scoped>
 .git-items {
   display: grid;
-  grid-template-columns: repeat(6, 1fr);
+  grid-template-columns: repeat(5, 1fr);
   grid-column-gap: 8px;
   grid-row-gap: 2px;
 }
