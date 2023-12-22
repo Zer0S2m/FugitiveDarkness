@@ -1,33 +1,24 @@
 import {defineStore} from "pinia";
-import {type DeleteGitRepository, type GitRepository} from "@/types/gitRepository";
+import {type IDeleteGitRepository, type IGitRepository} from "@/types/gitRepository";
+import api from "@/services/api"
 import type {Ref} from "vue";
 import {ref} from "vue";
 
 export const useGitRepositoryState = defineStore('gitRepository', () => {
-  const gitRepositories: Ref<GitRepository[]> = ref([])
+  const gitRepositories: Ref<IGitRepository[]> = ref([])
+  const isLoading: Ref<boolean> = ref(false)
+  const isLoadData: Ref<boolean> = ref(false)
 
   const loadGitRepositories = async () => {
-    gitRepositories.value = [
-      {
-        id: 1,
-        group_: 'test',
-        project: 'test',
-        host: 'github.com',
-        create_at: '2023-12-16T11:23:53.576425',
-        is_load: true
-      },
-      {
-        id: 2,
-        group_: 'test_2',
-        project: 'test_2',
-        host: 'github.com',
-        create_at: '2023-12-16T11:23:53.576425',
-        is_load: true
-      }
-    ]
+    if (isLoadData.value) return
+
+    isLoading.value = true
+    gitRepositories.value = (await api.getAllGitRepositories()).data.gitRepositories
+    isLoadData.value = true
+    isLoading.value = false
   }
 
-  const deleteGitRepository = async (gitRepo: DeleteGitRepository) => {
+  const deleteGitRepository = async (gitRepo: IDeleteGitRepository) => {
     gitRepositories.value = gitRepositories.value.filter((gitRepository) => {
       return !(gitRepository.group_ === gitRepo.group && gitRepo.project === gitRepo.project)
     })
@@ -37,6 +28,8 @@ export const useGitRepositoryState = defineStore('gitRepository', () => {
     loadGitRepositories,
     deleteGitRepository,
 
-    gitRepositories
+    gitRepositories,
+    isLoading,
+    isLoadData
   }
 })

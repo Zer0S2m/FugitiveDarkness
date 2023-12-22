@@ -16,11 +16,11 @@
 
 <script setup lang="ts">
 import IconDelete from "@/assets/icon-delete.svg"
-import type {GitRepository} from "@/types/gitRepository";
+import type {IGitRepository} from "@/types/gitRepository";
 import {useGitRepositoryState} from "@/stores/useGitRepositoryState";
 
 const useGitRepositoryStore = useGitRepositoryState()
-const props = defineProps<{ item: GitRepository }>();
+const props = defineProps<{ item: IGitRepository }>();
 
 const deleteGitRepository = async () => {
   await useGitRepositoryStore.deleteGitRepository({

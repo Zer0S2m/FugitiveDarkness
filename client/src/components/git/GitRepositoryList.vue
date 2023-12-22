@@ -5,10 +5,10 @@
 </template>
 
 <script setup lang="ts">
-import type {GitRepository} from "@/types/gitRepository";
+import type {IGitRepository} from "@/types/gitRepository";
 import GitRepositoryItem from "@/components/git/GitRepositoryItem.vue";
 
-defineProps<{ items: GitRepository[] }>()
+defineProps<{ items: IGitRepository[] }>()
 </script>
 
 <style scoped>

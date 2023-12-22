@@ -1,7 +1,5 @@
 <template>
-  <div>
-    <GitRepositoryList :items="useGitRepositoryStore.gitRepositories"/>
-  </div>
+  <GitRepositoryList v-if="!useGitRepositoryStore.isLoading" :items="useGitRepositoryStore.gitRepositories"/>
 </template>
 
 <script setup lang="ts">

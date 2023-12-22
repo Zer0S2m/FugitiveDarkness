@@ -1,4 +1,4 @@
-export interface GitRepository {
+export interface IGitRepository {
   id: number,
   group_: string,
   project: string,
@@ -7,7 +7,13 @@ export interface GitRepository {
   is_load: boolean
 }
 
-export interface DeleteGitRepository {
+export interface IResponseGitRepository {
+  success: boolean,
+  gitRepositories: IGitRepository[]
+}
+
+export interface IDeleteGitRepository {
   group: string,
   project: string
 }
+
