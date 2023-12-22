@@ -1,5 +1,5 @@
 @import './base.css';
 
-.app-wrapper {
-    padding: 20px;
+#app {
+    height: 100vh;
 }

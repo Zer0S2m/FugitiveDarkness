@@ -14,6 +14,7 @@ import Header from "@/components/common/Header.vue";
 
 <style scoped>
 .app-wrapper {
-  height: 100vh;
+  height: 95%;
+  padding: 20px;
 }
 </style>

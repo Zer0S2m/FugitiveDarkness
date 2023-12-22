@@ -32,9 +32,10 @@ const deleteGitRepository = async () => {
 
 <style scoped>
 .git-item {
-  border: 1px solid var(--color-secondary);
+  border: 1px solid var(--color-border);
   width: 100%;
   margin: 4px;
+  border-radius: 4px;
 }
 
 .git-item__wrapper {

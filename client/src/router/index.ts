@@ -1,5 +1,5 @@
 import {createRouter, createWebHistory} from 'vue-router'
-import MainView from "@/views/MainView.vue";
+import SearchView from "@/views/SearchView.vue";
 import RepositoriesView from "@/views/RepositoriesView.vue";
 
 const router = createRouter({
@@ -7,8 +7,8 @@ const router = createRouter({
   routes: [
     {
       path: '/',
-      name: 'main',
-      component: () => MainView
+      name: 'search',
+      component: () => SearchView
     },
     {
       path: '/git-repositories',

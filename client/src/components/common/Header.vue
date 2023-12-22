@@ -9,12 +9,12 @@ import {RouterLink} from "vue-router";
         <span>FD</span>
       </div>
       <nav class="nav-items">
-        <div class="nav-item">
+        <div class="nav-item nav-item-1">
           <div class="nav-item__wrapper">
-            <RouterLink class="nav-item__link" :to="{ name: 'main' }" route="git-repositories">Main</RouterLink>
+            <RouterLink class="nav-item__link" :to="{ name: 'search' }">Search</RouterLink>
           </div>
         </div>
-        <div class="nav-item">
+        <div class="nav-item nav-item-2">
           <div class="nav-item__wrapper">
             <RouterLink class="nav-item__link" :to="{ name: 'git-repositories' }">Repositories</RouterLink>
           </div>
@@ -59,6 +59,10 @@ import {RouterLink} from "vue-router";
 .nav-item {
   border-left: 1px solid var(--color-border);
   border-right: 1px solid var(--color-border);
+}
+
+.nav-item-1 {
+  border-right: 0;
 }
 
 .nav-item__wrapper {

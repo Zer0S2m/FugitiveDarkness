@@ -8,6 +8,7 @@ export const useGitRepositoryState = defineStore('gitRepository', () => {
   const gitRepositories: Ref<IGitRepository[]> = ref([])
   const isLoading: Ref<boolean> = ref(true)
   const isLoadData: Ref<boolean> = ref(false)
+  const searchText: Ref<string> = ref("")
 
   const loadGitRepositories = async () => {
     if (isLoadData.value) return
@@ -32,6 +33,7 @@ export const useGitRepositoryState = defineStore('gitRepository', () => {
 
     gitRepositories,
     isLoading,
-    isLoadData
+    isLoadData,
+    searchText
   }
 })
