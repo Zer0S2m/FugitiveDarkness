@@ -16,7 +16,6 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -27,15 +26,15 @@ class GitRepoCommandGrep {
 
     private final Pattern pattern;
 
-    private final Set<Path> sources;
+    private final Path source;
 
-    public GitRepoCommandGrep(Pattern pattern, Set<Path> sources) {
+    public GitRepoCommandGrep(Pattern pattern, Path source) {
         this.pattern = pattern;
-        this.sources = sources;
+        this.source = source;
     }
 
     public List<ContainerInfoSearchFileGitRepo> call() throws IOException {
-        final Repository repository = Git.open(sources.stream().toList().get(0).toFile())
+        final Repository repository = Git.open(source.toFile())
                 .checkout()
                 .getRepository();
 

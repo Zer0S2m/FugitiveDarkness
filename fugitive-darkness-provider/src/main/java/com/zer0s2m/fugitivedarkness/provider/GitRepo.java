@@ -4,7 +4,6 @@ import com.zer0s2m.fugitivedarkness.common.Environment;
 import com.zer0s2m.fugitivedarkness.provider.impl.GitRepoImpl;
 import org.eclipse.jgit.api.errors.GitAPIException;
 
-import java.io.IOException;
 import java.util.List;
 
 /**
@@ -27,9 +26,8 @@ public interface GitRepo {
      * Search for matches in files in git repositories by pattern. Git grep command.
      * @param filterSearch Filter for searching git repositories.
      * @return Search result in git repository.
-     * @throws IOException IO exception.
      */
-    List<ContainerInfoSearchFileGitRepo> searchByGrep(GitRepoFilterSearch filterSearch) throws IOException;
+    List<ContainerInfoSearchGitRepo> searchByGrep(GitRepoFilterSearch filterSearch);
 
     static GitRepo create() {
         return new GitRepoImpl();

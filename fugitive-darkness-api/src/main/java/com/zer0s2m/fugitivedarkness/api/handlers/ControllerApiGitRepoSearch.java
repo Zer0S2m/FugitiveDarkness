@@ -1,9 +1,7 @@
 package com.zer0s2m.fugitivedarkness.api.handlers;
 
 import com.zer0s2m.fugitivedarkness.common.Environment;
-import com.zer0s2m.fugitivedarkness.common.dto.ContainerGitRepoControl;
 import com.zer0s2m.fugitivedarkness.common.dto.ContainerGitRepoSearch;
-import com.zer0s2m.fugitivedarkness.provider.ContainerInfoSearchFileGitRepo;
 import com.zer0s2m.fugitivedarkness.provider.ContainerInfoSearchGitRepo;
 import com.zer0s2m.fugitivedarkness.provider.GitRepo;
 import com.zer0s2m.fugitivedarkness.provider.GitRepoFilterSearch;
@@ -49,12 +47,21 @@ final public class ControllerApiGitRepoSearch implements Handler<RoutingContext>
                 .asJsonObject()
                 .mapTo(ContainerGitRepoSearch.class);
 
-        ContainerGitRepoControl gitRepoControl = gitRepoSearch.filters().git().get(0);
-        final Path gitRepoSource = Path.of(
-                Environment.ROOT_PATH_REPO,
-                gitRepoControl.group(),
-                gitRepoControl.project(),
-                ".git");
+        final GitRepoFilterSearch gitRepoFilterSearch = GitRepoFilterSearch
+                .create()
+                .setPattern(gitRepoSearch.pattern());
+
+        gitRepoSearch.filters().git()
+                .forEach(repo -> {
+                    final Path source = Path.of(
+                            Environment.ROOT_PATH_REPO,
+                            repo.group(),
+                            repo.project(),
+                            ".git");
+                    gitRepoFilterSearch
+                            .addGitRepo(source)
+                            .addGitMeta(source, repo);
+                });
 
         JsonObject object = new JsonObject();
         object.put("success", true);
@@ -62,16 +69,9 @@ final public class ControllerApiGitRepoSearch implements Handler<RoutingContext>
         event.vertx()
                 .executeBlocking(() -> {
                     logger.info("Start a search");
-                    final List<ContainerInfoSearchFileGitRepo> result = serviceGit.searchByGrep(GitRepoFilterSearch
-                            .create()
-                            .setPattern(gitRepoSearch.pattern())
-                            .addGitRepo(gitRepoSource));
+                    final List<ContainerInfoSearchGitRepo> result = serviceGit.searchByGrep(gitRepoFilterSearch);
                     logger.info("Search ends");
-                    return new ContainerInfoSearchGitRepo(
-                            gitRepoControl.group(),
-                            gitRepoControl.project(),
-                            gitRepoSearch.pattern(),
-                            result);
+                    return result;
                 })
                 .onSuccess(result -> {
                     object.put("searchResult", result);
@@ -101,13 +101,13 @@ final public class ControllerApiGitRepoSearch implements Handler<RoutingContext>
                     .create(SchemaParser.createDraft7SchemaParser(
                             SchemaRouter.create(vertx, new SchemaRouterOptions())))
                     .body(Bodies.json(objectSchema()
-                            .requiredProperty("pattern", stringSchema())
-                            .requiredProperty("filters", objectSchema()
-                                    .requiredProperty("git", arraySchema()
-                                            .items(objectSchema()
-                                                    .requiredProperty("group", stringSchema())
-                                                    .requiredProperty("project", stringSchema()))
-                                    ))
+                                    .requiredProperty("pattern", stringSchema())
+                                    .requiredProperty("filters", objectSchema()
+                                            .requiredProperty("git", arraySchema()
+                                                    .items(objectSchema()
+                                                            .requiredProperty("group", stringSchema())
+                                                            .requiredProperty("project", stringSchema()))
+                                            ))
                             )
                     )
                     .build();

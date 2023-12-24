@@ -1,6 +1,7 @@
 package com.zer0s2m.fugitivedarkness.provider.impl;
 
 import com.zer0s2m.fugitivedarkness.common.Environment;
+import com.zer0s2m.fugitivedarkness.common.dto.ContainerGitRepoControl;
 import com.zer0s2m.fugitivedarkness.provider.*;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
@@ -9,6 +10,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -64,14 +66,29 @@ public class GitRepoImpl implements GitRepo {
 
     /**
      * Search for matches in files in git repositories by pattern. Git grep command.
+     *
      * @param filterSearch Filter for searching git repositories.
      * @return Search result in git repository.
-     * @throws IOException IO exception.
      */
     @Override
-    public List<ContainerInfoSearchFileGitRepo> searchByGrep(GitRepoFilterSearch filterSearch) throws IOException {
-        return new GitRepoCommandGrep(filterSearch.getPattern(), filterSearch.getSources())
-                .call();
+    public List<ContainerInfoSearchGitRepo> searchByGrep(GitRepoFilterSearch filterSearch) {
+        final List<ContainerInfoSearchGitRepo> searchFileGitRepos = new ArrayList<>();
+        filterSearch.getSources()
+                .forEach(source -> {
+                    final ContainerGitRepoControl gitRepo = filterSearch.getGitMeta(source);
+                    try {
+                        searchFileGitRepos.add(new ContainerInfoSearchGitRepo(
+                                gitRepo.group(),
+                                gitRepo.project(),
+                                filterSearch.getPattern().toString(),
+                                new GitRepoCommandGrep(filterSearch.getPattern(), source)
+                                        .call()
+                        ));
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                });
+        return searchFileGitRepos;
     }
 
 }
