@@ -25,3 +25,25 @@ export interface IFilterSearchGitRepository {
 export interface IFilterSearchGitRepositories {
   git: IControlGitRepository[]
 }
+
+export interface IMatcherFoundByGrepGitRepository {
+  matcher: string,
+  lineNumber: number
+}
+
+export interface ISearchFoundByGrepGitRepository {
+  filename: string,
+  matchers: IMatcherFoundByGrepGitRepository[]
+}
+
+export interface ISearchByGrepGitRepository {
+  group: string,
+  project: string,
+  pattern: string,
+  found: ISearchFoundByGrepGitRepository[]
+}
+
+export interface IResponseSearchByGrepGitRepository {
+  success: boolean,
+  searchResult: ISearchByGrepGitRepository[]
+}

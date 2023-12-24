@@ -2,7 +2,8 @@ import {defineStore} from "pinia";
 import {
   type IControlGitRepository,
   type IFilterSearchGitRepository,
-  type IGitRepository
+  type IGitRepository,
+  type ISearchByGrepGitRepository
 } from "@/types/gitRepository";
 import api from "@/services/api"
 import type {Ref} from "vue";
@@ -10,8 +11,10 @@ import {ref} from "vue";
 
 export const useGitRepositoryState = defineStore('gitRepository', () => {
   const gitRepositories: Ref<IGitRepository[]> = ref([])
+  const resultSearchByGrepGitRepositories: Ref<ISearchByGrepGitRepository[]> = ref([])
   const isLoading: Ref<boolean> = ref(true)
   const isLoadData: Ref<boolean> = ref(false)
+  const isLoadingSearch: Ref<boolean> = ref(false)
   const filtersForSearch: Ref<IFilterSearchGitRepository> = ref({
     filters: {
       git: [] as IControlGitRepository[]
@@ -56,6 +59,12 @@ export const useGitRepositoryState = defineStore('gitRepository', () => {
     }) != null
   }
 
+  const searchByGrep = async () => {
+    isLoadingSearch.value = true
+    resultSearchByGrepGitRepositories.value = (await api.searchByGrep(filtersForSearch.value)).data.searchResult
+    isLoadingSearch.value = false
+  }
+
   return {
     loadGitRepositories,
     deleteGitRepository,
@@ -63,10 +72,13 @@ export const useGitRepositoryState = defineStore('gitRepository', () => {
     setGitRepositoryFilterSearch,
     removeGitRepositoryFilterSearch,
     getIsActivityGitRepositoryInFilter,
+    searchByGrep,
 
     gitRepositories,
+    resultSearchByGrepGitRepositories,
     isLoading,
     isLoadData,
+    isLoadingSearch,
     filtersForSearch
   }
 })
