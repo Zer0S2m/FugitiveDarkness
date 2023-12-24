@@ -1,6 +1,6 @@
 <template>
   <div>
-    <input class="search" placeholder="Search..." :value="useGitRepositoryStore.searchText">
+    <input v-model="useGitRepositoryStore.filtersForSearch.pattern" class="search" placeholder="Search...">
   </div>
 </template>
 

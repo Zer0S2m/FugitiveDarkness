@@ -12,8 +12,16 @@ export interface IResponseGitRepository {
   gitRepositories: IGitRepository[]
 }
 
-export interface IDeleteGitRepository {
+export interface IControlGitRepository {
   group: string,
   project: string
 }
 
+export interface IFilterSearchGitRepository {
+  filters: IFilterSearchGitRepositories,
+  pattern: string
+}
+
+export interface IFilterSearchGitRepositories {
+  git: IControlGitRepository[]
+}
