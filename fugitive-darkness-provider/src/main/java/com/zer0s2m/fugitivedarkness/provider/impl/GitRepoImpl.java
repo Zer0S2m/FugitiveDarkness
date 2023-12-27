@@ -1,7 +1,6 @@
 package com.zer0s2m.fugitivedarkness.provider.impl;
 
 import com.zer0s2m.fugitivedarkness.common.Environment;
-import com.zer0s2m.fugitivedarkness.common.dto.ContainerGitRepoControl;
 import com.zer0s2m.fugitivedarkness.provider.*;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
@@ -40,6 +39,7 @@ public class GitRepoImpl implements GitRepo {
                 infoRepo.host(),
                 infoRepo.group(),
                 infoRepo.project(),
+                infoRepo.link(),
                 Path.of(pathSourceGitRepo.toString(), ".git")
         );
 
@@ -75,15 +75,20 @@ public class GitRepoImpl implements GitRepo {
         final List<ContainerInfoSearchGitRepo> searchFileGitRepos = new ArrayList<>();
         filterSearch.getSources()
                 .forEach(source -> {
-                    final ContainerGitRepoControl gitRepo = filterSearch.getGitMeta(source);
+                    final ContainerGitRepoMeta gitRepo = filterSearch.getGitMeta(source);
                     try {
-                        final GitRepoCommandGrep commandGrep = new GitRepoCommandGrep(filterSearch.getPattern(), source);
+                        final GitRepoCommandGrep commandGrep = new GitRepoCommandGrep(
+                                filterSearch.getPattern(),
+                                source,
+                                gitRepo
+                        );
                         final List<ContainerInfoSearchFileGitRepo> searchResult = commandGrep.call();
 
                         searchFileGitRepos.add(new ContainerInfoSearchGitRepo(
                                 gitRepo.group(),
                                 gitRepo.project(),
                                 filterSearch.getPattern().toString(),
+                                gitRepo.getLink(true),
                                 commandGrep.getExtensionFiles(),
                                 searchResult
                         ));

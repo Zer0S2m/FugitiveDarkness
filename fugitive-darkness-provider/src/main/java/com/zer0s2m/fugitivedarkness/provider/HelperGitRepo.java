@@ -27,13 +27,13 @@ public interface HelperGitRepo {
                     URISplit[URISplit.length - 3],
                     URISplit[URISplit.length - 2],
                     URISplit[URISplit.length - 1].replace(".git", ""),
+                    URI,
                     null
             );
         } else if (REMOTE_SSH.matcher(URI).find()) {
-            System.out.println(2);
-            System.out.println(URI);
+            // TODO: create info git repo
         }
-        return new ContainerInfoRepo(null, null, null, null);
+        return new ContainerInfoRepo(null, null, null, null, null);
     }
 
     /**

@@ -1,6 +1,5 @@
 package com.zer0s2m.fugitivedarkness.provider;
 
-import com.zer0s2m.fugitivedarkness.common.dto.ContainerGitRepoControl;
 import com.zer0s2m.fugitivedarkness.provider.impl.GitRepoFilterSearchImpl;
 
 import java.nio.file.Path;
@@ -36,7 +35,7 @@ public interface GitRepoFilterSearch {
      * @param meta   Git repository information.
      * @return Search filter.
      */
-    GitRepoFilterSearch addGitMeta(Path source, ContainerGitRepoControl meta);
+    GitRepoFilterSearch addGitMeta(Path source, ContainerGitRepoMeta meta);
 
     /**
      * Get metadata for a git repository.
@@ -44,7 +43,7 @@ public interface GitRepoFilterSearch {
      * @param source Source path of the git repository.
      * @return Git repository information.
      */
-    ContainerGitRepoControl getGitMeta(Path source);
+    ContainerGitRepoMeta getGitMeta(Path source);
 
     /**
      * Set a pattern to search for matches.

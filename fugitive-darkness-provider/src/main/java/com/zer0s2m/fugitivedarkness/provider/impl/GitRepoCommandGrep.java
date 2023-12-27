@@ -1,8 +1,6 @@
 package com.zer0s2m.fugitivedarkness.provider.impl;
 
-import com.zer0s2m.fugitivedarkness.provider.ContainerInfoSearchFileGitRepo;
-import com.zer0s2m.fugitivedarkness.provider.ContainerInfoSearchFileMatcherGitRepo;
-import com.zer0s2m.fugitivedarkness.provider.FileSystemUtils;
+import com.zer0s2m.fugitivedarkness.provider.*;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.diff.RawText;
 import org.eclipse.jgit.lib.*;
@@ -30,9 +28,12 @@ class GitRepoCommandGrep {
 
     private final Set<String> extensionFiles = new HashSet<>();
 
-    public GitRepoCommandGrep(Pattern pattern, Path source) {
+    private final ContainerGitRepoMeta containerGitRepoMeta;
+
+    public GitRepoCommandGrep(Pattern pattern, Path source, ContainerGitRepoMeta containerGitRepoMeta) {
         this.pattern = pattern;
         this.source = source;
+        this.containerGitRepoMeta = containerGitRepoMeta;
     }
 
     public List<ContainerInfoSearchFileGitRepo> call() throws IOException {
@@ -65,14 +66,15 @@ class GitRepoCommandGrep {
                     ObjectLoader objectLoader = objectReader.open(objectId);
 
                     if (!isBinary(objectLoader.openStream())) {
-                        List<ContainerInfoSearchFileMatcherGitRepo> matchers = getMatchedLines(objectLoader
-                                .openStream());
+                        List<ContainerInfoSearchFileMatcherGitRepo> matchers = getMatchedLines(
+                                objectLoader.openStream(), it.getEntryPathString());
                         if (!matchers.isEmpty()) {
                             final String extensionFile = FileSystemUtils
                                     .getExtensionFromRawStrFile(it.getEntryPathString());
                             infoSearchFileGitRepos.add(new ContainerInfoSearchFileGitRepo(
                                     it.getEntryPathString(),
                                     extensionFile,
+                                    GitRepo.getLinkForFile(containerGitRepoMeta, it.getEntryPathString(), "master"),
                                     matchers));
 
                             extensionFiles.add(extensionFile);
@@ -85,7 +87,9 @@ class GitRepoCommandGrep {
         return infoSearchFileGitRepos;
     }
 
-    private List<ContainerInfoSearchFileMatcherGitRepo> getMatchedLines(InputStream stream) throws IOException {
+    private List<ContainerInfoSearchFileMatcherGitRepo> getMatchedLines(
+            InputStream stream,
+            final String file) throws IOException {
         BufferedReader buf = null;
         try {
             List<ContainerInfoSearchFileMatcherGitRepo> matchers = new ArrayList<>();
@@ -96,7 +100,14 @@ class GitRepoCommandGrep {
             while ((line = buf.readLine()) != null) {
                 Matcher matcher = pattern.matcher(line);
                 if (matcher.find()) {
-                    matchers.add(new ContainerInfoSearchFileMatcherGitRepo(line, lineNumber));
+                    matchers.add(new ContainerInfoSearchFileMatcherGitRepo(
+                            line,
+                            GitRepo.getLinkForMatcherLine(
+                                    containerGitRepoMeta,
+                                    file,
+                                    "master",
+                                    lineNumber),
+                            lineNumber));
                 }
                 lineNumber++;
             }

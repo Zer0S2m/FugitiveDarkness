@@ -10,6 +10,8 @@ public record ContainerInfoSearchGitRepo(
         String project,
 
         String pattern,
+        
+        String link,
 
         Collection<String> extensionFiles,
 

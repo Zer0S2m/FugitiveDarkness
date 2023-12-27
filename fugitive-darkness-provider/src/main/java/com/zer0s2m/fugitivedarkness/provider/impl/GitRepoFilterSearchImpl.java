@@ -1,6 +1,6 @@
 package com.zer0s2m.fugitivedarkness.provider.impl;
 
-import com.zer0s2m.fugitivedarkness.common.dto.ContainerGitRepoControl;
+import com.zer0s2m.fugitivedarkness.provider.ContainerGitRepoMeta;
 import com.zer0s2m.fugitivedarkness.provider.GitRepoFilterSearch;
 
 import java.nio.file.Path;
@@ -16,7 +16,7 @@ public class GitRepoFilterSearchImpl implements GitRepoFilterSearch {
 
     private Pattern pattern;
 
-    private final Map<Path, ContainerGitRepoControl> meta = new HashMap<>();
+    private final Map<Path, ContainerGitRepoMeta> meta = new HashMap<>();
 
     /**
      * Set the path to the git repository for later searching.
@@ -50,7 +50,7 @@ public class GitRepoFilterSearchImpl implements GitRepoFilterSearch {
      * @return Search filter.
      */
     @Override
-    public GitRepoFilterSearch addGitMeta(Path source, ContainerGitRepoControl meta) {
+    public GitRepoFilterSearch addGitMeta(Path source, ContainerGitRepoMeta meta) {
         this.meta.put(source, meta);
         return this;
     }
@@ -62,7 +62,7 @@ public class GitRepoFilterSearchImpl implements GitRepoFilterSearch {
      * @return Git repository information.
      */
     @Override
-    public ContainerGitRepoControl getGitMeta(Path source) {
+    public ContainerGitRepoMeta getGitMeta(Path source) {
         return meta.get(source);
     }
 

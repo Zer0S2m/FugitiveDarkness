@@ -8,6 +8,9 @@ public record ContainerInfoSearchFileGitRepo(
 
         String extension,
 
+        String link,
+
         List<ContainerInfoSearchFileMatcherGitRepo> matchers
 
-) { }
+) {
+}

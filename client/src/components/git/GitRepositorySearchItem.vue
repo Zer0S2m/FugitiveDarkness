@@ -1,6 +1,12 @@
 <template>
   <div>
-    <h5 class="result-search-git-repo__title">{{ item.group }}/{{ item.project }}</h5>
+    <h5 class="result-search-git-repo__title">
+      <a
+        :href="item.link"
+        target="_blank"
+        >{{ item.group }}/{{ item.project }}</a
+      >
+    </h5>
     <GitRepositorySearchMatherList
       :matchers="item.found"
       class="result-search-git-repo__matchers"
@@ -18,7 +24,8 @@ defineProps<{
 </script>
 
 <style scoped>
-.result-search-git-repo__title {
+.result-search-git-repo__title > a {
+  color: var(--vt-c-black);
   font-weight: 600;
 }
 

@@ -28,12 +28,14 @@ export interface IFilterSearchGitRepositories {
 
 export interface IMatcherFoundByGrepGitRepository {
   matcher: string;
+  link: string;
   lineNumber: number;
 }
 
 export interface ISearchFoundByGrepGitRepository {
   filename: string;
   extension: string;
+  link: string;
   matchers: IMatcherFoundByGrepGitRepository[];
 }
 
@@ -41,6 +43,7 @@ export interface ISearchByGrepGitRepository {
   group: string;
   project: string;
   pattern: string;
+  link: string;
   extensionFiles: string[];
   found: ISearchFoundByGrepGitRepository[];
 }

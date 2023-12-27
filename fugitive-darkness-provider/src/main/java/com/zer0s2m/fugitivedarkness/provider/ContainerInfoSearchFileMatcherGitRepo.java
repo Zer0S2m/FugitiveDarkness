@@ -4,6 +4,8 @@ public record ContainerInfoSearchFileMatcherGitRepo(
 
         String matcher,
 
+        String link,
+
         int lineNumber
 
 ) { }

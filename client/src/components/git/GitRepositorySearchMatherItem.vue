@@ -1,11 +1,21 @@
 <template>
   <div class="matcher-found">
-    <h6>{{ matcher.filename }}</h6>
+    <h6>
+      <a
+        :href="matcher.link"
+        target="_blank"
+        >{{ matcher.filename }}</a
+      >
+    </h6>
     <div class="matcher-found__result">
       <div class="matcher-found__result--wrapper">
         <div class="matcher-found__result--lines">
           <p v-for="data in matcher.matchers">
-            <span>{{ data.lineNumber }}</span>
+            <a
+              :href="data.link"
+              target="_blank"
+              >{{ data.lineNumber }}</a
+            >
           </p>
         </div>
         <div class="matcher-found__result--code">
@@ -27,6 +37,17 @@ defineProps<{
 </script>
 
 <style scoped>
+h6 > a,
+.matcher-found__result--lines > p > a {
+  text-decoration: none;
+  color: var(--color-text);
+}
+
+h6 > a:hover,
+.matcher-found__result--lines > p > a:hover {
+  color: var(--color-secondary);
+}
+
 .matcher-found__result {
   border: 1px solid var(--color-border);
   width: 100%;

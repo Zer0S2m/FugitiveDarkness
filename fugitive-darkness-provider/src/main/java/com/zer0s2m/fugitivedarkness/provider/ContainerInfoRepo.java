@@ -10,6 +10,8 @@ public record ContainerInfoRepo(
 
         String project,
 
+        String link,
+
         Path source
 
 ) { }
