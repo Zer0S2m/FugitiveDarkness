@@ -3,9 +3,16 @@
     <h6>{{ matcher.filename }}</h6>
     <div class="matcher-found__result">
       <div class="matcher-found__result--wrapper">
-        <p v-for="data in matcher.matchers">
-          <span>{{data.lineNumber}}</span> - <span>{{data.matcher}}</span>
-        </p>
+        <div class="matcher-found__result--lines">
+          <p v-for="data in matcher.matchers">
+            <span>{{data.lineNumber}}</span>
+          </p>
+        </div>
+        <div class="matcher-found__result--code">
+          <p v-for="data in matcher.matchers">
+            <span>{{data.matcher}}</span>
+          </p>
+        </div>
       </div>
     </div>
   </div>
@@ -28,10 +35,34 @@ defineProps<{
 }
 
 .matcher-found__result--wrapper {
-  padding: 8px;
+  display: flex;
 }
 
 .matcher-found:hover .matcher-found__result {
   border: 1px solid var(--color-secondary);
+}
+
+.matcher-found__result--lines {
+  margin-right: 30px;
+  padding: 8px 12px 8px 0;
+  max-width: 68px;
+  width: 100%;
+  background-color: var(--color-border);
+}
+
+.matcher-found__result--lines > p {
+  width: 100%;
+  text-align: end;
+  font-family: 'Fira Code', serif;
+  font-size: 14px;
+}
+
+.matcher-found__result--code  {
+  padding: 8px 8px 8px 0;
+}
+
+.matcher-found__result--code > p  {
+  font-family: 'Fira Code', serif;
+  font-size: 14px;
 }
 </style>

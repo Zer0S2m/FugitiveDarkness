@@ -2,12 +2,12 @@
   <div class="tools-wrapper">
     <div class="tools-wrapper__base">
       <div class="tools-wrapper__field">
-        <div class="tools-wrapper_block">
+        <div class="tools-wrapper__block">
           <InputSearchGitRepository class="tools-wrapper__search"/>
           <ButtonSearchGitRepository @click="searchByGrep"/>
         </div>
       </div>
-      <div>
+      <div class="tools-wrapper__result">
         <GitRepositorySearchList :items="useGitRepositoryStore.resultSearchByGrepGitRepositories"
                                  v-if="!useGitRepositoryStore.isLoadingSearch"/>
         <div class="tools-wrapper__search--loader" v-if="useGitRepositoryStore.isLoadingSearch">
@@ -54,7 +54,7 @@ const searchByGrep = async () => {
   margin-bottom: 20px;
 }
 
-.tools-wrapper_block {
+.tools-wrapper__block {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -72,5 +72,9 @@ const searchByGrep = async () => {
 
 .tools-wrapper__filters {
   width: 420px;
+}
+
+.tools-wrapper__result {
+  padding-bottom: 8px;
 }
 </style>
