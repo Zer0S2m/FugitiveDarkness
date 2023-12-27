@@ -1,13 +1,17 @@
 <template>
   <div>
-    <input v-model="useGitRepositoryStore.filtersForSearch.pattern" class="search" placeholder="Search...">
+    <input
+      v-model="useGitRepositoryStore.filtersForSearch.pattern"
+      class="search"
+      placeholder="Search..."
+    />
   </div>
 </template>
 
 <script setup lang="ts">
-import {useGitRepositoryState} from "@/stores/useGitRepositoryState";
+import { useGitRepositoryState } from '@/stores/useGitRepositoryState';
 
-const useGitRepositoryStore = useGitRepositoryState()
+const useGitRepositoryStore = useGitRepositoryState();
 </script>
 
 <style scoped>
@@ -27,7 +31,8 @@ const useGitRepositoryStore = useGitRepositoryState()
   border-radius: 4px;
 }
 
-.search:hover, .search:focus {
+.search:hover,
+.search:focus {
   border-color: var(--color-secondary);
 }
 </style>

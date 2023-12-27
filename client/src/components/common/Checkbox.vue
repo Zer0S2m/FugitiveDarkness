@@ -2,9 +2,13 @@
   <div class="checkbox-wrapper">
     <label class="control control--checkbox">
       {{ title }}
-      <input v-bind:class="{
-        activity: isActivity
-      }" type="checkbox" @:click="clickHandler(meta, !isActivity)"/>
+      <input
+        v-bind:class="{
+          activity: isActivity
+        }"
+        type="checkbox"
+        @:click="clickHandler(meta, !isActivity)"
+      />
       <div class="control__indicator"></div>
     </label>
   </div>
@@ -12,11 +16,11 @@
 
 <script setup lang="ts">
 defineProps<{
-  title: string,
-  clickHandler: Function,
-  meta: any,
-  isActivity: boolean
-}>()
+  title: string;
+  clickHandler: Function;
+  meta: any;
+  isActivity: boolean;
+}>();
 </script>
 
 <style scoped>

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {RouterLink} from "vue-router";
+import { RouterLink } from 'vue-router';
 </script>
 
 <template>
@@ -11,12 +11,20 @@ import {RouterLink} from "vue-router";
       <nav class="nav-items">
         <div class="nav-item nav-item-1">
           <div class="nav-item__wrapper">
-            <RouterLink class="nav-item__link" :to="{ name: 'search' }">Search</RouterLink>
+            <RouterLink
+              class="nav-item__link"
+              :to="{ name: 'search' }"
+              >Search</RouterLink
+            >
           </div>
         </div>
         <div class="nav-item nav-item-2">
           <div class="nav-item__wrapper">
-            <RouterLink class="nav-item__link" :to="{ name: 'git-repositories' }">Repositories</RouterLink>
+            <RouterLink
+              class="nav-item__link"
+              :to="{ name: 'git-repositories' }"
+              >Repositories</RouterLink
+            >
           </div>
         </div>
       </nav>

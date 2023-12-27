@@ -2,6 +2,7 @@ package com.zer0s2m.fugitivedarkness.provider.impl;
 
 import com.zer0s2m.fugitivedarkness.provider.ContainerInfoSearchFileGitRepo;
 import com.zer0s2m.fugitivedarkness.provider.ContainerInfoSearchFileMatcherGitRepo;
+import com.zer0s2m.fugitivedarkness.provider.FileSystemUtils;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.diff.RawText;
 import org.eclipse.jgit.lib.*;
@@ -14,8 +15,7 @@ import org.eclipse.jgit.treewalk.TreeWalk;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -27,6 +27,8 @@ class GitRepoCommandGrep {
     private final Pattern pattern;
 
     private final Path source;
+
+    private final Set<String> extensionFiles = new HashSet<>();
 
     public GitRepoCommandGrep(Pattern pattern, Path source) {
         this.pattern = pattern;
@@ -49,7 +51,7 @@ class GitRepoCommandGrep {
         ObjectId commitId = repository.resolve(Constants.HEAD);
 
         try (final RevWalk revWalk = new RevWalk(objectReader)) {
-            try (final TreeWalk treeWalk = new TreeWalk(objectReader);) {
+            try (final TreeWalk treeWalk = new TreeWalk(objectReader)) {
                 RevCommit commit = revWalk.parseCommit(commitId);
                 CanonicalTreeParser treeParser = new CanonicalTreeParser();
                 treeParser.reset(objectReader, commit.getTree());
@@ -66,8 +68,14 @@ class GitRepoCommandGrep {
                         List<ContainerInfoSearchFileMatcherGitRepo> matchers = getMatchedLines(objectLoader
                                 .openStream());
                         if (!matchers.isEmpty()) {
+                            final String extensionFile = FileSystemUtils
+                                    .getExtensionFromRawStrFile(it.getEntryPathString());
                             infoSearchFileGitRepos.add(new ContainerInfoSearchFileGitRepo(
-                                    it.getEntryPathString(), matchers));
+                                    it.getEntryPathString(),
+                                    extensionFile,
+                                    matchers));
+
+                            extensionFiles.add(extensionFile);
                         }
                     }
                 }
@@ -104,6 +112,10 @@ class GitRepoCommandGrep {
         try (stream) {
             return RawText.isBinary(stream);
         }
+    }
+
+    public Set<String> getExtensionFiles() {
+        return extensionFiles;
     }
 
 }

@@ -6,7 +6,10 @@
         <h5 class="git-item__host">{{ item.host }}</h5>
       </div>
       <div class="git-item__tools">
-        <button class="git-item__delete" @click="deleteGitRepository">
+        <button
+          class="git-item__delete"
+          @click="deleteGitRepository"
+        >
           <IconDelete class="git-item__delete-icon" />
         </button>
       </div>
@@ -15,19 +18,19 @@
 </template>
 
 <script setup lang="ts">
-import IconDelete from "@/assets/icon-delete.svg"
-import type {IGitRepository} from "@/types/gitRepository";
-import {useGitRepositoryState} from "@/stores/useGitRepositoryState";
+import IconDelete from '@/assets/icon-delete.svg';
+import type { IGitRepository } from '@/types/gitRepository';
+import { useGitRepositoryState } from '@/stores/useGitRepositoryState';
 
-const useGitRepositoryStore = useGitRepositoryState()
+const useGitRepositoryStore = useGitRepositoryState();
 const props = defineProps<{ item: IGitRepository }>();
 
 const deleteGitRepository = async () => {
   await useGitRepositoryStore.deleteGitRepository({
     group: props.item.group_,
-    project: props.item.project,
-  })
-}
+    project: props.item.project
+  });
+};
 </script>
 
 <style scoped>

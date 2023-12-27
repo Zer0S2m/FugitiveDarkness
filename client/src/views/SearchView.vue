@@ -3,39 +3,44 @@
     <div class="tools-wrapper__base">
       <div class="tools-wrapper__field">
         <div class="tools-wrapper__block">
-          <InputSearchGitRepository class="tools-wrapper__search"/>
-          <ButtonSearchGitRepository @click="searchByGrep"/>
+          <InputSearchGitRepository class="tools-wrapper__search" />
+          <ButtonSearchGitRepository @click="searchByGrep" />
         </div>
       </div>
       <div class="tools-wrapper__result">
-        <GitRepositorySearchList :items="useGitRepositoryStore.resultSearchByGrepGitRepositories"
-                                 v-if="!useGitRepositoryStore.isLoadingSearch"/>
-        <div class="tools-wrapper__search--loader" v-if="useGitRepositoryStore.isLoadingSearch">
+        <GitRepositorySearchList
+          :items="useGitRepositoryStore.resultSearchByGrepGitRepositories"
+          v-if="!useGitRepositoryStore.isLoadingSearch"
+        />
+        <div
+          class="tools-wrapper__search--loader"
+          v-if="useGitRepositoryStore.isLoadingSearch"
+        >
           <HalfCircleSpinner
-              :animation-duration="1000"
-              :size="40"
-              color="var(--color-secondary)"
+            :animation-duration="1000"
+            :size="40"
+            color="var(--color-secondary)"
           />
         </div>
       </div>
     </div>
-    <FilterSearchGitRepository class="tools-wrapper__filters"/>
+    <FilterSearchGitRepository class="tools-wrapper__filters" />
   </div>
 </template>
 
 <script setup lang="ts">
-import FilterSearchGitRepository from "@/components/filters/FilterSearchGitRepository.vue";
-import InputSearchGitRepository from "@/components/filters/InputSearchGitRepository.vue";
-import ButtonSearchGitRepository from "@/components/filters/ButtonSearchGitRepository.vue";
-import {useGitRepositoryState} from "@/stores/useGitRepositoryState";
-import GitRepositorySearchList from "@/components/git/GitRepositorySearchList.vue";
-import {HalfCircleSpinner} from "epic-spinners";
+import FilterSearchGitRepository from '@/components/filters/FilterSearchGitRepository.vue';
+import InputSearchGitRepository from '@/components/filters/InputSearchGitRepository.vue';
+import ButtonSearchGitRepository from '@/components/filters/ButtonSearchGitRepository.vue';
+import { useGitRepositoryState } from '@/stores/useGitRepositoryState';
+import GitRepositorySearchList from '@/components/git/GitRepositorySearchList.vue';
+import { HalfCircleSpinner } from 'epic-spinners';
 
-const useGitRepositoryStore = useGitRepositoryState()
+const useGitRepositoryStore = useGitRepositoryState();
 
 const searchByGrep = async () => {
-  await useGitRepositoryStore.searchByGrep()
-}
+  await useGitRepositoryStore.searchByGrep();
+};
 </script>
 
 <style scoped>

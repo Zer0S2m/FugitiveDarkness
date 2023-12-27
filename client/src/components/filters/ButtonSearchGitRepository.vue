@@ -7,5 +7,5 @@
 </template>
 
 <script setup lang="ts">
-import IconSearch from "@/assets/icon-search.svg"
+import IconSearch from '@/assets/icon-search.svg';
 </script>

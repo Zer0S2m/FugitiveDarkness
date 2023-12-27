@@ -6,20 +6,35 @@
         <ul>
           <li>
             <h6>Repositories</h6>
-            <ul class="filter-search__tool-repositories" v-if="!useGitRepositoryStore.isLoading">
-              <li class="filter-search__tool-repository" v-for="gitRepository in useGitRepositoryStore.gitRepositories">
-                <Checkbox :meta="gitRepository" :title=" gitRepository.project" :click-handler="handlerClickCheckbox"
-                          :is-activity="useGitRepositoryStore.getIsActivityGitRepositoryInFilter({
-                            group: gitRepository.group_,
-                            project: gitRepository.project
-                          })"/>
+            <ul
+              class="filter-search__tool-repositories"
+              v-if="!useGitRepositoryStore.isLoading"
+            >
+              <li
+                class="filter-search__tool-repository"
+                v-for="gitRepository in useGitRepositoryStore.gitRepositories"
+              >
+                <Checkbox
+                  :meta="gitRepository"
+                  :title="gitRepository.project"
+                  :click-handler="handlerClickCheckbox"
+                  :is-activity="
+                    useGitRepositoryStore.getIsActivityGitRepositoryInFilter({
+                      group: gitRepository.group_,
+                      project: gitRepository.project
+                    })
+                  "
+                />
               </li>
             </ul>
-            <div class="filter-search__tool-repositories--loader" v-if="useGitRepositoryStore.isLoading">
+            <div
+              class="filter-search__tool-repositories--loader"
+              v-if="useGitRepositoryStore.isLoading"
+            >
               <HalfCircleSpinner
-                  :animation-duration="1000"
-                  :size="24"
-                  color="var(--color-secondary)"
+                :animation-duration="1000"
+                :size="24"
+                color="var(--color-secondary)"
               />
             </div>
           </li>
@@ -30,27 +45,27 @@
 </template>
 
 <script setup lang="ts">
-import Checkbox from "@/components/common/Checkbox.vue";
-import {useGitRepositoryState} from "@/stores/useGitRepositoryState";
-import {HalfCircleSpinner} from "epic-spinners";
-import type {IGitRepository} from "@/types/gitRepository";
+import Checkbox from '@/components/common/Checkbox.vue';
+import { useGitRepositoryState } from '@/stores/useGitRepositoryState';
+import { HalfCircleSpinner } from 'epic-spinners';
+import type { IGitRepository } from '@/types/gitRepository';
 
-const useGitRepositoryStore = useGitRepositoryState()
-useGitRepositoryStore.loadGitRepositories()
+const useGitRepositoryStore = useGitRepositoryState();
+useGitRepositoryStore.loadGitRepositories();
 
 const handlerClickCheckbox = (meta: IGitRepository, isActivity: boolean) => {
   if (isActivity) {
     useGitRepositoryStore.setGitRepositoryFilterSearch({
       group: meta.group_,
-      project: meta.project,
-    })
+      project: meta.project
+    });
   } else if (!isActivity) {
     useGitRepositoryStore.removeGitRepositoryFilterSearch({
       group: meta.group_,
-      project: meta.project,
-    })
+      project: meta.project
+    });
   }
-}
+};
 </script>
 
 <style scoped>

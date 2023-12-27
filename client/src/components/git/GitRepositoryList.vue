@@ -1,14 +1,17 @@
 <template>
   <div class="git-items">
-    <GitRepositoryItem v-for="item in items" :item="item"/>
+    <GitRepositoryItem
+      v-for="item in items"
+      :item="item"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
-import type {IGitRepository} from "@/types/gitRepository";
-import GitRepositoryItem from "@/components/git/GitRepositoryItem.vue";
+import type { IGitRepository } from '@/types/gitRepository';
+import GitRepositoryItem from '@/components/git/GitRepositoryItem.vue';
 
-defineProps<{ items: IGitRepository[] }>()
+defineProps<{ items: IGitRepository[] }>();
 </script>
 
 <style scoped>

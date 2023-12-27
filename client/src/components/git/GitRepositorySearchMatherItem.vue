@@ -5,12 +5,12 @@
       <div class="matcher-found__result--wrapper">
         <div class="matcher-found__result--lines">
           <p v-for="data in matcher.matchers">
-            <span>{{data.lineNumber}}</span>
+            <span>{{ data.lineNumber }}</span>
           </p>
         </div>
         <div class="matcher-found__result--code">
           <p v-for="data in matcher.matchers">
-            <span>{{data.matcher}}</span>
+            <span>{{ data.matcher }}</span>
           </p>
         </div>
       </div>
@@ -19,11 +19,11 @@
 </template>
 
 <script setup lang="ts">
-import {type ISearchFoundByGrepGitRepository} from "@/types/gitRepository";
+import { type ISearchFoundByGrepGitRepository } from '@/types/gitRepository';
 
 defineProps<{
-  matcher: ISearchFoundByGrepGitRepository
-}>()
+  matcher: ISearchFoundByGrepGitRepository;
+}>();
 </script>
 
 <style scoped>
@@ -57,11 +57,11 @@ defineProps<{
   font-size: 14px;
 }
 
-.matcher-found__result--code  {
+.matcher-found__result--code {
   padding: 8px 8px 8px 0;
 }
 
-.matcher-found__result--code > p  {
+.matcher-found__result--code > p {
   font-family: 'Fira Code', serif;
   font-size: 14px;
 }
