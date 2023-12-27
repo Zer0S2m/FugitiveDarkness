@@ -3,7 +3,10 @@
     <div class="tools-wrapper__base">
       <div class="tools-wrapper__field">
         <div class="tools-wrapper__block">
-          <InputSearchGitRepository class="tools-wrapper__search" />
+          <InputSearchGitRepository
+            class="tools-wrapper__search"
+            :handler="searchByGrep"
+          />
           <ButtonSearchGitRepository @click="searchByGrep" />
         </div>
       </div>
@@ -52,7 +55,23 @@ const searchByGrep = async () => {
 
 .tools-wrapper__base {
   width: 100%;
+  height: 92vh;
   margin-right: 20px;
+  padding-right: 12px;
+  overflow-y: scroll;
+}
+
+.tools-wrapper__base::-webkit-scrollbar {
+  width: 6px;
+}
+.tools-wrapper__base::-webkit-scrollbar-track {
+  background: var(--color-border);
+}
+.tools-wrapper__base::-webkit-scrollbar-thumb {
+  background: var(--color-secondary);
+}
+.tools-wrapper__base::-webkit-scrollbar:horizontal {
+  height: 0;
 }
 
 .tools-wrapper__field {
@@ -77,9 +96,9 @@ const searchByGrep = async () => {
 
 .tools-wrapper__filters {
   width: 420px;
-}
-
-.tools-wrapper__result {
-  padding-bottom: 8px;
+  position: sticky;
+  top: 20px;
+  align-self: flex-start;
+  height: 92vh;
 }
 </style>

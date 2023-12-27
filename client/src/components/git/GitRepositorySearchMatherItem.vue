@@ -1,5 +1,13 @@
 <template>
-  <div class="matcher-found">
+  <div
+    class="matcher-found"
+    v-if="
+      useGitRepositoryStore.getIsActiveGitRepositoryMatcherFileExtension(
+        `${groupRepository}/${projectRepository}`,
+        props.matcher.extension
+      )
+    "
+  >
     <h6>
       <a
         :href="matcher.link"
@@ -30,9 +38,14 @@
 
 <script setup lang="ts">
 import { type ISearchFoundByGrepGitRepository } from '@/types/gitRepository';
+import { useGitRepositoryState } from '@/stores/useGitRepositoryState';
 
-defineProps<{
+const useGitRepositoryStore = useGitRepositoryState();
+
+const props = defineProps<{
   matcher: ISearchFoundByGrepGitRepository;
+  groupRepository: string;
+  projectRepository: string;
 }>();
 </script>
 

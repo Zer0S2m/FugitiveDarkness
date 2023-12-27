@@ -9,6 +9,8 @@
     </h5>
     <GitRepositorySearchMatherList
       :matchers="item.found"
+      :group-repository="item.group"
+      :project-repository="item.project"
       class="result-search-git-repo__matchers"
     />
   </div>

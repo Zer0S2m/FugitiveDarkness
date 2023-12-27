@@ -19,4 +19,7 @@ defineProps<{
 .search-git-repo {
   margin-bottom: 20px;
 }
+.search-git-repo:last-child {
+  margin-bottom: 0;
+}
 </style>

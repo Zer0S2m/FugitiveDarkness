@@ -4,12 +4,19 @@
       v-model="useGitRepositoryStore.filtersForSearch.pattern"
       class="search"
       placeholder="Search..."
+      v-on:keyup.enter="handler"
     />
   </div>
 </template>
 
 <script setup lang="ts">
 import { useGitRepositoryState } from '@/stores/useGitRepositoryState';
+
+type HandlerFunction = (payload: KeyboardEvent) => void;
+
+defineProps<{
+  handler: HandlerFunction;
+}>();
 
 const useGitRepositoryStore = useGitRepositoryState();
 </script>

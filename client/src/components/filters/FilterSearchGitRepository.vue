@@ -17,7 +17,7 @@
                 <Checkbox
                   :meta="gitRepository"
                   :title="gitRepository.project"
-                  :click-handler="handlerClickCheckbox"
+                  :click-handler="handlerClickCheckboxGitRepository"
                   :is-activity="
                     useGitRepositoryStore.getIsActivityGitRepositoryInFilter({
                       group: gitRepository.group_,
@@ -25,6 +25,34 @@
                     })
                   "
                 />
+                <div
+                  class="filter-search__tool-repository--extension_files"
+                  v-if="
+                    useGitRepositoryStore.hasExtensionFilesForFilterByRepository(
+                      `${gitRepository.group_}/${gitRepository.project}`
+                    )
+                  "
+                >
+                  <h6>File extension</h6>
+                  <ul>
+                    <li
+                      class="filter-search__tool-repository--extension_file"
+                      v-for="filtersByExtensionFile in useGitRepositoryStore.filtersByExtensionFiles.get(
+                        `${gitRepository.group_}/${gitRepository.project}`
+                      )"
+                    >
+                      <Checkbox
+                        :meta="{
+                          extensionFile: filtersByExtensionFile.extension,
+                          ...gitRepository
+                        }"
+                        :title="filtersByExtensionFile.extension"
+                        :click-handler="handlerClickCheckboxExtensionFile"
+                        :is-activity="filtersByExtensionFile.isActive"
+                      />
+                    </li>
+                  </ul>
+                </div>
               </li>
             </ul>
             <div
@@ -53,7 +81,11 @@ import type { IGitRepository } from '@/types/gitRepository';
 const useGitRepositoryStore = useGitRepositoryState();
 useGitRepositoryStore.loadGitRepositories();
 
-const handlerClickCheckbox = (meta: IGitRepository, isActivity: boolean) => {
+interface IGitRepositoryFileExtension extends IGitRepository {
+  extensionFile: string;
+}
+
+const handlerClickCheckboxGitRepository = (meta: IGitRepository, isActivity: boolean) => {
   if (isActivity) {
     useGitRepositoryStore.setGitRepositoryFilterSearch({
       group: meta.group_,
@@ -65,6 +97,18 @@ const handlerClickCheckbox = (meta: IGitRepository, isActivity: boolean) => {
       project: meta.project
     });
   }
+};
+
+const handlerClickCheckboxExtensionFile = (
+  meta: IGitRepositoryFileExtension,
+  isActivity: boolean
+) => {
+  useGitRepositoryStore.setExtensionFileForFilter(
+    `${meta.group_}/${meta.project}`,
+    meta.extensionFile,
+    isActivity,
+    true
+  );
 };
 </script>
 
@@ -94,6 +138,19 @@ const handlerClickCheckbox = (meta: IGitRepository, isActivity: boolean) => {
 
 .filter-search__tool-repository {
   margin-bottom: 8px;
+}
+
+.filter-search__tool-repository--extension_files {
+  margin: 8px 0 0 12px;
+}
+
+.filter-search__tool-repository--extension_files > h6 {
+  margin-bottom: 4px;
+  font-size: 14px;
+}
+
+.filter-search__tool-repository--extension_file {
+  margin-bottom: 4px;
 }
 
 .filter-search__tool-repositories--loader {

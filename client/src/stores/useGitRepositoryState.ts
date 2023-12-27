@@ -21,8 +21,11 @@ export const useGitRepositoryState = defineStore('gitRepository', () => {
     },
     pattern: '' as string
   });
+  const filtersByExtensionFiles: Ref<Map<string, { extension: string; isActive: boolean }[]>> = ref(
+    new Map()
+  );
 
-  const loadGitRepositories = async () => {
+  const loadGitRepositories = async (): Promise<void> => {
     if (isLoadData.value) return;
 
     isLoading.value = true;
@@ -31,7 +34,7 @@ export const useGitRepositoryState = defineStore('gitRepository', () => {
     isLoading.value = false;
   };
 
-  const deleteGitRepository = async (gitRepo: IControlGitRepository) => {
+  const deleteGitRepository = async (gitRepo: IControlGitRepository): Promise<void> => {
     await api.deleteGitRepository(gitRepo);
 
     gitRepositories.value = gitRepositories.value.filter((gitRepository) => {
@@ -39,15 +42,15 @@ export const useGitRepositoryState = defineStore('gitRepository', () => {
     });
   };
 
-  const setPatternFilterSearch = (pattern: string) => {
+  const setPatternFilterSearch = (pattern: string): void => {
     filtersForSearch.value.pattern = pattern;
   };
 
-  const setGitRepositoryFilterSearch = (gitRepository: IControlGitRepository) => {
+  const setGitRepositoryFilterSearch = (gitRepository: IControlGitRepository): void => {
     filtersForSearch.value.filters.git.push(gitRepository);
   };
 
-  const removeGitRepositoryFilterSearch = (gitRepository: IControlGitRepository) => {
+  const removeGitRepositoryFilterSearch = (gitRepository: IControlGitRepository): void => {
     filtersForSearch.value.filters.git = filtersForSearch.value.filters.git.filter(
       (gitRepository_) => {
         return !(
@@ -69,12 +72,79 @@ export const useGitRepositoryState = defineStore('gitRepository', () => {
     );
   };
 
-  const searchByGrep = async () => {
+  const searchByGrep = async (): Promise<void> => {
     isLoadingSearch.value = true;
+    filtersByExtensionFiles.value = new Map();
+
     resultSearchByGrepGitRepositories.value = (
       await api.searchByGrep(filtersForSearch.value)
     ).data.searchResult;
+
+    resultSearchByGrepGitRepositories.value.forEach((searchResult) => {
+      setExtensionFilesForFilter(
+        `${searchResult.group}/${searchResult.project}`,
+        searchResult.extensionFiles
+      );
+    });
+
     isLoadingSearch.value = false;
+  };
+
+  const setExtensionFilesForFilter = (repository: string, extensionFiles: string[]): void => {
+    filtersByExtensionFiles.value.set(repository, []);
+    extensionFiles.forEach((extensionFile) => {
+      setExtensionFileForFilter(repository, extensionFile, true);
+    });
+  };
+
+  const setExtensionFileForFilter = (
+    repository: string,
+    extensionFile: string,
+    isActive: boolean,
+    isUpdate: boolean = false
+  ): void => {
+    if (filtersByExtensionFiles.value.has(repository)) {
+      if (!isUpdate) {
+        filtersByExtensionFiles.value.get(repository)?.push({
+          extension: extensionFile,
+          isActive
+        });
+      } else {
+        filtersByExtensionFiles.value.get(repository)?.map((filtersByExtensionFile) => {
+          if (filtersByExtensionFile.extension === extensionFile) {
+            filtersByExtensionFile.isActive = isActive;
+          }
+        });
+      }
+    } else {
+      filtersByExtensionFiles.value.set(repository, [
+        {
+          extension: extensionFile,
+          isActive
+        }
+      ]);
+    }
+  };
+
+  const getIsActiveGitRepositoryMatcherFileExtension = (
+    repository: string,
+    extensionFile: string
+  ): boolean => {
+    if (!hasExtensionFilesForFilterByRepository(repository)) {
+      return false;
+    }
+
+    for (const filtersByExtensionFile of filtersByExtensionFiles.value.get(repository) ?? []) {
+      if (filtersByExtensionFile.extension === extensionFile) {
+        return filtersByExtensionFile.isActive;
+      }
+    }
+
+    return false;
+  };
+
+  const hasExtensionFilesForFilterByRepository = (repository: string): boolean => {
+    return filtersByExtensionFiles.value.has(repository);
   };
 
   return {
@@ -85,12 +155,17 @@ export const useGitRepositoryState = defineStore('gitRepository', () => {
     removeGitRepositoryFilterSearch,
     getIsActivityGitRepositoryInFilter,
     searchByGrep,
+    setExtensionFilesForFilter,
+    setExtensionFileForFilter,
+    hasExtensionFilesForFilterByRepository,
+    getIsActiveGitRepositoryMatcherFileExtension,
 
     gitRepositories,
     resultSearchByGrepGitRepositories,
     isLoading,
     isLoadData,
     isLoadingSearch,
-    filtersForSearch
+    filtersForSearch,
+    filtersByExtensionFiles
   };
 });
