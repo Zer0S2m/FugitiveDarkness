@@ -106,6 +106,7 @@ final public class ControllerApiGitRepoSearch implements Handler<RoutingContext>
                                 object.put("searchResult", result);
 
                                 event.response()
+                                        .setChunked(true)
                                         .putHeader(HttpHeaders.CONTENT_LENGTH, String.valueOf(object.toString().length()))
                                         .putHeader(HttpHeaders.CONTENT_TYPE, "application/json")
                                         .setStatusCode(HttpResponseStatus.OK.code())

@@ -7,6 +7,11 @@ export interface IGitRepository {
   is_load: boolean;
 }
 
+export interface IInstallGitRepository {
+  remote: string;
+  group: string;
+}
+
 export interface IResponseGitRepository {
   success: boolean;
   gitRepositories: IGitRepository[];
