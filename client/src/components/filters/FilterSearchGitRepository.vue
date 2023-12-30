@@ -97,6 +97,8 @@ const handlerClickCheckboxGitRepository = (meta: IGitRepository, isActivity: boo
       project: meta.project
     });
   }
+
+  useGitRepositoryStore.setFilterByRepository(`${meta.group_}/${meta.project}`, isActivity);
 };
 
 const handlerClickCheckboxExtensionFile = (

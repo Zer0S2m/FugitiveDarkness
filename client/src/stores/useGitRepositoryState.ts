@@ -24,6 +24,7 @@ export const useGitRepositoryState = defineStore('gitRepository', () => {
   const filtersByExtensionFiles: Ref<Map<string, { extension: string; isActive: boolean }[]>> = ref(
     new Map()
   );
+  const filtersByRepository: Ref<Map<String, boolean>> = ref(new Map());
 
   const loadGitRepositories = async (): Promise<void> => {
     if (isLoadData.value) return;
@@ -81,10 +82,9 @@ export const useGitRepositoryState = defineStore('gitRepository', () => {
     ).data.searchResult;
 
     resultSearchByGrepGitRepositories.value.forEach((searchResult) => {
-      setExtensionFilesForFilter(
-        `${searchResult.group}/${searchResult.project}`,
-        searchResult.extensionFiles
-      );
+      const repository = `${searchResult.group}/${searchResult.project}`;
+      setExtensionFilesForFilter(repository, searchResult.extensionFiles);
+      setFilterByRepository(repository, true);
     });
 
     isLoadingSearch.value = false;
@@ -147,6 +147,22 @@ export const useGitRepositoryState = defineStore('gitRepository', () => {
     return filtersByExtensionFiles.value.has(repository);
   };
 
+  const getIsActiveFilterByRepository = (repository: string): boolean => {
+    if (!hasFilterByRepository(repository)) {
+      return false;
+    }
+
+    return <boolean>filtersByRepository.value.get(repository);
+  };
+
+  const hasFilterByRepository = (repository: string): boolean => {
+    return filtersByRepository.value.has(repository);
+  };
+
+  const setFilterByRepository = (repository: string, isActive: boolean): void => {
+    filtersByRepository.value.set(repository, isActive);
+  };
+
   return {
     loadGitRepositories,
     deleteGitRepository,
@@ -159,6 +175,9 @@ export const useGitRepositoryState = defineStore('gitRepository', () => {
     setExtensionFileForFilter,
     hasExtensionFilesForFilterByRepository,
     getIsActiveGitRepositoryMatcherFileExtension,
+    hasFilterByRepository,
+    getIsActiveFilterByRepository,
+    setFilterByRepository,
 
     gitRepositories,
     resultSearchByGrepGitRepositories,
@@ -166,6 +185,7 @@ export const useGitRepositoryState = defineStore('gitRepository', () => {
     isLoadData,
     isLoadingSearch,
     filtersForSearch,
-    filtersByExtensionFiles
+    filtersByExtensionFiles,
+    filtersByRepository
   };
 });

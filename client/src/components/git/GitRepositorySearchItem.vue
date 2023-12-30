@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-if="useGitRepositoryStore.getIsActiveFilterByRepository(`${item.group}/${item.project}`)">
     <h5 class="result-search-git-repo__title">
       <a
         :href="item.link"
@@ -19,6 +19,9 @@
 <script setup lang="ts">
 import { type ISearchByGrepGitRepository } from '@/types/gitRepository';
 import GitRepositorySearchMatherList from '@/components/git/GitRepositorySearchMatherList.vue';
+import { useGitRepositoryState } from '@/stores/useGitRepositoryState';
+
+const useGitRepositoryStore = useGitRepositoryState();
 
 defineProps<{
   item: ISearchByGrepGitRepository;
