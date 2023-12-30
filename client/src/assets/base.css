@@ -34,6 +34,7 @@
   --color-text: var(--vt-c-text-light-1);
 
   --color-secondary: hsla(160, 100%, 37%, 1);
+  --color-danger: #ef4444;
 
   --section-gap: 160px;
 }

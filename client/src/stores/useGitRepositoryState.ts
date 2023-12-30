@@ -163,6 +163,18 @@ export const useGitRepositoryState = defineStore('gitRepository', () => {
     filtersByRepository.value.set(repository, isActive);
   };
 
+  const resetResult = (): void => {
+    resultSearchByGrepGitRepositories.value = [];
+    filtersForSearch.value = {
+      filters: {
+        git: [] as IControlGitRepository[]
+      },
+      pattern: '' as string
+    };
+    filtersByExtensionFiles.value = new Map();
+    filtersByRepository.value = new Map();
+  };
+
   return {
     loadGitRepositories,
     deleteGitRepository,
@@ -178,6 +190,7 @@ export const useGitRepositoryState = defineStore('gitRepository', () => {
     hasFilterByRepository,
     getIsActiveFilterByRepository,
     setFilterByRepository,
+    resetResult,
 
     gitRepositories,
     resultSearchByGrepGitRepositories,

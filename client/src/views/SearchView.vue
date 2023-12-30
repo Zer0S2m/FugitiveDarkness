@@ -96,9 +96,6 @@ const searchByGrep = async () => {
 
 .tools-wrapper__filters {
   width: 420px;
-  position: sticky;
-  top: 20px;
-  align-self: flex-start;
   height: 92vh;
 }
 </style>

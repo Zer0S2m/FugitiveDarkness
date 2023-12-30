@@ -69,6 +69,16 @@
         </ul>
       </div>
     </div>
+    <div class="filter-search__reset">
+      <div class="filter-search__reset--wrapper">
+        <button
+          @click="useGitRepositoryStore.resetResult()"
+          class="filter-search__reset-btn"
+        >
+          Reset everything
+        </button>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -119,6 +129,9 @@ const handlerClickCheckboxExtensionFile = (
   width: 100%;
   border: 1px solid var(--color-border);
   border-radius: 4px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
 .filter-search__title {
@@ -159,5 +172,23 @@ const handlerClickCheckboxExtensionFile = (
   margin-top: 12px;
   display: flex;
   justify-content: center;
+}
+
+.filter-search__reset {
+  margin: 12px;
+}
+
+.filter-search__reset--wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.filter-search__reset-btn {
+  width: 100%;
+  padding: 8px 0;
+  background-color: var(--color-danger);
+  color: var(--vt-c-white);
+  border-radius: 4px;
 }
 </style>
