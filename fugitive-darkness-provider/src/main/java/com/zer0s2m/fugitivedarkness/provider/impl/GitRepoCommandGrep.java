@@ -20,7 +20,7 @@ import java.util.regex.Pattern;
 /**
  * Service for providing search in git repositories. Similar to the grep command in git.
  */
-class GitRepoCommandGrep {
+class GitRepoCommandGrep extends GitRepoCommandGrepUtils {
 
     private final Pattern pattern;
 
@@ -29,6 +29,8 @@ class GitRepoCommandGrep {
     private final Set<String> extensionFiles = new HashSet<>();
 
     private final ContainerGitRepoMeta containerGitRepoMeta;
+
+    private final GitRepoCommandGrepUtilPreviewCode utilPreviewCode = new GitRepoCommandGrepUtilPreviewCode();
 
     public GitRepoCommandGrep(Pattern pattern, Path source, ContainerGitRepoMeta containerGitRepoMeta) {
         this.pattern = pattern;
@@ -79,6 +81,9 @@ class GitRepoCommandGrep {
 
                             extensionFiles.add(extensionFile);
                         }
+
+                        utilPreviewCode.clearPreviewCodes();
+                        utilPreviewCode.clearUsedLineCodes();
                     }
                 }
             }
@@ -100,6 +105,42 @@ class GitRepoCommandGrep {
             while ((line = buf.readLine()) != null) {
                 Matcher matcher = pattern.matcher(line);
                 if (matcher.find()) {
+                    Set<ContainerInfoSearchFileMatcherGitRepo> previewCode = new HashSet<>();
+                    if (lineNumber != 1 && utilPreviewCode.getPreviewCodeLast(lineNumber) != null) {
+                        final String previewCodeLineLast = utilPreviewCode.getPreviewCodeLast(lineNumber);
+
+                        if (previewCodeLineLast == null) {
+                            continue;
+                        }
+
+                        previewCode.add(new ContainerInfoSearchFileMatcherGitRepo(
+                                previewCodeLineLast,
+                                GitRepo.getLinkForMatcherLine(
+                                        containerGitRepoMeta,
+                                        file,
+                                        "master",
+                                        utilPreviewCode.getPreviewLineNumberLast(lineNumber)),
+                                utilPreviewCode.getPreviewLineNumberLast(lineNumber),
+                                null
+                        ));
+
+                        if (lineNumber > 2 && previewCodeLineLast.trim().isEmpty()) {
+                            final String previewCodeLineLastByStepOne = utilPreviewCode.getPreviewCodeLast(lineNumber, 1);
+
+                            if (previewCodeLineLastByStepOne != null) {
+                                previewCode.add(new ContainerInfoSearchFileMatcherGitRepo(
+                                        previewCodeLineLastByStepOne,
+                                        GitRepo.getLinkForMatcherLine(
+                                                containerGitRepoMeta,
+                                                file,
+                                                "master",
+                                                utilPreviewCode.getPreviewLineNumberLast(lineNumber, 1)),
+                                        utilPreviewCode.getPreviewLineNumberLast(lineNumber, 1),
+                                        null
+                                ));
+                            }
+                        }
+                    }
                     matchers.add(new ContainerInfoSearchFileMatcherGitRepo(
                             line,
                             GitRepo.getLinkForMatcherLine(
@@ -107,8 +148,15 @@ class GitRepoCommandGrep {
                                     file,
                                     "master",
                                     lineNumber),
-                            lineNumber));
+                            lineNumber,
+                            previewCode
+                    ));
+
+                    utilPreviewCode.addUsedLineCodes(lineNumber);
+                } else {
+                    utilPreviewCode.addPreviewCodes(lineNumber, line);
                 }
+
                 lineNumber++;
             }
             return matchers;

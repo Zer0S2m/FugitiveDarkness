@@ -18,11 +18,11 @@
     <div class="matcher-found__result">
       <div class="matcher-found__result--wrapper">
         <div class="matcher-found__result--lines">
-          <p v-for="data in matcher.matchers">
+          <p v-for="matchersLink in matchersLinks">
             <a
-              :href="data.link"
+              :href="matchersLink.link"
               target="_blank"
-              >{{ data.lineNumber }}</a
+              >{{ matchersLink.lineNumber }}</a
             >
           </p>
         </div>
@@ -52,14 +52,63 @@ const props = defineProps<{
   projectRepository: string;
 }>();
 
-const collectCode = computed(() => {
+const collectCode = computed((): string => {
   let code = '';
 
   props.matcher.matchers.forEach((matcher) => {
+    if (matcher.previewLast !== null && matcher.previewLast.length !== 0) {
+      if (matcher.previewLast.length > 1) {
+        matcher.previewLast
+          .sort((matcherPreviewLastFirst, matcherPreviewLastSecond) => {
+            return matcherPreviewLastFirst.lineNumber - matcherPreviewLastSecond.lineNumber;
+          })
+          .forEach((matcherPreviewLast) => {
+            code += `${matcherPreviewLast.matcher}\n`;
+          });
+      } else {
+        matcher.previewLast.forEach((matcherPreviewLast) => {
+          code += `${matcherPreviewLast.matcher}\n`;
+        });
+      }
+    }
     code += `${matcher.matcher}\n`;
   });
 
   return code;
+});
+
+const matchersLinks = computed((): { link: string; lineNumber: number }[] => {
+  const links: { link: string; lineNumber: number }[] = [];
+
+  props.matcher.matchers.forEach((matcher) => {
+    if (matcher.previewLast !== null && matcher.previewLast.length !== 0) {
+      if (matcher.previewLast.length > 1) {
+        matcher.previewLast
+          .sort((matcherPreviewLastFirst, matcherPreviewLastSecond) => {
+            return matcherPreviewLastFirst.lineNumber - matcherPreviewLastSecond.lineNumber;
+          })
+          .forEach((matcherPreviewLast) => {
+            links.push({
+              link: matcherPreviewLast.link,
+              lineNumber: matcherPreviewLast.lineNumber
+            });
+          });
+      } else {
+        matcher.previewLast.forEach((matcherPreviewLast) => {
+          links.push({
+            link: matcherPreviewLast.link,
+            lineNumber: matcherPreviewLast.lineNumber
+          });
+        });
+      }
+    }
+    links.push({
+      link: matcher.link,
+      lineNumber: matcher.lineNumber
+    });
+  });
+
+  return links;
 });
 </script>
 

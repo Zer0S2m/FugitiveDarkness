@@ -35,6 +35,7 @@ export interface IMatcherFoundByGrepGitRepository {
   matcher: string;
   link: string;
   lineNumber: number;
+  previewLast: IMatcherFoundByGrepGitRepository[] | null;
 }
 
 export interface ISearchFoundByGrepGitRepository {
