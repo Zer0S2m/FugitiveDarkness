@@ -27,9 +27,11 @@
           </p>
         </div>
         <div class="matcher-found__result--code">
-          <p v-for="data in matcher.matchers">
-            <span>{{ data.matcher }}</span>
-          </p>
+          <Highlightjs
+            class="code"
+            :code="collectCode"
+            :language="matcher.extension"
+          />
         </div>
       </div>
     </div>
@@ -39,6 +41,8 @@
 <script setup lang="ts">
 import { type ISearchFoundByGrepGitRepository } from '@/types/gitRepository';
 import { useGitRepositoryState } from '@/stores/useGitRepositoryState';
+import Highlightjs from '@lib/highlightjs';
+import { computed } from 'vue';
 
 const useGitRepositoryStore = useGitRepositoryState();
 
@@ -47,6 +51,16 @@ const props = defineProps<{
   groupRepository: string;
   projectRepository: string;
 }>();
+
+const collectCode = computed(() => {
+  let code = '';
+
+  props.matcher.matchers.forEach((matcher) => {
+    code += `${matcher.matcher}\n`;
+  });
+
+  return code;
+});
 </script>
 
 <style scoped>
@@ -89,6 +103,7 @@ h6 > a:hover,
   text-align: end;
   font-family: 'Fira Code', serif;
   font-size: 14px;
+  line-height: 1.3;
 }
 
 .matcher-found__result--code {
