@@ -2,71 +2,74 @@
   <div class="filter-search">
     <div class="filter-search__wrapper">
       <h5 class="filter-search__title">Filter</h5>
-      <div class="filter-search__tool">
-        <ul>
-          <li>
-            <h6>Repositories</h6>
-            <ul
-              class="filter-search__tool-repositories"
-              v-if="!useGitRepositoryStore.isLoading"
-            >
-              <li
-                class="filter-search__tool-repository"
-                v-for="gitRepository in useGitRepositoryStore.gitRepositories"
+      <div class="filter-search__tool--grep">
+        <h6 class="filter-search__tool-title--grep">Command - grep</h6>
+        <div class="filter-search__tool tool--grep scroll">
+          <ul>
+            <li>
+              <h6>Repositories</h6>
+              <ul
+                class="filter-search__tool-repositories"
+                v-if="!useGitRepositoryStore.isLoading"
               >
-                <Checkbox
-                  :meta="gitRepository"
-                  :title="gitRepository.project"
-                  :click-handler="handlerClickCheckboxGitRepository"
-                  :is-activity="
-                    useGitRepositoryStore.getIsActivityGitRepositoryInFilter({
-                      group: gitRepository.group_,
-                      project: gitRepository.project
-                    })
-                  "
-                />
-                <div
-                  class="filter-search__tool-repository--extension_files"
-                  v-if="
-                    useGitRepositoryStore.hasExtensionFilesForFilterByRepository(
-                      `${gitRepository.group_}/${gitRepository.project}`
-                    )
-                  "
+                <li
+                  class="filter-search__tool-repository"
+                  v-for="gitRepository in useGitRepositoryStore.gitRepositories"
                 >
-                  <h6>File extension</h6>
-                  <ul>
-                    <li
-                      class="filter-search__tool-repository--extension_file"
-                      v-for="filtersByExtensionFile in useGitRepositoryStore.filtersByExtensionFiles.get(
+                  <Checkbox
+                    :meta="gitRepository"
+                    :title="gitRepository.project"
+                    :click-handler="handlerClickCheckboxGitRepository"
+                    :is-activity="
+                      useGitRepositoryStore.getIsActivityGitRepositoryInFilter({
+                        group: gitRepository.group_,
+                        project: gitRepository.project
+                      })
+                    "
+                  />
+                  <div
+                    class="filter-search__tool-repository--extension_files"
+                    v-if="
+                      useGitRepositoryStore.hasExtensionFilesForFilterByRepository(
                         `${gitRepository.group_}/${gitRepository.project}`
-                      )"
-                    >
-                      <Checkbox
-                        :meta="{
-                          extensionFile: filtersByExtensionFile.extension,
-                          ...gitRepository
-                        }"
-                        :title="filtersByExtensionFile.extension"
-                        :click-handler="handlerClickCheckboxExtensionFile"
-                        :is-activity="filtersByExtensionFile.isActive"
-                      />
-                    </li>
-                  </ul>
-                </div>
-              </li>
-            </ul>
-            <div
-              class="filter-search__tool-repositories--loader"
-              v-if="useGitRepositoryStore.isLoading"
-            >
-              <HalfCircleSpinner
-                :animation-duration="1000"
-                :size="24"
-                color="var(--color-secondary)"
-              />
-            </div>
-          </li>
-        </ul>
+                      )
+                    "
+                  >
+                    <h6>File extension</h6>
+                    <ul>
+                      <li
+                        class="filter-search__tool-repository--extension_file"
+                        v-for="filtersByExtensionFile in useGitRepositoryStore.filtersByExtensionFiles.get(
+                          `${gitRepository.group_}/${gitRepository.project}`
+                        )"
+                      >
+                        <Checkbox
+                          :meta="{
+                            extensionFile: filtersByExtensionFile.extension,
+                            ...gitRepository
+                          }"
+                          :title="filtersByExtensionFile.extension"
+                          :click-handler="handlerClickCheckboxExtensionFile"
+                          :is-activity="filtersByExtensionFile.isActive"
+                        />
+                      </li>
+                    </ul>
+                  </div>
+                </li>
+              </ul>
+              <div
+                class="filter-search__tool-repositories--loader"
+                v-if="useGitRepositoryStore.isLoading"
+              >
+                <HalfCircleSpinner
+                  :animation-duration="1000"
+                  :size="24"
+                  color="var(--color-secondary)"
+                />
+              </div>
+            </li>
+          </ul>
+        </div>
       </div>
     </div>
     <div class="filter-search__reset">
@@ -145,6 +148,24 @@ const handlerClickCheckboxExtensionFile = (
 
 .filter-search__tool {
   margin-bottom: 20px;
+}
+
+.filter-search__tool:last-child {
+  margin-bottom: 0;
+}
+
+.filter-search__tool.tool--grep {
+  overflow: scroll;
+  height: 100%;
+}
+
+.filter-search__tool--grep {
+  height: 320px;
+}
+
+.filter-search__tool-title--grep {
+  font-weight: 600;
+  margin-bottom: 8px;
 }
 
 .filter-search__tool-repositories {
