@@ -1,0 +1,32 @@
+@import './base.css';
+@import './modal.css';
+
+#app {
+  height: 100vh;
+  overflow: hidden;
+}
+
+code.code {
+  font-size: 14px;
+  line-height: 1.3;
+}
+pre.code {
+  overflow-x: scroll;
+}
+
+.scroll::-webkit-scrollbar {
+  width: 6px;
+}
+.scroll::-webkit-scrollbar-track {
+  background: var(--color-border);
+}
+.scroll::-webkit-scrollbar-thumb {
+  background: var(--color-secondary);
+}
+.scroll::-webkit-scrollbar:horizontal {
+  height: 0;
+}
+
+.match-found {
+  background-color: var(--color-match-find);
+}

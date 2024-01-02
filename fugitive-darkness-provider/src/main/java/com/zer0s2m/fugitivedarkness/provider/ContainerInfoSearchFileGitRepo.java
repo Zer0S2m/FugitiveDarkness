@@ -6,6 +6,11 @@ public record ContainerInfoSearchFileGitRepo(
 
         String filename,
 
+        String extension,
+
+        String link,
+
         List<ContainerInfoSearchFileMatcherGitRepo> matchers
 
-) { }
+) {
+}

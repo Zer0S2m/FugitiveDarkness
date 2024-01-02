@@ -1,12 +1,14 @@
 package com.zer0s2m.fugitivedarkness.api.handlers;
 
 import com.zer0s2m.fugitivedarkness.common.Environment;
-import com.zer0s2m.fugitivedarkness.common.dto.ContainerGitRepoControl;
 import com.zer0s2m.fugitivedarkness.common.dto.ContainerGitRepoSearch;
-import com.zer0s2m.fugitivedarkness.provider.ContainerInfoSearchFileGitRepo;
+import com.zer0s2m.fugitivedarkness.models.GitRepoModel;
+import com.zer0s2m.fugitivedarkness.provider.ContainerGitRepoMeta;
 import com.zer0s2m.fugitivedarkness.provider.ContainerInfoSearchGitRepo;
 import com.zer0s2m.fugitivedarkness.provider.GitRepo;
 import com.zer0s2m.fugitivedarkness.provider.GitRepoFilterSearch;
+import com.zer0s2m.fugitivedarkness.repository.GitRepoRepository;
+import com.zer0s2m.fugitivedarkness.repository.impl.GitRepoRepositoryImpl;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
@@ -24,7 +26,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.nio.file.Path;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static io.vertx.json.schema.common.dsl.Schemas.*;
 
@@ -49,39 +53,66 @@ final public class ControllerApiGitRepoSearch implements Handler<RoutingContext>
                 .asJsonObject()
                 .mapTo(ContainerGitRepoSearch.class);
 
-        ContainerGitRepoControl gitRepoControl = gitRepoSearch.filters().git().get(0);
-        final Path gitRepoSource = Path.of(
-                Environment.ROOT_PATH_REPO,
-                gitRepoControl.group(),
-                gitRepoControl.project(),
-                ".git");
+        final GitRepoFilterSearch gitRepoFilterSearch = GitRepoFilterSearch
+                .create()
+                .setPattern(gitRepoSearch.pattern());
 
         JsonObject object = new JsonObject();
         object.put("success", true);
 
-        event.vertx()
-                .executeBlocking(() -> {
-                    logger.info("Start a search");
-                    final List<ContainerInfoSearchFileGitRepo> result = serviceGit.searchByGrep(GitRepoFilterSearch
-                            .create()
-                            .setPattern(gitRepoSearch.pattern())
-                            .addGitRepo(gitRepoSource));
-                    logger.info("Search ends");
-                    return new ContainerInfoSearchGitRepo(
-                            gitRepoControl.group(),
-                            gitRepoControl.project(),
-                            gitRepoSearch.pattern(),
-                            result);
-                })
-                .onSuccess(result -> {
-                    object.put("searchResult", result);
+        final GitRepoRepository gitRepoRepository = new GitRepoRepositoryImpl(event.vertx());
 
-                    event.response()
-                            .putHeader(HttpHeaders.CONTENT_LENGTH, String.valueOf(object.toString().length()))
-                            .putHeader(HttpHeaders.CONTENT_TYPE, "application/json")
-                            .setStatusCode(HttpResponseStatus.OK.code())
-                            .write(object.toString());
-                    event.response().end();
+        gitRepoRepository
+                .findAll()
+                .onComplete(ar -> {
+                    event.vertx()
+                            .executeBlocking(() -> {
+                                logger.info("Start a search");
+
+                                final List<GitRepoModel> gitRepositories = gitRepoRepository
+                                        .mapTo(ar.result());
+                                final Map<String, String> hostGitRepoByGroupAndProject = new HashMap<>();
+                                gitRepositories.forEach(gitRepository -> hostGitRepoByGroupAndProject.put(
+                                        gitRepository.getGroup() + "__" + gitRepository.getProject(),
+                                        gitRepository.getHost()
+                                ));
+
+                                gitRepoSearch.filters().git()
+                                        .forEach(repo -> {
+                                            final Path source = Path.of(
+                                                    Environment.ROOT_PATH_REPO,
+                                                    repo.group(),
+                                                    repo.project(),
+                                                    ".git");
+
+                                            gitRepoFilterSearch
+                                                    .addGitRepo(source)
+                                                    .addGitMeta(source, new ContainerGitRepoMeta(
+                                                            repo.group(),
+                                                            repo.project(),
+                                                            hostGitRepoByGroupAndProject.get(
+                                                                    repo.group() + "__" + repo.project())
+                                                    ));
+                                        });
+
+                                final List<ContainerInfoSearchGitRepo> resultSearch = serviceGit
+                                        .searchByGrep(gitRepoFilterSearch);
+
+                                logger.info("Search ends");
+
+                                return resultSearch;
+                            })
+                            .onSuccess(result -> {
+                                object.put("searchResult", result);
+
+                                event.response()
+                                        .setChunked(true)
+                                        .putHeader(HttpHeaders.CONTENT_LENGTH, String.valueOf(object.toString().length()))
+                                        .putHeader(HttpHeaders.CONTENT_TYPE, "application/json")
+                                        .setStatusCode(HttpResponseStatus.OK.code())
+                                        .write(object.toString());
+                                event.response().end();
+                            });
                 });
     }
 
@@ -101,13 +132,13 @@ final public class ControllerApiGitRepoSearch implements Handler<RoutingContext>
                     .create(SchemaParser.createDraft7SchemaParser(
                             SchemaRouter.create(vertx, new SchemaRouterOptions())))
                     .body(Bodies.json(objectSchema()
-                            .requiredProperty("pattern", stringSchema())
-                            .requiredProperty("filters", objectSchema()
-                                    .requiredProperty("git", arraySchema()
-                                            .items(objectSchema()
-                                                    .requiredProperty("group", stringSchema())
-                                                    .requiredProperty("project", stringSchema()))
-                                    ))
+                                    .requiredProperty("pattern", stringSchema())
+                                    .requiredProperty("filters", objectSchema()
+                                            .requiredProperty("git", arraySchema()
+                                                    .items(objectSchema()
+                                                            .requiredProperty("group", stringSchema())
+                                                            .requiredProperty("project", stringSchema()))
+                                            ))
                             )
                     )
                     .build();

@@ -1,0 +1,22 @@
+.modal {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-title {
+  font-size: 20px;
+}
+
+.modal-content {
+  display: flex;
+  flex-direction: column;
+  padding: 18px;
+  background: #fff;
+  border-radius: 4px;
+}
+
+.modal-content--add-git-repository {
+  max-width: 400px;
+  width: 100%;
+}

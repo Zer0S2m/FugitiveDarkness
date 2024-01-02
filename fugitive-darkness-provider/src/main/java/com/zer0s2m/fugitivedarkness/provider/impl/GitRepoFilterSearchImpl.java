@@ -1,11 +1,10 @@
 package com.zer0s2m.fugitivedarkness.provider.impl;
 
+import com.zer0s2m.fugitivedarkness.provider.ContainerGitRepoMeta;
 import com.zer0s2m.fugitivedarkness.provider.GitRepoFilterSearch;
 
 import java.nio.file.Path;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 import java.util.regex.Pattern;
 
 /**
@@ -17,8 +16,11 @@ public class GitRepoFilterSearchImpl implements GitRepoFilterSearch {
 
     private Pattern pattern;
 
+    private final Map<Path, ContainerGitRepoMeta> meta = new HashMap<>();
+
     /**
      * Set the path to the git repository for later searching.
+     *
      * @param source Path to git repository.
      * @return Search filter.
      */
@@ -30,6 +32,7 @@ public class GitRepoFilterSearchImpl implements GitRepoFilterSearch {
 
     /**
      * Set the path to the git repository for later searching.
+     *
      * @param source A collection of paths to git repositories.
      * @return Search filter.
      */
@@ -40,7 +43,32 @@ public class GitRepoFilterSearchImpl implements GitRepoFilterSearch {
     }
 
     /**
+     * Add metadata for the repository.
+     *
+     * @param source Source path of the git repository.
+     * @param meta   Git repository information.
+     * @return Search filter.
+     */
+    @Override
+    public GitRepoFilterSearch addGitMeta(Path source, ContainerGitRepoMeta meta) {
+        this.meta.put(source, meta);
+        return this;
+    }
+
+    /**
+     * Get metadata for a git repository.
+     *
+     * @param source Source path of the git repository.
+     * @return Git repository information.
+     */
+    @Override
+    public ContainerGitRepoMeta getGitMeta(Path source) {
+        return meta.get(source);
+    }
+
+    /**
      * Set a pattern to search for matches.
+     *
      * @param pattern Match pattern.
      * @return Search filter.
      */
@@ -51,6 +79,7 @@ public class GitRepoFilterSearchImpl implements GitRepoFilterSearch {
 
     /**
      * Set a pattern to search for matches.
+     *
      * @param pattern Match pattern.
      * @return Search filter.
      */
@@ -62,6 +91,7 @@ public class GitRepoFilterSearchImpl implements GitRepoFilterSearch {
 
     /**
      * Get pattern for matches.
+     *
      * @return Match pattern.
      */
     @Override
@@ -71,6 +101,7 @@ public class GitRepoFilterSearchImpl implements GitRepoFilterSearch {
 
     /**
      * Get a collection of paths to git repositories.
+     *
      * @return A collection of paths to git repositories.
      */
     @Override

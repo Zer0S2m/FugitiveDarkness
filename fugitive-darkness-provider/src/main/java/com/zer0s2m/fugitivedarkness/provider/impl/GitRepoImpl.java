@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -38,6 +39,7 @@ public class GitRepoImpl implements GitRepo {
                 infoRepo.host(),
                 infoRepo.group(),
                 infoRepo.project(),
+                infoRepo.link(),
                 Path.of(pathSourceGitRepo.toString(), ".git")
         );
 
@@ -64,14 +66,37 @@ public class GitRepoImpl implements GitRepo {
 
     /**
      * Search for matches in files in git repositories by pattern. Git grep command.
+     *
      * @param filterSearch Filter for searching git repositories.
      * @return Search result in git repository.
-     * @throws IOException IO exception.
      */
     @Override
-    public List<ContainerInfoSearchFileGitRepo> searchByGrep(GitRepoFilterSearch filterSearch) throws IOException {
-        return new GitRepoCommandGrep(filterSearch.getPattern(), filterSearch.getSources())
-                .call();
+    public List<ContainerInfoSearchGitRepo> searchByGrep(GitRepoFilterSearch filterSearch) {
+        final List<ContainerInfoSearchGitRepo> searchFileGitRepos = new ArrayList<>();
+        filterSearch.getSources()
+                .forEach(source -> {
+                    final ContainerGitRepoMeta gitRepo = filterSearch.getGitMeta(source);
+                    try {
+                        final GitRepoCommandGrep commandGrep = new GitRepoCommandGrep(
+                                filterSearch.getPattern(),
+                                source,
+                                gitRepo
+                        );
+                        final List<ContainerInfoSearchFileGitRepo> searchResult = commandGrep.call();
+
+                        searchFileGitRepos.add(new ContainerInfoSearchGitRepo(
+                                gitRepo.group(),
+                                gitRepo.project(),
+                                filterSearch.getPattern().toString(),
+                                gitRepo.getLink(true),
+                                commandGrep.getExtensionFiles(),
+                                searchResult
+                        ));
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                });
+        return searchFileGitRepos;
     }
 
 }
