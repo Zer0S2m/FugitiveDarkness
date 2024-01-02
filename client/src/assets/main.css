@@ -10,6 +10,9 @@ code.code {
   font-size: 14px;
   line-height: 1.3;
 }
+pre.code {
+  overflow-x: scroll;
+}
 
 .scroll::-webkit-scrollbar {
   width: 6px;
@@ -22,4 +25,8 @@ code.code {
 }
 .scroll::-webkit-scrollbar:horizontal {
   height: 0;
+}
+
+.match-found {
+  background-color: var(--color-match-find);
 }

@@ -12,13 +12,16 @@
       <a
         :href="matcher.link"
         target="_blank"
-        >{{ matcher.filename }}</a
+        >{{ lineSlice(matcher.filename, 80) }}</a
       >
     </h6>
     <div class="matcher-found__result">
       <div class="matcher-found__result--wrapper">
         <div class="matcher-found__result--lines">
-          <p v-for="matchersLink in matchersLinks">
+          <p
+            :class="!matchersLink.isSequel ? 'matcher-found__result--line-sequel' : ''"
+            v-for="matchersLink in matchersLinks"
+          >
             <a
               :href="matchersLink.link"
               target="_blank"
@@ -26,12 +29,19 @@
             >
           </p>
         </div>
-        <div class="matcher-found__result--code">
-          <Highlightjs
-            class="code"
-            :code="collectCode"
-            :language="matcher.extension"
-          />
+        <div class="matcher-found__result--codes">
+          <div
+            :class="collectCode.length === 1 ? 'code--one' : 'code--multi'"
+            class="matcher-found__result--code"
+            v-for="code in collectCode"
+          >
+            <Highlightjs
+              class="code"
+              :code="code"
+              :pattern="useGitRepositoryStore.filtersForSearch.pattern"
+              :language="matcher.extension"
+            />
+          </div>
         </div>
       </div>
     </div>
@@ -39,10 +49,14 @@
 </template>
 
 <script setup lang="ts">
-import { type ISearchFoundByGrepGitRepository } from '@/types/gitRepository';
+import type {
+  IMatcherFoundByGrepGitRepository,
+  ISearchFoundByGrepGitRepository
+} from '@/types/gitRepository';
 import { useGitRepositoryState } from '@/stores/useGitRepositoryState';
 import Highlightjs from '@lib/highlightjs';
 import { computed } from 'vue';
+import { lineSlice } from '@/utils/stringFormat';
 
 const useGitRepositoryStore = useGitRepositoryState();
 
@@ -52,10 +66,11 @@ const props = defineProps<{
   projectRepository: string;
 }>();
 
-const collectCode = computed((): string => {
-  let code = '';
+const collectCode = computed((): string[] => {
+  const codes: string[] = [];
+  let code: string = '';
 
-  props.matcher.matchers.forEach((matcher) => {
+  props.matcher.matchers.forEach((matcher, index) => {
     if (matcher.previewLast !== null && matcher.previewLast.length !== 0) {
       if (matcher.previewLast.length > 1) {
         matcher.previewLast
@@ -71,16 +86,27 @@ const collectCode = computed((): string => {
         });
       }
     }
+
     code += `${matcher.matcher}\n`;
+
+    if (!getIsSequelLineCodeMatcher(matcher, index)) {
+      codes.push(code);
+      code = '';
+    }
   });
 
-  return code;
+  if (code.length !== 0) {
+    codes.push(code);
+    code = '';
+  }
+
+  return codes.length ? codes : [code];
 });
 
-const matchersLinks = computed((): { link: string; lineNumber: number }[] => {
-  const links: { link: string; lineNumber: number }[] = [];
+const matchersLinks = computed((): { link: string; lineNumber: number; isSequel: boolean }[] => {
+  const links: { link: string; lineNumber: number; isSequel: boolean }[] = [];
 
-  props.matcher.matchers.forEach((matcher) => {
+  props.matcher.matchers.forEach((matcher, index) => {
     if (matcher.previewLast !== null && matcher.previewLast.length !== 0) {
       if (matcher.previewLast.length > 1) {
         matcher.previewLast
@@ -90,26 +116,37 @@ const matchersLinks = computed((): { link: string; lineNumber: number }[] => {
           .forEach((matcherPreviewLast) => {
             links.push({
               link: matcherPreviewLast.link,
-              lineNumber: matcherPreviewLast.lineNumber
+              lineNumber: matcherPreviewLast.lineNumber,
+              isSequel: true
             });
           });
       } else {
         matcher.previewLast.forEach((matcherPreviewLast) => {
           links.push({
             link: matcherPreviewLast.link,
-            lineNumber: matcherPreviewLast.lineNumber
+            lineNumber: matcherPreviewLast.lineNumber,
+            isSequel: true
           });
         });
       }
     }
+
     links.push({
       link: matcher.link,
-      lineNumber: matcher.lineNumber
+      lineNumber: matcher.lineNumber,
+      isSequel: getIsSequelLineCodeMatcher(matcher, index)
     });
   });
 
   return links;
 });
+
+const getIsSequelLineCodeMatcher = (matcher: IMatcherFoundByGrepGitRepository, index: number) => {
+  return !(
+    props.matcher.matchers.length - 1 > index &&
+    matcher.lineNumber !== props.matcher.matchers[index + 1].lineNumber - 1
+  );
+};
 </script>
 
 <style scoped>
@@ -133,6 +170,7 @@ h6 > a:hover,
 
 .matcher-found__result--wrapper {
   display: flex;
+  overflow-x: scroll;
 }
 
 .matcher-found:hover .matcher-found__result {
@@ -147,6 +185,10 @@ h6 > a:hover,
   background-color: var(--color-border);
 }
 
+.matcher-found__result--line-sequel {
+  margin-bottom: 8px;
+}
+
 .matcher-found__result--lines > p {
   width: 100%;
   text-align: end;
@@ -156,6 +198,24 @@ h6 > a:hover,
 }
 
 .matcher-found__result--code {
+  padding: 0 8px 0 0;
+  overflow-x: scroll;
+}
+
+.matcher-found__result--code.code--multi {
+  margin-bottom: 8px;
+}
+
+.matcher-found__result--code.code--multi:first-child {
+  padding: 8px 8px 0 0;
+}
+
+.matcher-found__result--cod.code--multi:last-child {
+  padding: 0 8px 8px 0;
+  margin-bottom: 0;
+}
+
+.code--one {
   padding: 8px 8px 8px 0;
 }
 

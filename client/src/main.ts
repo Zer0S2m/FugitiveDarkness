@@ -24,6 +24,6 @@ app.mount('#app');
 hljs.highlightAll();
 hljs.registerAliases(['aj'], { languageName: 'java' });
 hljs.registerAliases(['flake8', 'factories'], { languageName: 'ini' });
-hljs.registerAliases(['gitignore', 'in'], { languageName: 'sh' });
+hljs.registerAliases(['gitignore', 'in', 'mvnw'], { languageName: 'bash' });
 hljs.registerAliases(['LICENSE', 'types', 'rst'], { languageName: 'plaintext' });
 hljs.registerAliases(['scss', 'sass'], { languageName: 'css' });

@@ -1,5 +1,6 @@
 import { h, defineComponent } from 'vue';
 import hljs from 'highlight.js/lib/common';
+import { searchMatch } from '@/utils/search';
 
 export default defineComponent({
   props: {
@@ -13,6 +14,10 @@ export default defineComponent({
     isUseClass: {
       type: Boolean,
       default: true
+    },
+    pattern: {
+      type: String,
+      default: ''
     }
   },
   setup(props, { slots, attrs }) {
@@ -30,6 +35,10 @@ export default defineComponent({
       language = 'plaintext';
     }
     const className = `language-${language}`;
+
+    if (props.pattern.length !== 0) {
+      highlightedCode = searchMatch(highlightedCode, props.pattern);
+    }
 
     return () => {
       return h(

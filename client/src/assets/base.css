@@ -36,6 +36,8 @@
   --color-secondary: hsla(160, 100%, 37%, 1);
   --color-danger: #ef4444;
 
+  --color-match-find: rgba(255, 192, 120, 0.5);
+
   --section-gap: 160px;
 }
 
