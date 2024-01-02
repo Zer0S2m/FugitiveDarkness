@@ -1,5 +1,8 @@
 package com.zer0s2m.fugitivedarkness.common;
 
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * Environment variables for system performance
  */
@@ -19,6 +22,8 @@ final public class Environment {
     public static final String FD_POSTGRES_DB = getFdPostgresDb();
 
     public static final String FD_POSTGRES_PASSWORD = getFdPostgresPassword();
+
+    public static final List<String> FD_ALLOW_ORIGIN = getFdAllowOrigin();
 
     private static String getRootPathRepo() {
         return System.getenv("FD_ROOT_PATH_REPO");
@@ -42,6 +47,10 @@ final public class Environment {
 
     private static String getFdPostgresPassword() {
         return System.getenv("FD_POSTGRES_PASSWORD");
+    }
+
+    private static List<String> getFdAllowOrigin() {
+        return Arrays.asList(System.getenv("FD_ALLOW_ORIGIN").split(","));
     }
 
 }
