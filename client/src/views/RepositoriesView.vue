@@ -23,7 +23,6 @@ import { useGitRepositoryState } from '@/stores/useGitRepositoryState';
 import { useModal } from 'vue-final-modal';
 import ModalAddGitRepository from '@/components/git/modals/ModalAddGitRepository.vue';
 import { type IInstallGitRepository } from '@/types/gitRepository';
-import api from '@/services/api';
 
 const useGitRepositoryStore = useGitRepositoryState();
 const { open, close } = useModal({
@@ -32,7 +31,7 @@ const { open, close } = useModal({
     title: 'Add git repository',
     onConfirm(dataForm: IInstallGitRepository) {
       close();
-      api.installGitRepository(dataForm);
+      useGitRepositoryStore.installingGitRepository(dataForm);
     }
   }
 });

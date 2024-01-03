@@ -11,7 +11,7 @@ import java.util.regex.Pattern;
  */
 public interface HelperGitRepo {
 
-    Pattern REMOTE_HTTPS = Pattern.compile("^https?://[a-zA-Z0-9.\\-_]+/?[a-zA-Z0-9\\-]+/?[a-zA-Z0-9\\-]+\\.git/?");
+    Pattern REMOTE_HTTPS = Pattern.compile("^https?://[a-zA-Z0-9.\\-_]+/?[a-zA-Z0-9\\-]+/?[a-zA-Z0-9\\-.]+\\.git/?");
 
     Pattern REMOTE_SSH = Pattern.compile("[a-zA-Z0-9\\-_]+@[a-zA-Z0-9.\\-_]+:[a-zA-Z0-9.\\-_/]+\\.git");
 

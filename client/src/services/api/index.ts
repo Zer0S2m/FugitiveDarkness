@@ -3,6 +3,7 @@ import type {
   IControlGitRepository,
   IFilterSearchGitRepository,
   IResponseGitRepository,
+  IResponseInstallingGitRepository,
   IResponseSearchByGrepGitRepository
 } from '@/types/gitRepository';
 import { type IInstallGitRepository } from '@/types/gitRepository';
@@ -18,7 +19,9 @@ export default {
   async getAllGitRepositories(): Promise<AxiosResponse<IResponseGitRepository>> {
     return apiClient.get<IResponseGitRepository>('/git/repo');
   },
-  async installGitRepository(payload: IInstallGitRepository): Promise<AxiosResponse<any>> {
+  async installGitRepository(
+    payload: IInstallGitRepository
+  ): Promise<AxiosResponse<IResponseInstallingGitRepository>> {
     return apiClient.post('/git/repo/install', {
       ...payload
     });

@@ -28,6 +28,8 @@ final public class ControllerApiGitRepoGet implements Handler<RoutingContext> {
      */
     @Override
     public void handle(@NotNull RoutingContext event) {
+        logger.info("Start getting");
+
         final GitRepoRepository gitRepoRepository = new GitRepoRepositoryImpl(event.vertx());
 
         gitRepoRepository
@@ -49,14 +51,15 @@ final public class ControllerApiGitRepoGet implements Handler<RoutingContext> {
 
                         event.response()
                                 .end();
+
+                        logger.info("Finish getting");
                     } else {
                         logger.error("Failure: " + ar.cause());
                         event.response()
                                 .setStatusCode(HttpResponseStatus.INTERNAL_SERVER_ERROR.code())
                                 .end();
                     }
-                })
-                .result();
+                });
     }
 
 }

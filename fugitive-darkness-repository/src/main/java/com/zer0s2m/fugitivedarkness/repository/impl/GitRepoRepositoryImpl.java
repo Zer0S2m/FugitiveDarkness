@@ -21,8 +21,10 @@ public class GitRepoRepositoryImpl extends RepositoryImpl implements GitRepoRepo
     }
 
     /**
-     * @param id
-     * @return
+     * Get an entity by unique ID key.
+     *
+     * @param id Must not be null.
+     * @return Entity.
      */
     @Override
     public Future<RowSet<Row>> findById(int id) {
@@ -33,6 +35,7 @@ public class GitRepoRepositoryImpl extends RepositoryImpl implements GitRepoRepo
 
     /**
      * Get all entities.
+     *
      * @return entities
      */
     @Override
@@ -75,6 +78,7 @@ public class GitRepoRepositoryImpl extends RepositoryImpl implements GitRepoRepo
 
     /**
      * Instantiate a Java object from a {@link JsonObject}.
+     *
      * @param rows The execution result of the row set of a query provided.
      * @return Result.
      */
@@ -101,6 +105,26 @@ public class GitRepoRepositoryImpl extends RepositoryImpl implements GitRepoRepo
                           AND git_repositories.project = $2
                         """)
                 .execute(Tuple.of(group, project));
+    }
+
+    /**
+     * Update the "loaded" attribute by group and project.
+     *
+     * @param group   Must not be null.
+     * @param project Must not be null.
+     * @param isLoad  Attribute. Must not be null.
+     */
+    @Override
+    public Future<RowSet<Row>> updateIsLoadByGroupAndProject(String group, String project, boolean isLoad) {
+        return sqlClient(vertx)
+                .preparedQuery("""
+                        UPDATE git_repositories
+                        SET is_load = $1
+                        WHERE group_ = $2
+                          AND project = $3
+                        RETURNING *
+                        """)
+                .execute(Tuple.of(isLoad, group, project));
     }
 
 }

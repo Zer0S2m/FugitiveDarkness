@@ -6,8 +6,15 @@
         <h5 class="git-item__host">{{ item.host }}</h5>
       </div>
       <div class="git-item__tools">
+        <HalfCircleSpinner
+          :animation-duration="1000"
+          :size="22"
+          v-if="!item.is_load"
+          color="var(--color-secondary)"
+        />
         <button
           class="git-item__delete"
+          v-if="item.is_load"
           @click="deleteGitRepository"
         >
           <IconDelete class="git-item__delete-icon" />
@@ -21,6 +28,7 @@
 import IconDelete from '@/assets/icon-delete.svg';
 import type { IGitRepository } from '@/types/gitRepository';
 import { useGitRepositoryState } from '@/stores/useGitRepositoryState';
+import { HalfCircleSpinner } from 'epic-spinners';
 
 const useGitRepositoryStore = useGitRepositoryState();
 const props = defineProps<{ item: IGitRepository }>();

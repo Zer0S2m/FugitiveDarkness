@@ -17,6 +17,16 @@ export interface IResponseGitRepository {
   gitRepositories: IGitRepository[];
 }
 
+export interface IResponseInstallingGitRepository {
+  success: boolean;
+  isLoadGitRepository: boolean;
+  gitRepository: {
+    host: string;
+    group: string;
+    project: string;
+  };
+}
+
 export interface IControlGitRepository {
   group: string;
   project: string;

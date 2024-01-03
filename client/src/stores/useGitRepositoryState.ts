@@ -3,6 +3,7 @@ import {
   type IControlGitRepository,
   type IFilterSearchGitRepository,
   type IGitRepository,
+  type IInstallGitRepository,
   type ISearchByGrepGitRepository
 } from '@/types/gitRepository';
 import api from '@/services/api';
@@ -175,6 +176,22 @@ export const useGitRepositoryState = defineStore('gitRepository', () => {
     filtersByRepository.value = new Map();
   };
 
+  const installingGitRepository = async (payload: IInstallGitRepository): Promise<void> => {
+    const resultInstalled = (await api.installGitRepository(payload)).data;
+
+    gitRepositories.value = [
+      ...gitRepositories.value,
+      {
+        create_at: '',
+        group_: resultInstalled.gitRepository.group,
+        host: resultInstalled.gitRepository.host,
+        id: 0,
+        is_load: resultInstalled.isLoadGitRepository,
+        project: resultInstalled.gitRepository.project
+      }
+    ];
+  };
+
   return {
     loadGitRepositories,
     deleteGitRepository,
@@ -191,6 +208,7 @@ export const useGitRepositoryState = defineStore('gitRepository', () => {
     getIsActiveFilterByRepository,
     setFilterByRepository,
     resetResult,
+    installingGitRepository,
 
     gitRepositories,
     resultSearchByGrepGitRepositories,

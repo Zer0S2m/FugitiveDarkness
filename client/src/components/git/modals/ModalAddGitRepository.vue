@@ -5,10 +5,7 @@
   >
     <h3 class="modal-title">{{ title }}</h3>
     <div class="wrapper-form">
-      <Vueform
-        v-model="dataForm"
-        sync
-      >
+      <Vueform v-model="dataForm">
         <TextElement
           name="remote"
           label="Remote"
@@ -39,8 +36,8 @@ defineProps<{
 }>();
 
 const dataForm: IInstallGitRepository = {
-  remote: 'https://example.com/group/project.git',
-  group: 'group'
+  remote: '',
+  group: ''
 };
 
 const emit = defineEmits<{

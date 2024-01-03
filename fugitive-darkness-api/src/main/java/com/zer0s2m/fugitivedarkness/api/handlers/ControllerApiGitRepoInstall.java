@@ -2,6 +2,7 @@ package com.zer0s2m.fugitivedarkness.api.handlers;
 
 import com.zer0s2m.fugitivedarkness.common.dto.ContainerGitRepoInstall;
 import com.zer0s2m.fugitivedarkness.models.GitRepoModel;
+import com.zer0s2m.fugitivedarkness.provider.ContainerInfoRepo;
 import com.zer0s2m.fugitivedarkness.provider.GitRepo;
 import com.zer0s2m.fugitivedarkness.repository.GitRepoRepository;
 import com.zer0s2m.fugitivedarkness.repository.impl.GitRepoRepositoryImpl;
@@ -41,37 +42,46 @@ final public class ControllerApiGitRepoInstall implements Handler<RoutingContext
      */
     @Override
     public void handle(@NotNull RoutingContext event) {
-        ContainerGitRepoInstall containerGitRepoInstall = event
+        final GitRepoRepository repositoryGit = new GitRepoRepositoryImpl(event.vertx());
+        final ContainerGitRepoInstall containerGitRepoInstall = event
                 .body()
                 .asJsonObject()
                 .mapTo(ContainerGitRepoInstall.class);
+        final ContainerInfoRepo infoRepo = serviceGit.gGetInfo(containerGitRepoInstall.remote());
 
         JsonObject object = new JsonObject();
         object.put("success", true);
+        object.put("isLoadGitRepository", false);
+        object.put("gitRepository", infoRepo);
 
-        event.vertx()
-                .executeBlocking(() -> {
-                    try {
-                        return serviceGit.gClone(containerGitRepoInstall.remote());
-                    } catch (GitAPIException e) {
-                        throw new RuntimeException(e);
+        repositoryGit.save(new GitRepoModel(
+                        infoRepo.group(),
+                        infoRepo.project(),
+                        infoRepo.host(),
+                        infoRepo.source(),
+                        false
+                ))
+                .onComplete(resultSaved -> {
+                    if (!resultSaved.succeeded()) {
+                        logger.error("Failure: " + resultSaved.cause());
+                        return;
                     }
-                })
-                .onSuccess(result -> {
-                    final GitRepoRepository repositoryGit = new GitRepoRepositoryImpl(event.vertx());
 
-                    repositoryGit
-                            .save(new GitRepoModel(
-                                    result.group(),
-                                    result.project(),
-                                    result.host(),
-                                    result.source()
-                            ))
-                            .onComplete(ar -> {
-                                if (!ar.succeeded()) {
-                                    logger.error("Failure: " + ar.cause());
+                    event.vertx()
+                            .executeBlocking(() -> {
+                                try {
+                                    return serviceGit.gClone(containerGitRepoInstall.remote());
+                                } catch (GitAPIException e) {
+                                    throw new RuntimeException(e);
                                 }
-                            });
+                            })
+                            .onSuccess(result -> repositoryGit
+                                    .updateIsLoadByGroupAndProject(result.group(), result.project(), true)
+                                    .onComplete(ar -> {
+                                        if (!ar.succeeded()) {
+                                            logger.error("Failure: " + ar.cause());
+                                        }
+                                    }));
                 });
 
         event.response()

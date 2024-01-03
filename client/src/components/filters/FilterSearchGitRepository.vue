@@ -17,6 +17,7 @@
                   v-for="gitRepository in useGitRepositoryStore.gitRepositories"
                 >
                   <Checkbox
+                    v-if="gitRepository.is_load"
                     :meta="gitRepository"
                     :title="gitRepository.project"
                     :click-handler="handlerClickCheckboxGitRepository"

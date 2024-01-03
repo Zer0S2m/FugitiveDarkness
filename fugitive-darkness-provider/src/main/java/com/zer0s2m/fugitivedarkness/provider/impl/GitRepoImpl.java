@@ -8,7 +8,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,35 +27,22 @@ public class GitRepoImpl implements GitRepo {
      */
     @Override
     public ContainerInfoRepo gClone(String URI) throws GitAPIException {
-        final ContainerInfoRepo infoRepo = HelperGitRepo.getInfoRepo(URI);
-        final Path pathSourceGitRepo = Path.of(
-                Environment.ROOT_PATH_REPO,
-                infoRepo.group(),
-                infoRepo.project());
-        final File source = pathSourceGitRepo.toFile();
+        final ContainerInfoRepo infoRepo = gGetInfo(URI);
 
-        final ContainerInfoRepo updatedInfoRepo = new ContainerInfoRepo(
-                infoRepo.host(),
-                infoRepo.group(),
-                infoRepo.project(),
-                infoRepo.link(),
-                Path.of(pathSourceGitRepo.toString(), ".git")
-        );
-
-        logger.info("Start cloning the repository: " + source.getPath());
+        logger.info("Start cloning the repository: " + infoRepo.source());
 
         Git.cloneRepository()
                 .setURI(URI)
-                .setDirectory(source)
+                .setDirectory(infoRepo.source().toFile())
                 .setCloneAllBranches(true)
                 .setCloneSubmodules(true)
                 .setNoCheckout(true)
                 .call()
                 .close();
 
-        logger.info("Finish cloning the repository: " + source.getPath());
+        logger.info("Finish cloning the repository: " + infoRepo.source());
 
-        return updatedInfoRepo;
+        return infoRepo;
     }
 
     @Override

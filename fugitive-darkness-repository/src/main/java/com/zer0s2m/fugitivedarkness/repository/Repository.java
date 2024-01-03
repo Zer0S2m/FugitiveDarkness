@@ -7,16 +7,24 @@ import java.util.List;
 
 public interface Repository<T, D> {
 
+    /**
+     * Get an entity by unique ID key.
+     *
+     * @param id Must not be null.
+     * @return Entity.
+     */
     Future<T> findById(int id);
 
     /**
      * Get all entities.
+     *
      * @return entities
      */
     Future<T> findAll();
 
     /**
      * Saves a given entity.
+     *
      * @param entity Must not be null.
      * @return The saved entity
      */
@@ -24,6 +32,7 @@ public interface Repository<T, D> {
 
     /**
      * Instantiate a Java object from a {@link JsonObject}.
+     *
      * @param rows The execution result of the row set of a query provided.
      * @return Result.
      */
