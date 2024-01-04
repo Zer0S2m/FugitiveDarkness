@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,9 +46,17 @@ public class GitRepoImpl implements GitRepo {
         return infoRepo;
     }
 
+    /**
+     * Removing a git repository from the file system.
+     *
+     * @param group   Project group.
+     * @param project Project
+     * @throws IOException IO exception.
+     */
     @Override
-    public void gDelete(String group, String project) {
-
+    public void gDelete(String group, String project) throws IOException {
+        final Path sourceGitRepository = HelperGitRepo.getSourceGitRepository(group, project);
+        FileSystemUtils.deleteDirectory(sourceGitRepository);
     }
 
     /**

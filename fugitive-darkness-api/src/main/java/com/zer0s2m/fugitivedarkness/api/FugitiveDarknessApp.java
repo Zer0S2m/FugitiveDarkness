@@ -1,6 +1,7 @@
 package com.zer0s2m.fugitivedarkness.api;
 
 import com.zer0s2m.fugitivedarkness.api.exception.NotFoundException;
+import com.zer0s2m.fugitivedarkness.api.exception.ObjectISExistsInSystemException;
 import com.zer0s2m.fugitivedarkness.api.handlers.ControllerApiGitRepoDelete;
 import com.zer0s2m.fugitivedarkness.api.handlers.ControllerApiGitRepoGet;
 import com.zer0s2m.fugitivedarkness.api.handlers.ControllerApiGitRepoInstall;
@@ -85,6 +86,7 @@ public class FugitiveDarknessApp extends AbstractVerticle {
                         .create()
                         .setHandleFileUploads(false))
                 .handler(ControllerApiGitRepoInstall.GitRepoInstallValidation.validator(vertx))
+                .handler(new ControllerApiGitRepoInstall.GitRepoInstallCheckIsExists())
                 .handler(new ControllerApiGitRepoInstall());
         router
                 .delete("/api/v1/git/repo/delete")
@@ -123,6 +125,16 @@ public class FugitiveDarknessApp extends AbstractVerticle {
                             .response()
                             .end();
                 }
+            } else if (ctx.failure() instanceof ObjectISExistsInSystemException) {
+                Buffer errorMsg = ((ObjectISExistsInSystemException) ctx.failure()).toJson().toBuffer();
+                ctx
+                        .response()
+                        .putHeader(HttpHeaders.CONTENT_LENGTH, String.valueOf(errorMsg.length()))
+                        .setStatusCode(HttpResponseStatus.BAD_REQUEST.code())
+                        .write(errorMsg);
+                ctx
+                        .response()
+                        .end();
             }
         });
         router.errorHandler(404, ctx -> {

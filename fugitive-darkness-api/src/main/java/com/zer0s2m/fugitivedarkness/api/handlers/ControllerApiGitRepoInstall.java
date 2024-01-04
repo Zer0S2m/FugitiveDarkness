@@ -1,5 +1,6 @@
 package com.zer0s2m.fugitivedarkness.api.handlers;
 
+import com.zer0s2m.fugitivedarkness.api.exception.ObjectISExistsInSystemException;
 import com.zer0s2m.fugitivedarkness.common.dto.ContainerGitRepoInstall;
 import com.zer0s2m.fugitivedarkness.models.GitRepoModel;
 import com.zer0s2m.fugitivedarkness.provider.ContainerInfoRepo;
@@ -23,6 +24,8 @@ import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.concurrent.TimeUnit;
+
 import static io.vertx.json.schema.common.dsl.Schemas.objectSchema;
 import static io.vertx.json.schema.common.dsl.Schemas.stringSchema;
 
@@ -31,7 +34,7 @@ import static io.vertx.json.schema.common.dsl.Schemas.stringSchema;
  */
 final public class ControllerApiGitRepoInstall implements Handler<RoutingContext> {
 
-    private final GitRepo serviceGit = GitRepo.create();
+    private static final GitRepo serviceGit = GitRepo.create();
 
     static private final Logger logger = LoggerFactory.getLogger(ControllerApiGitRepoInstall.class);
 
@@ -67,19 +70,30 @@ final public class ControllerApiGitRepoInstall implements Handler<RoutingContext
                         return;
                     }
 
-                    event.vertx()
+                    WorkerExecutor executor = event
+                            .vertx()
+                            .createSharedWorkerExecutor(
+                                    "worker.git.operation-installing",
+                                    4,
+                                    5,
+                                    TimeUnit.MINUTES);
+                    executor
                             .executeBlocking(() -> {
                                 try {
                                     return serviceGit.gClone(containerGitRepoInstall.remote());
                                 } catch (GitAPIException e) {
+                                    logger.error("Failure (GIT): " + e.fillInStackTrace());
                                     throw new RuntimeException(e);
                                 }
+                            }, false)
+                            .onFailure((fail) -> {
+                                repositoryGit.deleteByGroupAndProject(infoRepo.group(), infoRepo.project());
                             })
                             .onSuccess(result -> repositoryGit
                                     .updateIsLoadByGroupAndProject(result.group(), result.project(), true)
                                     .onComplete(ar -> {
                                         if (!ar.succeeded()) {
-                                            logger.error("Failure: " + ar.cause());
+                                            logger.error("Failure (DB): " + ar.cause());
                                         }
                                     }));
                 });
@@ -114,6 +128,40 @@ final public class ControllerApiGitRepoInstall implements Handler<RoutingContext
                             .requiredProperty("remote", stringSchema())
                             .requiredProperty("group", stringSchema())))
                     .build();
+        }
+
+    }
+
+    /**
+     * Handler to check if a git repository exists.
+     */
+    public static class GitRepoInstallCheckIsExists implements Handler<RoutingContext> {
+
+        /**
+         * Handler to check if a git repository exists.
+         *
+         * @param event The event to handle.
+         */
+        @Override
+        public void handle(@NotNull RoutingContext event) {
+            final GitRepoRepository repositoryGit = new GitRepoRepositoryImpl(event.vertx());
+            final ContainerGitRepoInstall containerGitRepoInstall = event
+                    .body()
+                    .asJsonObject()
+                    .mapTo(ContainerGitRepoInstall.class);
+            final ContainerInfoRepo infoRepo = serviceGit.gGetInfo(containerGitRepoInstall.remote());
+
+            repositoryGit
+                    .existsByGroupAndProject(infoRepo.group(), infoRepo.project())
+                    .onSuccess((ar) -> {
+                        if (repositoryGit.mapToExistsColumn(ar)) {
+                            event.fail(
+                                    HttpResponseStatus.BAD_REQUEST.code(),
+                                    new ObjectISExistsInSystemException("The repository already exists in the system"));
+                        } else {
+                            event.next();
+                        }
+                    });
         }
 
     }

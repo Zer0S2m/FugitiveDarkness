@@ -27,6 +27,11 @@ export interface IResponseInstallingGitRepository {
   };
 }
 
+export interface IResponseInstallingGitRepositoryError {
+  type: string;
+  message: string;
+}
+
 export interface IControlGitRepository {
   group: string;
   project: string;

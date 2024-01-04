@@ -5,6 +5,14 @@
   >
     <h3 class="modal-title">{{ title }}</h3>
     <div class="wrapper-form">
+      <div
+        class="errors"
+        v-if="!useGitRepositoryStore.stateFormAddGitRepositoryErrors.success"
+      >
+        <div class="errors--wrapper">
+          <p class="errors-text">{{ useGitRepositoryStore.stateFormAddGitRepositoryErrors.msg }}</p>
+        </div>
+      </div>
       <Vueform v-model="dataForm">
         <TextElement
           name="remote"
@@ -30,6 +38,7 @@
 <script setup lang="ts">
 import { VueFinalModal } from 'vue-final-modal';
 import type { IInstallGitRepository } from '@/types/gitRepository';
+import { useGitRepositoryState } from '@/stores/useGitRepositoryState';
 
 defineProps<{
   title?: string;
@@ -43,6 +52,8 @@ const dataForm: IInstallGitRepository = {
 const emit = defineEmits<{
   (e: 'confirm', dataForm: IInstallGitRepository): void;
 }>();
+
+const useGitRepositoryStore = useGitRepositoryState();
 </script>
 
 <style scoped>
@@ -60,5 +71,18 @@ const emit = defineEmits<{
   padding: 6px 28px;
   border: 1px solid var(--color-secondary);
   border-radius: 4px;
+}
+
+.errors {
+  border-radius: 4px;
+  background-color: var(--vf-bg-danger);
+}
+
+.errors > .errors--wrapper {
+  padding: 12px;
+}
+
+.errors-text {
+  color: var(--vf-color-danger);
 }
 </style>

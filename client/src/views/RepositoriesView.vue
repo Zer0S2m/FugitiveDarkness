@@ -1,18 +1,21 @@
 <template>
-  <GitRepositoryList
-    v-if="!useGitRepositoryStore.isLoading"
-    :items="useGitRepositoryStore.gitRepositories"
-    @open-modal-add-git-repository="openModalAddGitRepository"
-  />
-  <div
-    class="loader-block"
-    v-if="useGitRepositoryStore.isLoading"
-  >
-    <HalfCircleSpinner
-      :animation-duration="1000"
-      :size="60"
-      color="var(--color-secondary)"
+  <div class="git__local">
+    <h2 class="git-local__title">Local repositories</h2>
+    <GitRepositoryList
+      v-if="!useGitRepositoryStore.isLoading"
+      :items="useGitRepositoryStore.gitRepositories"
+      @open-modal-add-git-repository="openModalAddGitRepository"
     />
+    <div
+      class="loader-block"
+      v-if="useGitRepositoryStore.isLoading"
+    >
+      <HalfCircleSpinner
+        :animation-duration="1000"
+        :size="60"
+        color="var(--color-secondary)"
+      />
+    </div>
   </div>
 </template>
 
@@ -29,9 +32,13 @@ const { open, close } = useModal({
   component: ModalAddGitRepository,
   attrs: {
     title: 'Add git repository',
-    onConfirm(dataForm: IInstallGitRepository) {
-      close();
-      useGitRepositoryStore.installingGitRepository(dataForm);
+    async onConfirm(dataForm: IInstallGitRepository) {
+      await useGitRepositoryStore.installingGitRepository(dataForm);
+
+      if (useGitRepositoryStore.stateFormAddGitRepositoryErrors.success) {
+        useGitRepositoryStore.clearStateFormAddGitRepositoryErrors();
+        await close();
+      }
     }
   }
 });
@@ -39,6 +46,7 @@ const { open, close } = useModal({
 useGitRepositoryStore.loadGitRepositories();
 
 const openModalAddGitRepository = () => {
+  useGitRepositoryStore.clearStateFormAddGitRepositoryErrors();
   open();
 };
 </script>
@@ -50,5 +58,11 @@ const openModalAddGitRepository = () => {
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+.git-local__title {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 12px;
 }
 </style>

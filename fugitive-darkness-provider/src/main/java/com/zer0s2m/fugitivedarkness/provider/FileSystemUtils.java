@@ -26,8 +26,9 @@ public interface FileSystemUtils {
     }
 
     static String getExtensionFromRawStrFile(String source) {
-        final String[] splitSource = source.split("\\.");
-        return splitSource[splitSource.length - 1];
+        final String[] splitSource = source.split("/");
+        final String[] splitLastPart = splitSource[splitSource.length - 1].split("\\.");
+        return splitLastPart[splitLastPart.length - 1];
     }
 
 }

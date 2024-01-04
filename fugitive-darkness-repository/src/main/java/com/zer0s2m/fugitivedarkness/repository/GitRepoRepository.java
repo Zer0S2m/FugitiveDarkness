@@ -15,6 +15,8 @@ public interface GitRepoRepository extends Repository<RowSet<Row>, GitRepoModel>
      */
     void deleteByGroupAndProject(String group, String project);
 
+    Future<RowSet<Row>> existsByGroupAndProject(String group, String project);
+
     /**
      * Update the "loaded" attribute by group and project.
      *

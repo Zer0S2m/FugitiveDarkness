@@ -38,4 +38,6 @@ public interface Repository<T, D> {
      */
     List<D> mapTo(final T rows);
 
+    boolean mapToExistsColumn(final T rows);
+
 }

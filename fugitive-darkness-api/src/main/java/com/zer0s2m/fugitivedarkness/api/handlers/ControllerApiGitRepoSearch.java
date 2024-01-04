@@ -64,56 +64,54 @@ final public class ControllerApiGitRepoSearch implements Handler<RoutingContext>
 
         gitRepoRepository
                 .findAll()
-                .onComplete(ar -> {
-                    event.vertx()
-                            .executeBlocking(() -> {
-                                logger.info("Start a search");
+                .onComplete(ar -> event.vertx()
+                        .executeBlocking(() -> {
+                            logger.info("Start a search");
 
-                                final List<GitRepoModel> gitRepositories = gitRepoRepository
-                                        .mapTo(ar.result());
-                                final Map<String, String> hostGitRepoByGroupAndProject = new HashMap<>();
-                                gitRepositories.forEach(gitRepository -> hostGitRepoByGroupAndProject.put(
-                                        gitRepository.getGroup() + "__" + gitRepository.getProject(),
-                                        gitRepository.getHost()
-                                ));
+                            final List<GitRepoModel> gitRepositories = gitRepoRepository
+                                    .mapTo(ar.result());
+                            final Map<String, String> hostGitRepoByGroupAndProject = new HashMap<>();
+                            gitRepositories.forEach(gitRepository -> hostGitRepoByGroupAndProject.put(
+                                    gitRepository.getGroup() + "__" + gitRepository.getProject(),
+                                    gitRepository.getHost()
+                            ));
 
-                                gitRepoSearch.filters().git()
-                                        .forEach(repo -> {
-                                            final Path source = Path.of(
-                                                    Environment.ROOT_PATH_REPO,
-                                                    repo.group(),
-                                                    repo.project(),
-                                                    ".git");
+                            gitRepoSearch.filters().git()
+                                    .forEach(repo -> {
+                                        final Path source = Path.of(
+                                                Environment.ROOT_PATH_REPO,
+                                                repo.group(),
+                                                repo.project(),
+                                                ".git");
 
-                                            gitRepoFilterSearch
-                                                    .addGitRepo(source)
-                                                    .addGitMeta(source, new ContainerGitRepoMeta(
-                                                            repo.group(),
-                                                            repo.project(),
-                                                            hostGitRepoByGroupAndProject.get(
-                                                                    repo.group() + "__" + repo.project())
-                                                    ));
-                                        });
+                                        gitRepoFilterSearch
+                                                .addGitRepo(source)
+                                                .addGitMeta(source, new ContainerGitRepoMeta(
+                                                        repo.group(),
+                                                        repo.project(),
+                                                        hostGitRepoByGroupAndProject.get(
+                                                                repo.group() + "__" + repo.project())
+                                                ));
+                                    });
 
-                                final List<ContainerInfoSearchGitRepo> resultSearch = serviceGit
-                                        .searchByGrep(gitRepoFilterSearch);
+                            final List<ContainerInfoSearchGitRepo> resultSearch = serviceGit
+                                    .searchByGrep(gitRepoFilterSearch);
 
-                                logger.info("Search ends");
+                            logger.info("Search ends");
 
-                                return resultSearch;
-                            })
-                            .onSuccess(result -> {
-                                object.put("searchResult", result);
+                            return resultSearch;
+                        }, false)
+                        .onSuccess(result -> {
+                            object.put("searchResult", result);
 
-                                event.response()
-                                        .setChunked(true)
-                                        .putHeader(HttpHeaders.CONTENT_LENGTH, String.valueOf(object.toString().length()))
-                                        .putHeader(HttpHeaders.CONTENT_TYPE, "application/json")
-                                        .setStatusCode(HttpResponseStatus.OK.code())
-                                        .write(object.toString());
-                                event.response().end();
-                            });
-                });
+                            event.response()
+                                    .setChunked(true)
+                                    .putHeader(HttpHeaders.CONTENT_LENGTH, String.valueOf(object.toString().length()))
+                                    .putHeader(HttpHeaders.CONTENT_TYPE, "application/json")
+                                    .setStatusCode(HttpResponseStatus.OK.code())
+                                    .write(object.toString());
+                            event.response().end();
+                        }));
     }
 
     /**

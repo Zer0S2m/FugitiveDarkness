@@ -1,14 +1,17 @@
 import { defineStore } from 'pinia';
-import {
-  type IControlGitRepository,
-  type IFilterSearchGitRepository,
-  type IGitRepository,
-  type IInstallGitRepository,
-  type ISearchByGrepGitRepository
+import type {
+  IControlGitRepository,
+  IFilterSearchGitRepository,
+  IGitRepository,
+  IInstallGitRepository,
+  IResponseInstallingGitRepository,
+  IResponseInstallingGitRepositoryError,
+  ISearchByGrepGitRepository
 } from '@/types/gitRepository';
 import api from '@/services/api';
 import type { Ref } from 'vue';
 import { ref } from 'vue';
+import type { AxiosResponse } from 'axios';
 
 export const useGitRepositoryState = defineStore('gitRepository', () => {
   const gitRepositories: Ref<IGitRepository[]> = ref([]);
@@ -26,6 +29,15 @@ export const useGitRepositoryState = defineStore('gitRepository', () => {
     new Map()
   );
   const filtersByRepository: Ref<Map<String, boolean>> = ref(new Map());
+  const stateFormAddGitRepositoryErrors: Ref<{
+    success: boolean;
+    msg: string | null;
+    type: string | null;
+  }> = ref({
+    success: true,
+    msg: null,
+    type: null
+  });
 
   const loadGitRepositories = async (): Promise<void> => {
     if (isLoadData.value) return;
@@ -177,19 +189,43 @@ export const useGitRepositoryState = defineStore('gitRepository', () => {
   };
 
   const installingGitRepository = async (payload: IInstallGitRepository): Promise<void> => {
-    const resultInstalled = (await api.installGitRepository(payload)).data;
+    const resultInstalled: AxiosResponse<
+      IResponseInstallingGitRepository | IResponseInstallingGitRepositoryError
+    > = await api.installGitRepository(payload);
+
+    if (resultInstalled.status === 400) {
+      const resultInstalledData: IResponseInstallingGitRepositoryError =
+        resultInstalled.data as IResponseInstallingGitRepositoryError;
+      stateFormAddGitRepositoryErrors.value = {
+        success: false,
+        msg: resultInstalledData.message,
+        type: resultInstalledData.type
+      };
+      return;
+    }
+
+    const resultInstalledData: IResponseInstallingGitRepository =
+      resultInstalled.data as IResponseInstallingGitRepository;
 
     gitRepositories.value = [
       ...gitRepositories.value,
       {
         create_at: '',
-        group_: resultInstalled.gitRepository.group,
-        host: resultInstalled.gitRepository.host,
+        group_: resultInstalledData.gitRepository.group,
+        host: resultInstalledData.gitRepository.host,
         id: 0,
-        is_load: resultInstalled.isLoadGitRepository,
-        project: resultInstalled.gitRepository.project
+        is_load: resultInstalledData.isLoadGitRepository,
+        project: resultInstalledData.gitRepository.project
       }
     ];
+  };
+
+  const clearStateFormAddGitRepositoryErrors = (): void => {
+    stateFormAddGitRepositoryErrors.value = {
+      success: true,
+      msg: null,
+      type: null
+    };
   };
 
   return {
@@ -209,6 +245,7 @@ export const useGitRepositoryState = defineStore('gitRepository', () => {
     setFilterByRepository,
     resetResult,
     installingGitRepository,
+    clearStateFormAddGitRepositoryErrors,
 
     gitRepositories,
     resultSearchByGrepGitRepositories,
@@ -217,6 +254,7 @@ export const useGitRepositoryState = defineStore('gitRepository', () => {
     isLoadingSearch,
     filtersForSearch,
     filtersByExtensionFiles,
-    filtersByRepository
+    filtersByRepository,
+    stateFormAddGitRepositoryErrors
   };
 });

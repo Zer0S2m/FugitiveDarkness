@@ -4,6 +4,7 @@ import com.zer0s2m.fugitivedarkness.common.Environment;
 import com.zer0s2m.fugitivedarkness.provider.impl.GitRepoImpl;
 import org.eclipse.jgit.api.errors.GitAPIException;
 
+import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
 
@@ -25,6 +26,7 @@ public interface GitRepo {
 
     /**
      * Get git repository information from URI.
+     *
      * @param URI Remote git repository host.
      * @return Git repository information.
      */
@@ -43,7 +45,14 @@ public interface GitRepo {
         );
     }
 
-    void gDelete(String group, String project);
+    /**
+     * Removing a git repository from the file system.
+     *
+     * @param group   Project group.
+     * @param project Project
+     * @throws IOException IO exception.
+     */
+    void gDelete(String group, String project) throws IOException;
 
     /**
      * Search for matches in files in git repositories by pattern. Git grep command.

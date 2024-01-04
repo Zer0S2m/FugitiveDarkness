@@ -4,6 +4,7 @@ import type {
   IFilterSearchGitRepository,
   IResponseGitRepository,
   IResponseInstallingGitRepository,
+  IResponseInstallingGitRepositoryError,
   IResponseSearchByGrepGitRepository
 } from '@/types/gitRepository';
 import { type IInstallGitRepository } from '@/types/gitRepository';
@@ -12,7 +13,8 @@ const apiClient: AxiosInstance = axios.create({
   baseURL: `${import.meta.env.VITE_FD_HOST_API}/api/v1`,
   headers: {
     'Content-type': 'application/json'
-  }
+  },
+  validateStatus: null
 });
 
 export default {
@@ -21,7 +23,9 @@ export default {
   },
   async installGitRepository(
     payload: IInstallGitRepository
-  ): Promise<AxiosResponse<IResponseInstallingGitRepository>> {
+  ): Promise<
+    AxiosResponse<IResponseInstallingGitRepository | IResponseInstallingGitRepositoryError>
+  > {
     return apiClient.post('/git/repo/install', {
       ...payload
     });

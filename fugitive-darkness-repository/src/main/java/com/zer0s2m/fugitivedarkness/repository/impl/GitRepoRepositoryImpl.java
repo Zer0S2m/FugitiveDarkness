@@ -10,6 +10,7 @@ import io.vertx.sqlclient.RowSet;
 import io.vertx.sqlclient.Tuple;
 
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.StreamSupport;
 
 public class GitRepoRepositoryImpl extends RepositoryImpl implements GitRepoRepository {
@@ -89,6 +90,15 @@ public class GitRepoRepositoryImpl extends RepositoryImpl implements GitRepoRepo
                 .toList();
     }
 
+    @Override
+    public boolean mapToExistsColumn(final RowSet<Row> rows) {
+        AtomicBoolean isExists = new AtomicBoolean();
+        rows.forEach(row -> {
+            isExists.set(row.getBoolean("exists"));
+        });
+        return isExists.get();
+    };
+
     /**
      * Deletes an object with the specified group and project name.
      *
@@ -103,6 +113,18 @@ public class GitRepoRepositoryImpl extends RepositoryImpl implements GitRepoRepo
                         FROM git_repositories
                         WHERE git_repositories.group_ = $1
                           AND git_repositories.project = $2
+                        """)
+                .execute(Tuple.of(group, project));
+    }
+
+    @Override
+    public Future<RowSet<Row>> existsByGroupAndProject(String group, String project) {
+        return sqlClient(vertx)
+                .preparedQuery("""
+                        SELECT EXISTS(select id
+                                      from "git_repositories"
+                                      WHERE "git_repositories".group_ = $1
+                                        AND "git_repositories".project = $2)
                         """)
                 .execute(Tuple.of(group, project));
     }
