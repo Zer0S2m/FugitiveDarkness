@@ -38,6 +38,12 @@ public interface Repository<T, D> {
      */
     List<D> mapTo(final T rows);
 
+    /**
+     * Convert EXISTS request to object.
+     *
+     * @param rows The execution result of the row set of a query provided.
+     * @return Result.
+     */
     boolean mapToExistsColumn(final T rows);
 
 }

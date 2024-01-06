@@ -2,10 +2,7 @@ package com.zer0s2m.fugitivedarkness.api;
 
 import com.zer0s2m.fugitivedarkness.api.exception.NotFoundException;
 import com.zer0s2m.fugitivedarkness.api.exception.ObjectISExistsInSystemException;
-import com.zer0s2m.fugitivedarkness.api.handlers.ControllerApiGitRepoDelete;
-import com.zer0s2m.fugitivedarkness.api.handlers.ControllerApiGitRepoGet;
-import com.zer0s2m.fugitivedarkness.api.handlers.ControllerApiGitRepoInstall;
-import com.zer0s2m.fugitivedarkness.api.handlers.ControllerApiGitRepoSearch;
+import com.zer0s2m.fugitivedarkness.api.handlers.*;
 import com.zer0s2m.fugitivedarkness.common.Environment;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.vertx.core.AbstractVerticle;
@@ -51,7 +48,8 @@ public class FugitiveDarknessApp extends AbstractVerticle {
                                 \tPOST   [/api/v1/operation/search]
                                 \tGET    [/api/v1/git/repo/]
                                 \tPOST   [/api/v1/git/repo/install]
-                                \tDELETE [/api/v1/git/repo/delete]""");
+                                \tDELETE [/api/v1/git/repo/delete]
+                                \tPOST   [/api/v1/git/provider/install]""");
                         logger.info("""
                                 Setting ENV:
                                 \tFD_ROOT_PATH - %s
@@ -104,6 +102,14 @@ public class FugitiveDarknessApp extends AbstractVerticle {
                         .setHandleFileUploads(false))
                 .handler(ControllerApiGitRepoSearch.GitRepoSearchValidation.validator(vertx))
                 .handler(new ControllerApiGitRepoSearch());
+        router
+                .post("/api/v1/git/provider/install")
+                .consumes("application/json")
+                .handler(BodyHandler
+                        .create()
+                        .setHandleFileUploads(false))
+                .handler(ControllerApiGitProviderInstall.GitProviderInstallValidation.validator(vertx))
+                .handler(new ControllerApiGitProviderInstall());
     }
 
     /**

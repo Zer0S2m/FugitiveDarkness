@@ -1,5 +1,7 @@
 package com.zer0s2m.fugitivedarkness.provider;
 
+import java.util.Objects;
+
 public abstract class GitRepoProviderAbstract {
 
     /**
@@ -13,6 +15,8 @@ public abstract class GitRepoProviderAbstract {
     private final String pathGetRepoForUser;
 
     public GitRepoProviderAbstract(String pathGetRepoForOrg, String pathGetRepoForUser) {
+        Objects.requireNonNull(pathGetRepoForOrg, "The path to get repositories cannot be empty [ORG]");
+        Objects.requireNonNull(pathGetRepoForUser, "The path to get repositories cannot be empty [USER]");
         this.pathGetRepoForOrg = pathGetRepoForOrg;
         this.pathGetRepoForUser = pathGetRepoForUser;
     }

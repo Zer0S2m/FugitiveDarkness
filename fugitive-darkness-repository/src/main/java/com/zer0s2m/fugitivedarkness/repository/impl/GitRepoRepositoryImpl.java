@@ -90,6 +90,12 @@ public class GitRepoRepositoryImpl extends RepositoryImpl implements GitRepoRepo
                 .toList();
     }
 
+    /**
+     * Convert EXISTS request to object.
+     *
+     * @param rows The execution result of the row set of a query provided.
+     * @return Result.
+     */
     @Override
     public boolean mapToExistsColumn(final RowSet<Row> rows) {
         AtomicBoolean isExists = new AtomicBoolean();
@@ -97,7 +103,7 @@ public class GitRepoRepositoryImpl extends RepositoryImpl implements GitRepoRepo
             isExists.set(row.getBoolean("exists"));
         });
         return isExists.get();
-    };
+    }
 
     /**
      * Deletes an object with the specified group and project name.
