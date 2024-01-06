@@ -22,6 +22,9 @@ public class GitProviderModel {
     @JsonProperty("created_at")
     private String createdAt;
 
+    public GitProviderModel() {
+    }
+
     public GitProviderModel(String type, boolean isOrg, boolean isUser, String target) {
         this.type = type;
         this.isOrg = isOrg;

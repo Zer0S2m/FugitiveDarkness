@@ -10,6 +10,7 @@ import io.vertx.sqlclient.RowSet;
 import io.vertx.sqlclient.Tuple;
 
 import java.util.List;
+import java.util.stream.StreamSupport;
 
 public class GitProviderRepositoryImpl extends RepositoryImpl implements Repository<RowSet<Row>, GitProviderModel> {
 
@@ -37,7 +38,17 @@ public class GitProviderRepositoryImpl extends RepositoryImpl implements Reposit
      */
     @Override
     public Future<RowSet<Row>> findAll() {
-        return null;
+        return sqlClient(vertx)
+                .query("""
+                        SELECT "git_providers"."id",
+                               "git_providers"."created_at",
+                               "git_providers"."type",
+                               "git_providers"."is_org",
+                               "git_providers"."is_user",
+                               "git_providers"."target"
+                        FROM "git_providers";
+                        """)
+                .execute();
     }
 
     /**
@@ -70,7 +81,9 @@ public class GitProviderRepositoryImpl extends RepositoryImpl implements Reposit
      */
     @Override
     public List<GitProviderModel> mapTo(RowSet<Row> rows) {
-        return null;
+        return StreamSupport.stream(rows.spliterator(), false)
+                .map(row -> row.toJson().mapTo(GitProviderModel.class))
+                .toList();
     }
 
     /**

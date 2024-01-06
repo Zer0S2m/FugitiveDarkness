@@ -51,7 +51,7 @@ public final class ControllerApiGitProviderInstall implements Handler<RoutingCon
 
         JsonObject object = new JsonObject();
         object.put("success", true);
-        object.put("provider", containerInfoGitProviderInstall);
+        object.put("gitProvider", containerInfoGitProviderInstall);
 
         gitProviderRepository
                 .save(new GitProviderModel(
