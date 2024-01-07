@@ -99,9 +99,7 @@ public class GitRepoRepositoryImpl extends RepositoryImpl implements GitRepoRepo
     @Override
     public boolean mapToExistsColumn(final RowSet<Row> rows) {
         AtomicBoolean isExists = new AtomicBoolean();
-        rows.forEach(row -> {
-            isExists.set(row.getBoolean("exists"));
-        });
+        rows.forEach(row -> isExists.set(row.getBoolean("exists")));
         return isExists.get();
     }
 
@@ -123,6 +121,13 @@ public class GitRepoRepositoryImpl extends RepositoryImpl implements GitRepoRepo
                 .execute(Tuple.of(group, project));
     }
 
+    /**
+     * Check entry for existence by group and project.
+     *
+     * @param group   Git repository group.
+     * @param project Name of the project.
+     * @return Result.
+     */
     @Override
     public Future<RowSet<Row>> existsByGroupAndProject(String group, String project) {
         return sqlClient(vertx)
@@ -141,6 +146,7 @@ public class GitRepoRepositoryImpl extends RepositoryImpl implements GitRepoRepo
      * @param group   Must not be null.
      * @param project Must not be null.
      * @param isLoad  Attribute. Must not be null.
+     * @return Result.
      */
     @Override
     public Future<RowSet<Row>> updateIsLoadByGroupAndProject(String group, String project, boolean isLoad) {

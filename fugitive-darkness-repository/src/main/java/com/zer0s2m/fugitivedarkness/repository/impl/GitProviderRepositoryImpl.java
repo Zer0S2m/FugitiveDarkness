@@ -1,7 +1,7 @@
 package com.zer0s2m.fugitivedarkness.repository.impl;
 
 import com.zer0s2m.fugitivedarkness.models.GitProviderModel;
-import com.zer0s2m.fugitivedarkness.repository.Repository;
+import com.zer0s2m.fugitivedarkness.repository.GitProviderRepository;
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonObject;
@@ -12,14 +12,14 @@ import io.vertx.sqlclient.Tuple;
 import java.util.List;
 import java.util.stream.StreamSupport;
 
-public class GitProviderRepositoryImpl extends RepositoryImpl implements Repository<RowSet<Row>, GitProviderModel> {
+public class GitProviderRepositoryImpl extends RepositoryImpl implements GitProviderRepository {
 
     private final Vertx vertx;
 
     public GitProviderRepositoryImpl(Vertx vertx) {
         this.vertx = vertx;
     }
-    
+
     /**
      * Get an entity by unique ID key.
      *
@@ -29,6 +29,30 @@ public class GitProviderRepositoryImpl extends RepositoryImpl implements Reposit
     @Override
     public Future<RowSet<Row>> findById(int id) {
         return null;
+    }
+
+    /**
+     * Find a record by provider type and target.
+     *
+     * @param type   Provider type.
+     * @param target Provider target.
+     * @return Result.
+     */
+    @Override
+    public Future<RowSet<Row>> findByTypeAndTarget(String type, String target) {
+        return sqlClient(vertx)
+                .preparedQuery("""
+                        SELECT "git_providers".id,
+                               "git_providers".created_at,
+                               "git_providers".type,
+                               "git_providers".is_org,
+                               "git_providers".is_user,
+                               "git_providers".target
+                        FROM "git_providers"
+                        WHERE "git_providers".type = $1
+                          AND target = $2
+                        """)
+                .execute(Tuple.of(type, target));
     }
 
     /**

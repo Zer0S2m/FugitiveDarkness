@@ -3,7 +3,7 @@ package com.zer0s2m.fugitivedarkness.api.handlers;
 import com.zer0s2m.fugitivedarkness.common.dto.ContainerInfoGitProviderInstall;
 import com.zer0s2m.fugitivedarkness.models.GitProviderModel;
 import com.zer0s2m.fugitivedarkness.provider.GitRepoProviderType;
-import com.zer0s2m.fugitivedarkness.repository.Repository;
+import com.zer0s2m.fugitivedarkness.repository.GitProviderRepository;
 import com.zer0s2m.fugitivedarkness.repository.impl.GitProviderRepositoryImpl;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.vertx.core.Handler;
@@ -18,8 +18,6 @@ import io.vertx.json.schema.SchemaParser;
 import io.vertx.json.schema.SchemaRepository;
 import io.vertx.json.schema.SchemaRouter;
 import io.vertx.json.schema.SchemaRouterOptions;
-import io.vertx.sqlclient.Row;
-import io.vertx.sqlclient.RowSet;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,8 +40,7 @@ public final class ControllerApiGitProviderInstall implements Handler<RoutingCon
     public void handle(@NotNull RoutingContext event) {
         logger.info("Start installing the provider for git repositories");
 
-        final Repository<RowSet<Row>, GitProviderModel> gitProviderRepository =
-                new GitProviderRepositoryImpl(event.vertx());
+        final GitProviderRepository gitProviderRepository = new GitProviderRepositoryImpl(event.vertx());
         final ContainerInfoGitProviderInstall containerInfoGitProviderInstall = event
                 .body()
                 .asJsonObject()
@@ -61,7 +58,7 @@ public final class ControllerApiGitProviderInstall implements Handler<RoutingCon
                         containerInfoGitProviderInstall.target()))
                 .onComplete((resultSaved) -> {
                     if (!resultSaved.succeeded()) {
-                        logger.error("Failure: " + resultSaved.cause());
+                        logger.error("Failure (DB): " + resultSaved.cause());
                     }
 
                     logger.info("End of provider installation for git repositories");
