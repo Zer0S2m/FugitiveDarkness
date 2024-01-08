@@ -10,7 +10,6 @@ import io.vertx.sqlclient.RowSet;
 import io.vertx.sqlclient.Tuple;
 
 import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.StreamSupport;
 
 public class GitRepoRepositoryImpl extends RepositoryImpl implements GitRepoRepository {
@@ -98,9 +97,7 @@ public class GitRepoRepositoryImpl extends RepositoryImpl implements GitRepoRepo
      */
     @Override
     public boolean mapToExistsColumn(final RowSet<Row> rows) {
-        AtomicBoolean isExists = new AtomicBoolean();
-        rows.forEach(row -> isExists.set(row.getBoolean("exists")));
-        return isExists.get();
+        return super.mapToExistsColumn(rows);
     }
 
     /**

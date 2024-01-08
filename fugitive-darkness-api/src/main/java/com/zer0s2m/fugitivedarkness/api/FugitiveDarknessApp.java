@@ -118,6 +118,9 @@ public class FugitiveDarknessApp extends AbstractVerticle {
                         .create()
                         .setHandleFileUploads(false))
                 .handler(ControllerApiGitProviderInstall.GitProviderInstallValidation.validator(vertx))
+                .handler(new ControllerApiGitProviderInstall.GitProviderInstallValidationIsOrgAndIsUser())
+                .handler(new ControllerApiGitProviderInstall.GitProviderInstallValidationIsExistsInSystem())
+                .handler(new ControllerApiGitProviderInstall.GitProviderInstallValidationIsExistsInExternalSystem())
                 .handler(new ControllerApiGitProviderInstall());
     }
 

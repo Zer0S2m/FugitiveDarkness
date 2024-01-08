@@ -56,6 +56,25 @@ public class GitProviderRepositoryImpl extends RepositoryImpl implements GitProv
     }
 
     /**
+     * Check for the existence of an entry by provider type and provider target.
+     *
+     * @param type   Provider type.
+     * @param target Provider target
+     * @return Is exists.
+     */
+    @Override
+    public Future<RowSet<Row>> existsByTypeAndTarget(String type, String target) {
+        return sqlClient(vertx)
+                .preparedQuery("""
+                        SELECT EXISTS(select id
+                                      from "git_providers"
+                                      WHERE "git_providers".type = $1
+                                        AND "git_providers".target = $2)
+                        """)
+                .execute(Tuple.of(type, target));
+    }
+
+    /**
      * Get all entities.
      *
      * @return entities
@@ -117,8 +136,8 @@ public class GitProviderRepositoryImpl extends RepositoryImpl implements GitProv
      * @return Result.
      */
     @Override
-    public boolean mapToExistsColumn(RowSet<Row> rows) {
-        return false;
+    public boolean mapToExistsColumn(final RowSet<Row> rows) {
+        return super.mapToExistsColumn(rows);
     }
 
 }

@@ -61,7 +61,6 @@ public class ControllerApiGitRepoProvider implements Handler<RoutingContext> {
                         final GitProviderModel gitProvider = gitProviderRepository.mapTo(ar.result()).get(0);
                         final GitRepoProvider gitRepoProvider = GitRepoProvider.create(typeProvider);
                         final GitRepoProviderConverter gitRepoProviderConverter = GitRepoProviderConverter.create();
-                        assert gitRepoProvider != null;
 
                         GitRepoProviderInfo gitRepoProviderInfo;
 

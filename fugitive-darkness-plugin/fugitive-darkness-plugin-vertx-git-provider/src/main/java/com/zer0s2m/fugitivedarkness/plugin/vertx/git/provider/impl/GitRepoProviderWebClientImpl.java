@@ -9,6 +9,7 @@ import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonArray;
 import io.vertx.ext.web.client.HttpResponse;
 import io.vertx.ext.web.client.WebClient;
+import io.vertx.ext.web.client.predicate.ResponsePredicate;
 import io.vertx.ext.web.codec.BodyCodec;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,6 +43,7 @@ public class GitRepoProviderWebClientImpl implements GitRepoProviderWebClient {
 
         return client
                 .get(infoProvider.host(), infoProvider.path())
+                .expect(ResponsePredicate.SC_SUCCESS)
                 .putHeaders(MultiMap
                         .caseInsensitiveMultiMap()
                         .addAll(infoProvider.headers()))

@@ -51,7 +51,7 @@ public interface GitRepoProvider {
             return new GitRepoProviderGitlab();
         }
 
-        return null;
+        throw new RuntimeException("There is no provider for " + providerType);
     }
 
 }

@@ -16,4 +16,13 @@ public interface GitProviderRepository extends Repository<RowSet<Row>, GitProvid
      */
     Future<RowSet<Row>> findByTypeAndTarget(String type, String target);
 
+    /**
+     * Check for the existence of an entry by provider type and provider target.
+     *
+     * @param type   Provider type.
+     * @param target Provider target
+     * @return Is exists.
+     */
+    Future<RowSet<Row>> existsByTypeAndTarget(String type, String target);
+
 }
