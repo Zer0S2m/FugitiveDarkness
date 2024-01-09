@@ -8,6 +8,7 @@ import type {
   IResponseSearchByGrepGitRepository
 } from '@/types/gitRepository';
 import { type IInstallGitRepository } from '@/types/gitRepository';
+import type { IResponseGitProvider } from '@/types/gitProvider';
 
 const apiClient: AxiosInstance = axios.create({
   baseURL: `${import.meta.env.VITE_FD_HOST_API}/api/v1`,
@@ -42,5 +43,9 @@ export default {
       filters: data.filters,
       pattern: data.pattern
     });
+  },
+
+  async getAllGitProviders(): Promise<AxiosResponse<IResponseGitProvider>> {
+    return apiClient.get<IResponseGitProvider>('/git/provider');
   }
 };

@@ -1,5 +1,5 @@
 <template>
-  <div class="git-items">
+  <ContainerCardList>
     <GitRepositoryItem
       v-for="item in items"
       :item="item"
@@ -11,13 +11,14 @@
         </button>
       </div>
     </div>
-  </div>
+  </ContainerCardList>
 </template>
 
 <script setup lang="ts">
 import IconAdd from '@/assets/icon-add.svg';
 import type { IGitRepository } from '@/types/gitRepository';
 import GitRepositoryItem from '@/components/git/GitRepositoryItem.vue';
+import ContainerCardList from '@/components/common/ContainerCardList.vue';
 
 defineProps<{ items: IGitRepository[] }>();
 const emit = defineEmits(['openModalAddGitRepository']);
@@ -28,13 +29,6 @@ const openModalAddGitRepository = () => {
 </script>
 
 <style scoped>
-.git-items {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  grid-column-gap: 8px;
-  grid-row-gap: 2px;
-}
-
 .git-item__add {
   border: 1px solid var(--color-border);
   width: 100%;

@@ -1,6 +1,6 @@
 <template>
   <div class="git__local">
-    <h2 class="git-local__title">Local repositories</h2>
+    <h2 class="title-container">Local repositories</h2>
     <GitRepositoryList
       v-if="!useGitRepositoryStore.isLoading"
       :items="useGitRepositoryStore.gitRepositories"
@@ -50,19 +50,3 @@ const openModalAddGitRepository = () => {
   open();
 };
 </script>
-
-<style scoped>
-.loader-block {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.git-local__title {
-  font-size: 18px;
-  font-weight: 600;
-  margin-bottom: 12px;
-}
-</style>

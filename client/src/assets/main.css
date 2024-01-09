@@ -30,3 +30,17 @@ pre.code {
 .match-found {
   background-color: var(--color-match-find);
 }
+
+.loader-block {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.title-container {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 12px;
+}

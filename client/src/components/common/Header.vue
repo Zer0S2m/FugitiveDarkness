@@ -27,6 +27,15 @@ import { RouterLink } from 'vue-router';
             >
           </div>
         </div>
+        <div class="nav-item nav-item-3">
+          <div class="nav-item__wrapper">
+            <RouterLink
+              class="nav-item__link"
+              :to="{ name: 'git-providers' }"
+              >Providers</RouterLink
+            >
+          </div>
+        </div>
       </nav>
     </div>
   </header>
@@ -69,7 +78,8 @@ import { RouterLink } from 'vue-router';
   border-right: 1px solid var(--color-border);
 }
 
-.nav-item-1 {
+.nav-item-1,
+.nav-item-2 {
   border-right: 0;
 }
 
