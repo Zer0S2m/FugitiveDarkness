@@ -1,11 +1,6 @@
 @import './base.css';
 @import './modal.css';
 
-#app {
-  height: 100vh;
-  overflow: hidden;
-}
-
 code.code {
   font-size: 14px;
   line-height: 1.3;

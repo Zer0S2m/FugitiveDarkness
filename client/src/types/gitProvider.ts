@@ -13,3 +13,15 @@ export interface IResponseGitProvider {
   success: boolean;
   gitProviders: IGitProvider[];
 }
+
+export interface IGitRepositoryInProvider {
+  host: string;
+  group: string;
+  project: string;
+  link: string;
+}
+
+export interface IResponseGitRepositoryInProvider {
+  success: boolean;
+  gitRepositories: IGitRepositoryInProvider[];
+}
