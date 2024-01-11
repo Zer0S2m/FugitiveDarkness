@@ -1,10 +1,16 @@
 import { defineStore } from 'pinia';
 import type { Ref } from 'vue';
 import { ref } from 'vue';
-import type { IGitProvider } from '@/types/gitProvider';
+import type {
+  IGitProvider,
+  IInstallGitProvider,
+  IResponseInstallingGitProvider
+} from '@/types/gitProvider';
 import api from '@/services/api';
 import type { IGitRepositoryInProvider } from '@/types/gitProvider';
 import { GitProviderType } from '@/enums/gitProvider';
+import type { AxiosResponse } from 'axios';
+import type { IResponseInstallError } from '@/types/api';
 
 export const useGitProviderState = defineStore('gitProvider', () => {
   const gitProviders: Ref<IGitProvider[]> = ref([]);
@@ -19,6 +25,15 @@ export const useGitProviderState = defineStore('gitProvider', () => {
   > = ref(new Map());
   const isLoading: Ref<boolean> = ref(true);
   const isLoadData: Ref<boolean> = ref(false);
+  const stateFormAddGitProviderErrors: Ref<{
+    success: boolean;
+    msg: string | null;
+    type: string | null;
+  }> = ref({
+    success: true,
+    msg: null,
+    type: null
+  });
 
   const loadGitProviders = async (): Promise<void> => {
     if (isLoadData.value) return;
@@ -76,16 +91,43 @@ export const useGitProviderState = defineStore('gitProvider', () => {
     return [];
   };
 
+  const installingGitProvider = async (payload: IInstallGitProvider): Promise<void> => {
+    const resultInstalled: AxiosResponse<IResponseInstallError | IResponseInstallingGitProvider> =
+      await api.installGitProvider(payload);
+
+    if ([400, 404].includes(resultInstalled.status)) {
+      const resultInstalledData: IResponseInstallError =
+        resultInstalled.data as IResponseInstallError;
+      stateFormAddGitProviderErrors.value = {
+        success: false,
+        msg: resultInstalledData.message,
+        type: resultInstalledData.type
+      };
+      return;
+    }
+  };
+
+  const clearStateFormAddGitProviderErrors = (): void => {
+    stateFormAddGitProviderErrors.value = {
+      success: true,
+      msg: null,
+      type: null
+    };
+  };
+
   return {
     loadGitProviders,
     loadGitRepositoryInProvider,
     getRepositoryInProviderByTypeAndTarget,
     initGitRepositoryInProvider,
     getIsLoadingRepositoryInProviderByTypeAndTarget,
+    installingGitProvider,
+    clearStateFormAddGitProviderErrors,
 
     gitProviders,
     isLoading,
     isLoadData,
-    gitRepositoriesInProvider
+    gitRepositoriesInProvider,
+    stateFormAddGitProviderErrors
   };
 });

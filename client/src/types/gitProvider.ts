@@ -25,3 +25,15 @@ export interface IResponseGitRepositoryInProvider {
   success: boolean;
   gitRepositories: IGitRepositoryInProvider[];
 }
+
+export interface IInstallGitProvider {
+  type: GitProviderType;
+  isOrg: boolean;
+  isUser: boolean;
+  target: string;
+}
+
+export interface IResponseInstallingGitProvider {
+  success: true;
+  gitProvider: IInstallGitProvider;
+}

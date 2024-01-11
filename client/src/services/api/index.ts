@@ -1,14 +1,19 @@
 import axios, { type AxiosInstance, type AxiosResponse } from 'axios';
+import type { IResponseInstallError } from '@/types/api';
 import type {
   IControlGitRepository,
   IFilterSearchGitRepository,
   IResponseGitRepository,
   IResponseInstallingGitRepository,
-  IResponseInstallingGitRepositoryError,
   IResponseSearchByGrepGitRepository
 } from '@/types/gitRepository';
 import { type IInstallGitRepository } from '@/types/gitRepository';
-import type { IResponseGitProvider, IResponseGitRepositoryInProvider } from '@/types/gitProvider';
+import type {
+  IInstallGitProvider,
+  IResponseGitProvider,
+  IResponseGitRepositoryInProvider,
+  IResponseInstallingGitProvider
+} from '@/types/gitProvider';
 import { GitProviderType } from '@/enums/gitProvider';
 
 const apiClient: AxiosInstance = axios.create({
@@ -25,9 +30,7 @@ export default {
   },
   async installGitRepository(
     payload: IInstallGitRepository
-  ): Promise<
-    AxiosResponse<IResponseInstallingGitRepository | IResponseInstallingGitRepositoryError>
-  > {
+  ): Promise<AxiosResponse<IResponseInstallingGitRepository | IResponseInstallError>> {
     return apiClient.post('/git/repo/install', {
       ...payload
     });
@@ -58,6 +61,13 @@ export default {
         provider,
         target
       }
+    });
+  },
+  async installGitProvider(
+    data: IInstallGitProvider
+  ): Promise<AxiosResponse<IResponseInstallingGitProvider | IResponseInstallError>> {
+    return apiClient.post('/git/provider/install', {
+      ...data
     });
   }
 };
