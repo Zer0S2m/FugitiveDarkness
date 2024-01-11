@@ -15,6 +15,13 @@ public interface GitRepoRepository extends Repository<RowSet<Row>, GitRepoModel>
      */
     void deleteByGroupAndProject(String group, String project);
 
+    /**
+     * Check entry for existence by group and project.
+     *
+     * @param group   Git repository group.
+     * @param project Name of the project.
+     * @return Result.
+     */
     Future<RowSet<Row>> existsByGroupAndProject(String group, String project);
 
     /**
@@ -23,6 +30,7 @@ public interface GitRepoRepository extends Repository<RowSet<Row>, GitRepoModel>
      * @param group   Must not be null.
      * @param project Must not be null.
      * @param isLoad  Attribute. Must not be null.
+     * @return Result.
      */
     Future<RowSet<Row>> updateIsLoadByGroupAndProject(String group, String project, boolean isLoad);
 

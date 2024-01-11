@@ -2,6 +2,7 @@ package com.zer0s2m.fugitivedarkness.repository.impl;
 
 import com.zer0s2m.fugitivedarkness.common.Environment;
 import com.zer0s2m.fugitivedarkness.repository.Repository;
+import com.zer0s2m.fugitivedarkness.repository.RepositoryOperationExists;
 import io.vertx.core.Vertx;
 import io.vertx.pgclient.PgBuilder;
 import io.vertx.pgclient.PgConnectOptions;
@@ -12,7 +13,7 @@ import io.vertx.sqlclient.SqlClient;
  * A closed class to provide {@link Repository} with the necessary
  * functionality to work correctly with the database.
  */
-class RepositoryImpl {
+class RepositoryImpl implements RepositoryOperationExists {
 
     private final PgConnectOptions connectOptions = connectOptions();
 
