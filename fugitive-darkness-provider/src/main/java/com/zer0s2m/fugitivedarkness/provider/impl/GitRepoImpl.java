@@ -72,19 +72,19 @@ public class GitRepoImpl implements GitRepo {
                 .forEach(source -> {
                     final ContainerGitRepoMeta gitRepo = filterSearch.getGitMeta(source);
                     try {
-                        final GitRepoCommandGrep commandGrep = new GitRepoCommandGrep(
+                        final SearchEngineGitGrep commandGrep = new GitRepoCommandGrep(
                                 filterSearch.getPattern(),
                                 source,
                                 gitRepo
                         );
-                        final List<ContainerInfoSearchFileGitRepo> searchResult = commandGrep.call();
+                        final List<ContainerInfoSearchFileGitRepo> searchResult = commandGrep.callGrep();
 
                         searchFileGitRepos.add(new ContainerInfoSearchGitRepo(
                                 gitRepo.group(),
                                 gitRepo.project(),
                                 filterSearch.getPattern().toString(),
                                 gitRepo.getLink(true),
-                                commandGrep.getExtensionFiles(),
+                                commandGrep.getExtensionFilesGrep(),
                                 searchResult
                         ));
                     } catch (IOException e) {
