@@ -1,24 +1,34 @@
 <template>
   <ContainerCardItem>
-    <div>
-      <div class="git-provider__block-title">
-        <h4 class="git-providers__title">{{ item.target }}</h4>
-        <IconGitlab v-if="item.type === GitProviderType.GITLAB" />
-        <IconGithub v-if="item.type === GitProviderType.GITHUB" />
+    <div class="git-providers__wrapper">
+      <div class="git-providers__base">
+        <div class="git-provider__block-title">
+          <h4 class="git-providers__title">{{ item.target }}</h4>
+          <IconGitlab v-if="item.type === GitProviderType.GITLAB" />
+          <IconGithub v-if="item.type === GitProviderType.GITHUB" />
+        </div>
+        <div class="git-provider__info">
+          <div class="git-provider__user">
+            <div class="git-provider__block--wrapper">
+              <IconUser />
+              <span>User - {{ item.is_user ? 'yes' : 'no' }}</span>
+            </div>
+          </div>
+          <div class="git-provider__org">
+            <div class="git-provider__block--wrapper">
+              <IconOrganization />
+              <span>Organization - {{ item.is_org ? 'yes' : 'no' }}</span>
+            </div>
+          </div>
+        </div>
       </div>
-      <div class="git-provider__info">
-        <div class="git-provider__user">
-          <div class="git-provider__block--wrapper">
-            <IconUser />
-            <span>User - {{ item.is_user ? 'yes' : 'no' }}</span>
-          </div>
-        </div>
-        <div class="git-provider__org">
-          <div class="git-provider__block--wrapper">
-            <IconOrganization />
-            <span>Organization - {{ item.is_org ? 'yes' : 'no' }}</span>
-          </div>
-        </div>
+      <div class="git-providers__tools">
+        <button
+          class="git-item__delete"
+          @click="deleteGitProvider"
+        >
+          <IconDelete class="git-item__delete-icon" />
+        </button>
       </div>
     </div>
   </ContainerCardItem>
@@ -32,11 +42,31 @@ import IconGithub from '@/assets/github-mark.svg';
 import IconUser from '@/assets/icon-user.svg';
 import IconOrganization from '@/assets/icon-organization.svg';
 import { GitProviderType } from '@/enums/gitProvider';
+import IconDelete from '@/assets/icon-delete.svg';
+import { useGitProviderState } from '@/stores/useGitProviderState';
 
-defineProps<{ item: IGitProvider }>();
+const props = defineProps<{ item: IGitProvider }>();
+
+const useGitProviderStore = useGitProviderState();
+
+const deleteGitProvider = async () => {
+  await useGitProviderStore.deleteGitProvider({
+    type: props.item.type,
+    target: props.item.target
+  });
+};
 </script>
 
 <style scoped>
+.git-providers__wrapper {
+  display: flex;
+  width: 100%;
+}
+
+.git-providers__base {
+  width: 100%;
+}
+
 .git-provider__block-title {
   display: flex;
   align-items: center;

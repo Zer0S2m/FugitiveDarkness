@@ -75,6 +75,24 @@ public class GitProviderRepositoryImpl extends RepositoryImpl implements GitProv
     }
 
     /**
+     * Delete a record from the database by provider type and target.
+     *
+     * @param type Provider type.
+     * @param target Provider target.
+     */
+    @Override
+    public void deleteByTypeAndTarget(String type, String target) {
+        sqlClient(vertx)
+                .preparedQuery("""
+                        DELETE
+                        FROM "git_providers"
+                        WHERE "git_providers".type = $1
+                          AND "git_providers".target = $2
+                        """)
+                .execute(Tuple.of(type, target));
+    }
+
+    /**
      * Get all entities.
      *
      * @return entities

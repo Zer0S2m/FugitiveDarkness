@@ -2,6 +2,7 @@ import { defineStore } from 'pinia';
 import type { Ref } from 'vue';
 import { ref } from 'vue';
 import type {
+  IDeleteGitProvider,
   IGitProvider,
   IInstallGitProvider,
   IResponseInstallingGitProvider
@@ -115,6 +116,15 @@ export const useGitProviderState = defineStore('gitProvider', () => {
     };
   };
 
+  const deleteGitProvider = async (payload: IDeleteGitProvider): Promise<void> => {
+    await api.deleteGitProvider(payload);
+
+    gitRepositoriesInProvider.value.delete(`${payload.type}/${payload.target}`);
+    gitProviders.value = gitProviders.value.filter((gitProvider) => {
+      return !(gitProvider.type === payload.type && gitProvider.target === payload.target);
+    });
+  };
+
   return {
     loadGitProviders,
     loadGitRepositoryInProvider,
@@ -123,6 +133,7 @@ export const useGitProviderState = defineStore('gitProvider', () => {
     getIsLoadingRepositoryInProviderByTypeAndTarget,
     installingGitProvider,
     clearStateFormAddGitProviderErrors,
+    deleteGitProvider,
 
     gitProviders,
     isLoading,

@@ -1,11 +1,14 @@
 import { GitProviderType } from '@/enums/gitProvider';
 
-export interface IGitProvider {
-  id: number;
+export interface IBaseGitProvider {
   type: GitProviderType;
+  target: string;
+}
+
+export interface IGitProvider extends IBaseGitProvider {
+  id: number;
   is_org: boolean;
   is_user: boolean;
-  target: string;
   created_at: string;
 }
 
@@ -26,14 +29,14 @@ export interface IResponseGitRepositoryInProvider {
   gitRepositories: IGitRepositoryInProvider[];
 }
 
-export interface IInstallGitProvider {
-  type: GitProviderType;
+export interface IInstallGitProvider extends IBaseGitProvider {
   isOrg: boolean;
   isUser: boolean;
-  target: string;
 }
 
 export interface IResponseInstallingGitProvider {
   success: true;
   gitProvider: IInstallGitProvider;
 }
+
+export interface IDeleteGitProvider extends IBaseGitProvider {}

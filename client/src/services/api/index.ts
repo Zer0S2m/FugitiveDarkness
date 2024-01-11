@@ -9,6 +9,7 @@ import type {
 } from '@/types/gitRepository';
 import { type IInstallGitRepository } from '@/types/gitRepository';
 import type {
+  IDeleteGitProvider,
   IInstallGitProvider,
   IResponseGitProvider,
   IResponseGitRepositoryInProvider,
@@ -68,6 +69,11 @@ export default {
   ): Promise<AxiosResponse<IResponseInstallingGitProvider | IResponseInstallError>> {
     return apiClient.post('/git/provider/install', {
       ...data
+    });
+  },
+  async deleteGitProvider(data: IDeleteGitProvider): Promise<any> {
+    return apiClient.delete('/git/provider/delete', {
+      data
     });
   }
 };

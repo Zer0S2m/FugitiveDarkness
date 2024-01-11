@@ -51,6 +51,7 @@ public class FugitiveDarknessApp extends AbstractVerticle {
                                 \tPOST   [/api/v1/git/repo/install]
                                 \tDELETE [/api/v1/git/repo/delete]
                                 \tGET    [/api/v1/git/provider]
+                                \tDELETE [/api/v1/git/provider/delete]
                                 \tPOST   [/api/v1/git/provider/install]""");
                         logger.info("""
                                 Setting ENV:
@@ -111,6 +112,15 @@ public class FugitiveDarknessApp extends AbstractVerticle {
         router
                 .get("/api/v1/git/provider")
                 .handler(new ControllerApiGitProviderGet());
+        router
+                .delete("/api/v1/git/provider/delete")
+                .consumes("application/json")
+                .handler(BodyHandler
+                        .create()
+                        .setHandleFileUploads(false))
+                .handler(ControllerApiGitProviderDelete.GitProviderDeleteValidation.validator(vertx))
+                .handler(new ControllerApiGitProviderDelete.GitProviderDeleteValidationIsExistsInSystem())
+                .handler(new ControllerApiGitProviderDelete());
         router
                 .post("/api/v1/git/provider/install")
                 .consumes("application/json")

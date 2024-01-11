@@ -25,4 +25,12 @@ public interface GitProviderRepository extends Repository<RowSet<Row>, GitProvid
      */
     Future<RowSet<Row>> existsByTypeAndTarget(String type, String target);
 
+    /**
+     * Delete a record from the database by provider type and target.
+     *
+     * @param type Provider type.
+     * @param target Provider target.
+     */
+    void deleteByTypeAndTarget(String type, String target);
+
 }
