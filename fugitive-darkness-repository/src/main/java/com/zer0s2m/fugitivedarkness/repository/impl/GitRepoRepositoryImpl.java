@@ -10,7 +10,6 @@ import io.vertx.sqlclient.RowSet;
 import io.vertx.sqlclient.Tuple;
 
 import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.StreamSupport;
 
 public class GitRepoRepositoryImpl extends RepositoryImpl implements GitRepoRepository {
@@ -90,14 +89,16 @@ public class GitRepoRepositoryImpl extends RepositoryImpl implements GitRepoRepo
                 .toList();
     }
 
+    /**
+     * Convert EXISTS request to object.
+     *
+     * @param rows The execution result of the row set of a query provided.
+     * @return Result.
+     */
     @Override
     public boolean mapToExistsColumn(final RowSet<Row> rows) {
-        AtomicBoolean isExists = new AtomicBoolean();
-        rows.forEach(row -> {
-            isExists.set(row.getBoolean("exists"));
-        });
-        return isExists.get();
-    };
+        return super.mapToExistsColumn(rows);
+    }
 
     /**
      * Deletes an object with the specified group and project name.
@@ -117,6 +118,13 @@ public class GitRepoRepositoryImpl extends RepositoryImpl implements GitRepoRepo
                 .execute(Tuple.of(group, project));
     }
 
+    /**
+     * Check entry for existence by group and project.
+     *
+     * @param group   Git repository group.
+     * @param project Name of the project.
+     * @return Result.
+     */
     @Override
     public Future<RowSet<Row>> existsByGroupAndProject(String group, String project) {
         return sqlClient(vertx)
@@ -135,6 +143,7 @@ public class GitRepoRepositoryImpl extends RepositoryImpl implements GitRepoRepo
      * @param group   Must not be null.
      * @param project Must not be null.
      * @param isLoad  Attribute. Must not be null.
+     * @return Result.
      */
     @Override
     public Future<RowSet<Row>> updateIsLoadByGroupAndProject(String group, String project, boolean isLoad) {

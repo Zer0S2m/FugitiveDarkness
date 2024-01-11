@@ -16,7 +16,37 @@
   border-radius: 4px;
 }
 
-.modal-content--add-git-repository {
+.modal-content--add-git-repository,
+.modal-content--add-git-provider {
   max-width: 400px;
   width: 100%;
+}
+
+.modal-errors {
+  border-radius: 4px;
+  background-color: var(--vf-bg-danger);
+}
+
+.modal-errors > .modal-errors--wrapper {
+  padding: 12px;
+}
+
+.modal-errors-text {
+  color: var(--vf-color-danger);
+}
+
+.modal-wrapper-form {
+  margin-top: 12px;
+}
+
+.modal-button__block {
+  display: flex;
+  justify-content: end;
+  margin-top: 12px;
+}
+
+.modal-add-button {
+  padding: 6px 28px;
+  border: 1px solid var(--color-secondary);
+  border-radius: 4px;
 }

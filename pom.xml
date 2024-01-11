@@ -14,6 +14,7 @@
     <module>fugitive-darkness-provider</module>
     <module>fugitive-darkness-models</module>
     <module>fugitive-darkness-repository</module>
+    <module>fugitive-darkness-plugin</module>
   </modules>
 
   <developers>
@@ -37,6 +38,7 @@
     <vertx-stack-depchain.version>4.5.0</vertx-stack-depchain.version>
     <vertx-core.version>4.5.0</vertx-core.version>
     <vertx-web.version>4.5.0</vertx-web.version>
+    <vertx-web-client.version>4.5.0</vertx-web-client.version>
     <vertx-web-validation.version>4.5.0</vertx-web-validation.version>
     <vertx-pg-client.version>4.5.0</vertx-pg-client.version>
     <slf4j.version>2.0.9</slf4j.version>
@@ -54,6 +56,8 @@
     <fugitive-darkness-provider.version>0.0.1-SNAPSHOT</fugitive-darkness-provider.version>
     <fugitive-darkness-models.version>0.0.1-SNAPSHOT</fugitive-darkness-models.version>
     <fugitive-darkness-repository.version>0.0.1-SNAPSHOT</fugitive-darkness-repository.version>
+    <fugitive-darkness-plugin.version>0.0.1-SNAPSHOT</fugitive-darkness-plugin.version>
+    <fugitive-darkness-plugin-vertx-git-provider.version>0.0.1-SNAPSHOT</fugitive-darkness-plugin-vertx-git-provider.version>
   </properties>
 
   <dependencyManagement>
@@ -100,6 +104,11 @@
         <groupId>io.vertx</groupId>
         <artifactId>vertx-pg-client</artifactId>
         <version>${vertx-pg-client.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.vertx</groupId>
+        <artifactId>vertx-web-client</artifactId>
+        <version>${vertx-web-client.version}</version>
       </dependency>
       <dependency>
         <groupId>org.slf4j</groupId>
@@ -155,6 +164,11 @@
         <groupId>com.zer0s2m.fugitive-darkness</groupId>
         <artifactId>fugitive-darkness-repository</artifactId>
         <version>${fugitive-darkness-repository.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.zer0s2m.fugitive-darkness</groupId>
+        <artifactId>fugitive-darkness-plugin-vertx-git-provider</artifactId>
+        <version>${fugitive-darkness-plugin-vertx-git-provider.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>

@@ -1,11 +1,11 @@
 import { defineStore } from 'pinia';
+import type { IResponseInstallError } from '@/types/api';
 import type {
   IControlGitRepository,
   IFilterSearchGitRepository,
   IGitRepository,
   IInstallGitRepository,
   IResponseInstallingGitRepository,
-  IResponseInstallingGitRepositoryError,
   ISearchByGrepGitRepository
 } from '@/types/gitRepository';
 import api from '@/services/api';
@@ -189,13 +189,12 @@ export const useGitRepositoryState = defineStore('gitRepository', () => {
   };
 
   const installingGitRepository = async (payload: IInstallGitRepository): Promise<void> => {
-    const resultInstalled: AxiosResponse<
-      IResponseInstallingGitRepository | IResponseInstallingGitRepositoryError
-    > = await api.installGitRepository(payload);
+    const resultInstalled: AxiosResponse<IResponseInstallingGitRepository | IResponseInstallError> =
+      await api.installGitRepository(payload);
 
     if (resultInstalled.status === 400) {
-      const resultInstalledData: IResponseInstallingGitRepositoryError =
-        resultInstalled.data as IResponseInstallingGitRepositoryError;
+      const resultInstalledData: IResponseInstallError =
+        resultInstalled.data as IResponseInstallError;
       stateFormAddGitRepositoryErrors.value = {
         success: false,
         msg: resultInstalledData.message,
