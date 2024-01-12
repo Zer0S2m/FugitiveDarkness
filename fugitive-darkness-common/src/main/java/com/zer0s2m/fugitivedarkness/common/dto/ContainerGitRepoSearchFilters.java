@@ -4,7 +4,11 @@ import java.util.List;
 
 public record ContainerGitRepoSearchFilters(
 
-        List<ContainerGitRepoControl> git
+        List<ContainerGitRepoControl> git,
+
+        List<String> includeExtensionFiles,
+
+        List<String> excludeExtensionFiles
 
 ) {
 }

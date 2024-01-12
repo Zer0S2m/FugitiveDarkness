@@ -18,6 +18,10 @@ public class GitRepoFilterSearchImpl implements GitRepoFilterSearch {
 
     private final Map<Path, ContainerGitRepoMeta> meta = new HashMap<>();
 
+    private final Set<String> includeExtensionFiles = new HashSet<>();
+
+    private final Set<String> excludeExtensionFiles = new HashSet<>();
+
     /**
      * Set the path to the git repository for later searching.
      *
@@ -107,6 +111,82 @@ public class GitRepoFilterSearchImpl implements GitRepoFilterSearch {
     @Override
     public Set<Path> getSources() {
         return sources;
+    }
+
+    /**
+     * Set the file extension that will be included in the search filtering.
+     *
+     * @param extensionFiles File extension.
+     * @return Search filter.
+     */
+    @Override
+    public GitRepoFilterSearch setIncludeExtensionFile(Collection<String> extensionFiles) {
+        Objects.requireNonNull(extensionFiles, "File extensions are required");
+
+        this.includeExtensionFiles.addAll(extensionFiles);
+        return this;
+    }
+
+    /**
+     * Set the file extension that will be included in the search filtering.
+     *
+     * @param extensionFile File extension.
+     * @return Search filter.
+     */
+    @Override
+    public GitRepoFilterSearch setIncludeExtensionFile(String extensionFile) {
+        Objects.requireNonNull(extensionFile, "File extensions are required");
+
+        this.includeExtensionFiles.add(extensionFile);
+        return this;
+    }
+
+    /**
+     * Set file extensions that will be included in file filtering when searching for matches.
+     *
+     * @return File extension.
+     */
+    @Override
+    public Set<String> getIncludeExtensionFile() {
+        return includeExtensionFiles;
+    }
+
+    /**
+     * Set the file extension to be excluded from search filtering.
+     *
+     * @param extensionFiles File extension.
+     * @return Search filter.
+     */
+    @Override
+    public GitRepoFilterSearch setExcludeExtensionFile(Collection<String> extensionFiles) {
+        Objects.requireNonNull(extensionFiles, "File extensions are required");
+
+        this.excludeExtensionFiles.addAll(extensionFiles);
+        return this;
+    }
+
+    /**
+     * Set the file extension to be excluded from search filtering.
+     *
+     * @param extensionFile File extension.
+     * @return Search filter.
+     */
+    @Override
+    public GitRepoFilterSearch setExcludeExtensionFile(String extensionFile) {
+        Objects.requireNonNull(extensionFile, "File extensions are required");
+
+        this.excludeExtensionFiles.add(extensionFile);
+        return this;
+    }
+
+    /**
+     * Get file extensions that will be excluded from file filtering when searching for matches.
+     *
+     * @return File extension.
+     */
+    @Override
+    public Set<String> getExcludeExtensionFile() {
+        return excludeExtensionFiles;
     }
 
 }

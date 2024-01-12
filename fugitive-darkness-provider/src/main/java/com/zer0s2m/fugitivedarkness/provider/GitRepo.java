@@ -13,8 +13,6 @@ import java.util.List;
  */
 public interface GitRepo {
 
-    String LINE_NUMBER_POINTER = "#L";
-
     /**
      * Clone a git repository from a remote host into a set path environment variable {@link Environment#ROOT_PATH_REPO}.
      *
@@ -56,6 +54,7 @@ public interface GitRepo {
 
     /**
      * Search for matches in files in git repositories by pattern. Git grep command.
+     * <p>Uses a search engine {@link SearchEngineGitGrep}.</p>
      *
      * @param filterSearch Filter for searching git repositories.
      * @return Search result in git repository.
@@ -64,21 +63,6 @@ public interface GitRepo {
 
     static GitRepo create() {
         return new GitRepoImpl();
-    }
-
-    static String getLinkForFile(
-            final ContainerGitRepoMeta gitRepoMeta,
-            final String file,
-            final String targetBranch) {
-        return gitRepoMeta.getLink(false) + "/tree/" + targetBranch + "/" + file;
-    }
-
-    static String getLinkForMatcherLine(
-            final ContainerGitRepoMeta gitRepoMeta,
-            final String file,
-            final String targetBranch,
-            final int lineNumber) {
-        return getLinkForFile(gitRepoMeta, file, targetBranch) + LINE_NUMBER_POINTER + lineNumber;
     }
 
 }

@@ -6,6 +6,7 @@ import org.eclipse.jgit.lib.Repository;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 import java.util.regex.Pattern;
 
@@ -30,6 +31,16 @@ public abstract class SearchEngineGitGrepAbstract implements SearchEngineGitGrep
      */
     private final Set<String> extensionFilesGrep = new HashSet<>();
 
+    /**
+     * The file extension that will be included in file filtering when searching for matches.
+     */
+    private final Set<String> extensionFilesForIncludeFilterSearch = new HashSet<>();
+
+    /**
+     * The file extension that will be excluded from files when searching for matches.
+     */
+            private final Set<String> extensionFilesForIncludeExcludeSearch = new HashSet<>();
+
     private Repository repository;
 
     /**
@@ -40,6 +51,10 @@ public abstract class SearchEngineGitGrepAbstract implements SearchEngineGitGrep
      */
     protected SearchEngineGitGrepAbstract(Pattern pattern, Path source, ContainerGitRepoMeta containerGitRepoMeta)
             throws IOException {
+        Objects.requireNonNull(pattern, "Pattern needs to be set");
+        Objects.requireNonNull(source, "You need to set the path to the git repository");
+        Objects.requireNonNull(containerGitRepoMeta, "Additional repository information needs to be set");
+
         setContainerGitRepoMeta(containerGitRepoMeta);
         setPattern(pattern);
         setGitRepositoryGrep(source);
@@ -87,6 +102,50 @@ public abstract class SearchEngineGitGrepAbstract implements SearchEngineGitGrep
     }
 
     /**
+     * Set the file extension that will be included in the search filtering.
+     *
+     * @param extensionFiles File extension.
+     */
+    @Override
+    public void setIncludeExtensionFilesForSearchGrep(Set<String> extensionFiles) {
+        Objects.requireNonNull(extensionFiles, "File extensions are required");
+
+        extensionFilesForIncludeFilterSearch.addAll(extensionFiles);
+    }
+
+    /**
+     * Set file extensions that will be included in file filtering when searching for matches.
+     *
+     * @return File extension.
+     */
+    @Override
+    public Set<String> getIncludeExtensionFilesForSearchGrep() {
+        return extensionFilesForIncludeFilterSearch;
+    }
+
+    /**
+     * Set the file extension to be excluded from search filtering..
+     *
+     * @param extensionFiles File extension.
+     */
+    @Override
+    public void setExcludeExtensionFilesForSearchGrep(Set<String> extensionFiles) {
+        Objects.requireNonNull(extensionFiles, "File extensions are required");
+
+        extensionFilesForIncludeExcludeSearch.addAll(extensionFiles);
+    }
+
+    /**
+     * Get file extensions that will be excluded from file filtering when searching for matches.
+     *
+     * @return File extension.
+     */
+    @Override
+    public Set<String> getExcludeExtensionFilesForSearchGrep() {
+        return extensionFilesForIncludeExcludeSearch;
+    }
+
+    /**
      * Install the git repository via its source path.
      *
      * @param source Source path of the repository.
@@ -129,4 +188,5 @@ public abstract class SearchEngineGitGrepAbstract implements SearchEngineGitGrep
     public ContainerGitRepoMeta getContainerGitRepoMeta() {
         return containerGitRepoMeta;
     }
+
 }
