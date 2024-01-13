@@ -83,6 +83,5 @@ const searchByGrep = async () => {
 
 .tools-wrapper__filters {
   width: 420px;
-  height: 92vh;
 }
 </style>
