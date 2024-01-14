@@ -24,3 +24,9 @@ run-migrate:
 
 run-docker:
 	@$(run-docker-dev)
+
+dev:
+	@$(run-docker-dev)
+	@$(run-migrate)
+	@$(mvn_bin) clean install package
+	@$(mvn_bin) exec:java -pl fugitive-darkness-api
