@@ -253,6 +253,17 @@ export const useGitRepositoryState = defineStore('gitRepository', () => {
       });
   };
 
+  const updateGitRepositoryOperationFetch = async (
+    gitRepo: IControlGitRepository
+  ): Promise<void> => {
+    gitRepositories.value.map(async (gitRepository) => {
+      if (gitRepository.group_ === gitRepo.group && gitRepository.project === gitRepo.project) {
+        gitRepository.is_load = false;
+        await api.updateGitRepository(gitRepo);
+      }
+    });
+  };
+
   return {
     loadGitRepositories,
     deleteGitRepository,
@@ -275,6 +286,7 @@ export const useGitRepositoryState = defineStore('gitRepository', () => {
     addExcludeExtensionFileForFilter,
     removeIncludeExtensionFileForFilter,
     removeExcludeExtensionFileForFilter,
+    updateGitRepositoryOperationFetch,
 
     gitRepositories,
     resultSearchByGrepGitRepositories,

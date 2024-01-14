@@ -54,7 +54,7 @@ public interface HelperGitRepo {
      * @return Source path.
      */
     static Path getSourceGitRepository(final String group, final String project) {
-        return Path.of(Environment.ROOT_PATH_REPO, group, project);
+        return Path.of(Environment.ROOT_PATH_REPO, group, project, ".git");
     }
 
 }

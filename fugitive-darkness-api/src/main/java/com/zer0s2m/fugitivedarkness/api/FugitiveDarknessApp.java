@@ -50,6 +50,7 @@ public class FugitiveDarknessApp extends AbstractVerticle {
                                 \tGET    [/api/v1/git/repo]
                                 \tPOST   [/api/v1/git/repo/install]
                                 \tDELETE [/api/v1/git/repo/delete]
+                                \tPUT    [/api/v1/git/repo/fetch]
                                 \tGET    [/api/v1/git/provider]
                                 \tDELETE [/api/v1/git/provider/delete]
                                 \tPOST   [/api/v1/git/provider/install]""");
@@ -76,7 +77,12 @@ public class FugitiveDarknessApp extends AbstractVerticle {
         router.route()
                 .handler(CorsHandler.create()
                         .addOrigins(Environment.FD_ALLOW_ORIGIN)
-                        .allowedMethods(Set.of(HttpMethod.GET, HttpMethod.DELETE, HttpMethod.POST, HttpMethod.OPTIONS)));
+                        .allowedMethods(Set.of(
+                                HttpMethod.GET,
+                                HttpMethod.DELETE,
+                                HttpMethod.POST,
+                                HttpMethod.PUT,
+                                HttpMethod.OPTIONS)));
         router
                 .get("/api/v1/git/repo")
                 .handler(new ControllerApiGitRepoGet());
@@ -95,8 +101,16 @@ public class FugitiveDarknessApp extends AbstractVerticle {
                 .handler(BodyHandler
                         .create()
                         .setHandleFileUploads(false))
-                .handler(ControllerApiGitRepoDelete.GitRepoDeleteValidation.validator(vertx))
+                .handler(ControllerApiValidation.GitRepoControlValidation.validator(vertx))
                 .handler(new ControllerApiGitRepoDelete());
+        router
+                .put("/api/v1/git/repo/fetch")
+                .consumes("application/json")
+                .handler(BodyHandler
+                        .create()
+                        .setHandleFileUploads(false))
+                .handler(ControllerApiValidation.GitRepoControlValidation.validator(vertx))
+                .handler(new ControllerApiGitRepoFetch());
         router
                 .post("/api/v1/operation/search")
                 .consumes("application/json")

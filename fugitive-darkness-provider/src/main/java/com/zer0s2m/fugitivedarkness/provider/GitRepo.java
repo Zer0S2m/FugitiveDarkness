@@ -53,6 +53,16 @@ public interface GitRepo {
     void gDelete(String group, String project) throws IOException;
 
     /**
+     * Update from remote repository by group and project.
+     *
+     * @param group   Project group. Must not be {@literal null}.
+     * @param project Project. Must not be {@literal null}.
+     * @throws IOException     If an IO error occurred.
+     * @throws GitAPIException The exception is caused by the internal functionality of managing git repositories.
+     */
+    void gFetch(String group, String project) throws IOException, GitAPIException;
+
+    /**
      * Search for matches in files in git repositories by pattern. Git grep command.
      * <p>Uses a search engine {@link SearchEngineGitGrep}.</p>
      *

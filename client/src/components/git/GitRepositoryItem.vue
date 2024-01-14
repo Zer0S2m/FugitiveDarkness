@@ -11,19 +11,29 @@
         v-if="!item.is_load"
         color="var(--color-secondary)"
       />
-      <button
-        class="git-item__delete"
-        v-if="item.is_load"
-        @click="deleteGitRepository"
-      >
-        <IconDelete class="git-item__delete-icon" />
-      </button>
+      <div class="git-item__tools--wrapper">
+        <button
+          class="git-item__delete"
+          v-if="item.is_load"
+          @click="deleteGitRepository"
+        >
+          <IconDelete class="git-item__delete-icon" />
+        </button>
+        <button
+          class="git-item__update"
+          v-if="item.is_load"
+          @click="updateGitRepository"
+        >
+          <IconUpdate class="git-item__update-icon" />
+        </button>
+      </div>
     </div>
   </ContainerCardItem>
 </template>
 
 <script setup lang="ts">
 import IconDelete from '@/assets/icon-delete.svg';
+import IconUpdate from '@/assets/icon-update.svg';
 import type { IGitRepository } from '@/types/gitRepository';
 import { useGitRepositoryState } from '@/stores/useGitRepositoryState';
 import { HalfCircleSpinner } from 'epic-spinners';
@@ -32,8 +42,15 @@ import ContainerCardItem from '@/components/common/ContainerCardItem.vue';
 const useGitRepositoryStore = useGitRepositoryState();
 const props = defineProps<{ item: IGitRepository }>();
 
-const deleteGitRepository = async () => {
+const deleteGitRepository = async (): Promise<void> => {
   await useGitRepositoryStore.deleteGitRepository({
+    group: props.item.group_,
+    project: props.item.project
+  });
+};
+
+const updateGitRepository = async (): Promise<void> => {
+  await useGitRepositoryStore.updateGitRepositoryOperationFetch({
     group: props.item.group_,
     project: props.item.project
   });
@@ -50,8 +67,18 @@ const deleteGitRepository = async () => {
   margin-top: 12px;
 }
 
+.git-item__tools--wrapper {
+  display: flex;
+  flex-direction: column;
+}
+
 .git-item__delete {
-  width: 28px;
-  height: 28px;
+  margin-bottom: 4px;
+}
+
+.git-item__delete > svg,
+.git-item__update > svg {
+  width: 20px;
+  height: 20px;
 }
 </style>

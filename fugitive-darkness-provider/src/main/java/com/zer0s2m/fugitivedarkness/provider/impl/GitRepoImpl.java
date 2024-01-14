@@ -60,6 +60,23 @@ public class GitRepoImpl implements GitRepo {
     }
 
     /**
+     * Update from remote repository by group and project.
+     *
+     * @param group   Project group. Must not be {@literal null}.
+     * @param project Project. Must not be {@literal null}.
+     * @throws IOException     If an IO error occurred.
+     * @throws GitAPIException The exception is caused by the internal functionality of managing git repositories.
+     */
+    @Override
+    public void gFetch(String group, String project) throws IOException, GitAPIException {
+        final Path sourceGitRepository = HelperGitRepo.getSourceGitRepository(group, project);
+
+        Git.open(sourceGitRepository.toFile())
+                .fetch()
+                .call();
+    }
+
+    /**
      * Search for matches in files in git repositories by pattern. Git grep command.
      * <p>Uses a search engine {@link SearchEngineGitGrep}.</p>
      *

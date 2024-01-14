@@ -41,6 +41,11 @@ export default {
       data
     });
   },
+  async updateGitRepository(data: IControlGitRepository): Promise<any> {
+    return apiClient.put('/git/repo/fetch', {
+      ...data
+    });
+  },
   async searchByGrep(
     data: IFilterSearchGitRepository
   ): Promise<AxiosResponse<IResponseSearchByGrepGitRepository>> {

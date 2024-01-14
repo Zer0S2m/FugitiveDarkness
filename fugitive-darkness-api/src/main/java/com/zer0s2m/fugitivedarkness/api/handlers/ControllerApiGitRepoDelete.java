@@ -8,23 +8,12 @@ import com.zer0s2m.fugitivedarkness.repository.GitRepoRepository;
 import com.zer0s2m.fugitivedarkness.repository.impl.GitRepoRepositoryImpl;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.vertx.core.Handler;
-import io.vertx.core.Vertx;
 import io.vertx.ext.web.RoutingContext;
-import io.vertx.ext.web.validation.ValidationHandler;
-import io.vertx.ext.web.validation.builder.Bodies;
-import io.vertx.ext.web.validation.builder.ValidationHandlerBuilder;
-import io.vertx.json.schema.SchemaParser;
-import io.vertx.json.schema.SchemaRepository;
-import io.vertx.json.schema.SchemaRouter;
-import io.vertx.json.schema.SchemaRouterOptions;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.nio.file.Path;
-
-import static io.vertx.json.schema.common.dsl.Schemas.objectSchema;
-import static io.vertx.json.schema.common.dsl.Schemas.stringSchema;
 
 /**
  * Request handler to remove a git repository from the system.
@@ -72,29 +61,6 @@ final public class ControllerApiGitRepoDelete implements Handler<RoutingContext>
                     .setStatusCode(HttpResponseStatus.NO_CONTENT.code())
                     .end();
         }
-    }
-
-    /**
-     * TODO: Move to {@link SchemaRepository}.
-     */
-    public static class GitRepoDeleteValidation {
-
-        /**
-         * Get validation handler for incoming body.
-         *
-         * @param vertx App.
-         * @return Incoming body handler.
-         */
-        public static ValidationHandler validator(Vertx vertx) {
-            return ValidationHandlerBuilder
-                    .create(SchemaParser.createDraft7SchemaParser(
-                            SchemaRouter.create(vertx, new SchemaRouterOptions())))
-                    .body(Bodies.json(objectSchema()
-                            .requiredProperty("group", stringSchema())
-                            .requiredProperty("project", stringSchema())))
-                    .build();
-        }
-
     }
 
 }
