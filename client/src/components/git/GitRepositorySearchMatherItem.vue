@@ -8,12 +8,18 @@
       )
     "
   >
-    <h6>
+    <h6 class="matcher-found--title">
       <a
         :href="matcher.link"
         target="_blank"
         >{{ lineSlice(matcher.filename, 80) }}</a
       >
+      <button
+        class="copy-path"
+        @click="copyPath"
+      >
+        <IconCopy />
+      </button>
     </h6>
     <div class="matcher-found__result">
       <div class="matcher-found__result--wrapper">
@@ -49,6 +55,7 @@
 </template>
 
 <script setup lang="ts">
+import IconCopy from '@/assets/icon-copy.svg';
 import type {
   IMatcherFoundByGrepGitRepository,
   ISearchFoundByGrepGitRepository
@@ -147,16 +154,29 @@ const getIsSequelLineCodeMatcher = (matcher: IMatcherFoundByGrepGitRepository, i
     matcher.lineNumber !== props.matcher.matchers[index + 1].lineNumber - 1
   );
 };
+
+const copyPath = (): void => {
+  navigator.clipboard.writeText(props.matcher.filename);
+};
 </script>
 
 <style scoped>
-h6 > a,
+.matcher-found--title {
+  display: flex;
+  align-items: center;
+}
+
+.matcher-found--title > a {
+  line-height: 1.5;
+}
+
+.matcher-found--title > a,
 .matcher-found__result--lines > p > a {
   text-decoration: none;
   color: var(--color-text);
 }
 
-h6 > a:hover,
+.matcher-found--title > a:hover,
 .matcher-found__result--lines > p > a:hover {
   color: var(--color-secondary);
 }
@@ -222,5 +242,22 @@ h6 > a:hover,
 .matcher-found__result--code > p {
   font-family: 'Fira Code', serif;
   font-size: 14px;
+}
+
+.copy-path {
+  margin-left: 8px;
+  display: inline-flex;
+  padding: 0 6px;
+}
+
+.copy-path > svg {
+  transform: scale(0.55);
+}
+.copy-path:hover svg {
+  fill: var(--color-secondary);
+}
+
+.copy-path > svg:hover {
+  fill: var(--color-secondary);
 }
 </style>
