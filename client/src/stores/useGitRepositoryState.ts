@@ -21,7 +21,9 @@ export const useGitRepositoryState = defineStore('gitRepository', () => {
   const isLoadingSearch: Ref<boolean> = ref(false);
   const filtersForSearch: Ref<IFilterSearchGitRepository> = ref({
     filters: {
-      git: [] as IControlGitRepository[]
+      git: [] as IControlGitRepository[],
+      includeExtensionFiles: [],
+      excludeExtensionFiles: []
     },
     pattern: '' as string
   });
@@ -180,7 +182,9 @@ export const useGitRepositoryState = defineStore('gitRepository', () => {
     resultSearchByGrepGitRepositories.value = [];
     filtersForSearch.value = {
       filters: {
-        git: [] as IControlGitRepository[]
+        git: [] as IControlGitRepository[],
+        includeExtensionFiles: [],
+        excludeExtensionFiles: []
       },
       pattern: '' as string
     };
@@ -227,6 +231,28 @@ export const useGitRepositoryState = defineStore('gitRepository', () => {
     };
   };
 
+  const addIncludeExtensionFileForFilter = (fileExtension: string): void => {
+    filtersForSearch.value.filters.includeExtensionFiles.push(fileExtension);
+  };
+
+  const addExcludeExtensionFileForFilter = (fileExtension: string): void => {
+    filtersForSearch.value.filters.excludeExtensionFiles.push(fileExtension);
+  };
+
+  const removeIncludeExtensionFileForFilter = (fileExtension: string): void => {
+    filtersForSearch.value.filters.includeExtensionFiles =
+      filtersForSearch.value.filters.includeExtensionFiles.filter((item) => {
+        return !(item === fileExtension);
+      });
+  };
+
+  const removeExcludeExtensionFileForFilter = (fileExtension: string): void => {
+    filtersForSearch.value.filters.excludeExtensionFiles =
+      filtersForSearch.value.filters.excludeExtensionFiles.filter((item) => {
+        return !(item === fileExtension);
+      });
+  };
+
   return {
     loadGitRepositories,
     deleteGitRepository,
@@ -245,6 +271,10 @@ export const useGitRepositoryState = defineStore('gitRepository', () => {
     resetResult,
     installingGitRepository,
     clearStateFormAddGitRepositoryErrors,
+    addIncludeExtensionFileForFilter,
+    addExcludeExtensionFileForFilter,
+    removeIncludeExtensionFileForFilter,
+    removeExcludeExtensionFileForFilter,
 
     gitRepositories,
     resultSearchByGrepGitRepositories,

@@ -57,6 +57,15 @@ final public class ControllerApiGitRepoSearch implements Handler<RoutingContext>
                 .create()
                 .setPattern(gitRepoSearch.pattern());
 
+        if (gitRepoSearch.filters().includeExtensionFiles() != null &&
+                !gitRepoSearch.filters().includeExtensionFiles().isEmpty()) {
+            gitRepoFilterSearch.setIncludeExtensionFile(gitRepoSearch.filters().includeExtensionFiles());
+        }
+        if (gitRepoSearch.filters().excludeExtensionFiles() != null &&
+                !gitRepoSearch.filters().excludeExtensionFiles().isEmpty()) {
+            gitRepoFilterSearch.setExcludeExtensionFile(gitRepoSearch.filters().excludeExtensionFiles());
+        }
+
         JsonObject object = new JsonObject();
         object.put("success", true);
 
@@ -136,7 +145,13 @@ final public class ControllerApiGitRepoSearch implements Handler<RoutingContext>
                                                     .items(objectSchema()
                                                             .requiredProperty("group", stringSchema())
                                                             .requiredProperty("project", stringSchema()))
-                                            ))
+                                            )
+                                            .optionalProperty("includeExtensionFiles", arraySchema()
+                                                    .items(stringSchema())
+                                                    .nullable())
+                                            .optionalProperty("excludeExtensionFiles", arraySchema()
+                                                    .items(stringSchema())
+                                                    .nullable()))
                             )
                     )
                     .build();

@@ -39,6 +39,8 @@ export interface IFilterSearchGitRepository {
 
 export interface IFilterSearchGitRepositories {
   git: IControlGitRepository[];
+  includeExtensionFiles: string[];
+  excludeExtensionFiles: string[];
 }
 
 export interface IMatcherFoundByGrepGitRepository {

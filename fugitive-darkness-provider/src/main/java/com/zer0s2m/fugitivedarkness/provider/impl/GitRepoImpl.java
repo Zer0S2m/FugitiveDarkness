@@ -61,6 +61,7 @@ public class GitRepoImpl implements GitRepo {
 
     /**
      * Search for matches in files in git repositories by pattern. Git grep command.
+     * <p>Uses a search engine {@link SearchEngineGitGrep}.</p>
      *
      * @param filterSearch Filter for searching git repositories.
      * @return Search result in git repository.
@@ -72,19 +73,15 @@ public class GitRepoImpl implements GitRepo {
                 .forEach(source -> {
                     final ContainerGitRepoMeta gitRepo = filterSearch.getGitMeta(source);
                     try {
-                        final GitRepoCommandGrep commandGrep = new GitRepoCommandGrep(
-                                filterSearch.getPattern(),
-                                source,
-                                gitRepo
-                        );
-                        final List<ContainerInfoSearchFileGitRepo> searchResult = commandGrep.call();
+                        final SearchEngineGitGrep commandGrep = searchEngineGitGrep(filterSearch, source, gitRepo);
+                        final List<ContainerInfoSearchFileGitRepo> searchResult = commandGrep.callGrep();
 
                         searchFileGitRepos.add(new ContainerInfoSearchGitRepo(
                                 gitRepo.group(),
                                 gitRepo.project(),
                                 filterSearch.getPattern().toString(),
                                 gitRepo.getLink(true),
-                                commandGrep.getExtensionFiles(),
+                                commandGrep.getExtensionFilesGrep(),
                                 searchResult
                         ));
                     } catch (IOException e) {
@@ -92,6 +89,33 @@ public class GitRepoImpl implements GitRepo {
                     }
                 });
         return searchFileGitRepos;
+    }
+
+    /**
+     * Build a search engine based on {@link SearchEngineGitGrep}.
+     *
+     * @param filterSearch Installed search filters.
+     * @param source       Source path of the git repository.
+     * @param gitRepo      More information about the git repository.
+     * @return Assembled search engine.
+     * @throws IOException If an IO error occurred.
+     */
+    private static SearchEngineGitGrep searchEngineGitGrep(
+            GitRepoFilterSearch filterSearch,
+            Path source,
+            ContainerGitRepoMeta gitRepo) throws IOException {
+        final SearchEngineGitGrep commandGrep = new SearchEngineGitGrepImpl(
+                filterSearch.getPattern(),
+                source,
+                gitRepo
+        );
+        if (filterSearch.getIncludeExtensionFile() != null) {
+            commandGrep.setIncludeExtensionFilesForSearchGrep(filterSearch.getIncludeExtensionFile());
+        }
+        if (filterSearch.getExcludeExtensionFile() != null) {
+            commandGrep.setExcludeExtensionFilesForSearchGrep(filterSearch.getExcludeExtensionFile());
+        }
+        return commandGrep;
     }
 
 }

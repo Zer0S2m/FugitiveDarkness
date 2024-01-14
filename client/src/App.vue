@@ -17,6 +17,6 @@ import { ModalsContainer } from 'vue-final-modal';
 <style scoped>
 .app-wrapper {
   height: 100%;
-  padding: 20px;
+  padding: 20px 20px 0 20px;
 }
 </style>

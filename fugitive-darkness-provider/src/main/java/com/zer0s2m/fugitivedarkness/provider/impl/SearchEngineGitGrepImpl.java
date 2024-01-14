@@ -1,8 +1,6 @@
 package com.zer0s2m.fugitivedarkness.provider.impl;
 
 import com.zer0s2m.fugitivedarkness.provider.*;
-import org.eclipse.jgit.api.Git;
-import org.eclipse.jgit.diff.RawText;
 import org.eclipse.jgit.lib.*;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.revwalk.RevWalk;
@@ -18,33 +16,45 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Service for providing search in git repositories. Similar to the grep command in git.
+ * Service for providing search in git repositories. Similar to the
+ * <a href="https://git-scm.com/docs/git-grep">grep</a> command in git.
  */
-class GitRepoCommandGrep extends GitRepoCommandGrepUtils {
+class SearchEngineGitGrepImpl extends SearchEngineGitGrepAbstract implements SearchEngineGitGrep {
 
-    private final Pattern pattern;
+    /**
+     * Helper for finding past lines of code.
+     */
+    private final GitRepoCommandGrepUtils.GitRepoCommandGrepUtilPreviewCode utilPreviewCode =
+            new GitRepoCommandGrepUtils.GitRepoCommandGrepUtilPreviewCode();
 
-    private final Path source;
-
-    private final Set<String> extensionFiles = new HashSet<>();
-
-    private final ContainerGitRepoMeta containerGitRepoMeta;
-
-    private final GitRepoCommandGrepUtilPreviewCode utilPreviewCode = new GitRepoCommandGrepUtilPreviewCode();
-
-    public GitRepoCommandGrep(Pattern pattern, Path source, ContainerGitRepoMeta containerGitRepoMeta) {
-        this.pattern = pattern;
-        this.source = source;
-        this.containerGitRepoMeta = containerGitRepoMeta;
+    /**
+     * @param pattern              A pattern for finding matches in files.
+     * @param source               Source path to the git repository.
+     * @param containerGitRepoMeta Additional Information.
+     * @throws IOException If an IO error occurred.
+     */
+    public SearchEngineGitGrepImpl(Pattern pattern, Path source, ContainerGitRepoMeta containerGitRepoMeta)
+            throws IOException {
+        super(pattern, source, containerGitRepoMeta);
     }
 
-    public List<ContainerInfoSearchFileGitRepo> call() throws IOException {
-        final Repository repository = Git.open(source.toFile())
-                .checkout()
-                .getRepository();
-
-        try (final ObjectReader objectReader = repository.newObjectReader()) {
-            return grep(objectReader, repository);
+    /**
+     * Start search.
+     * <p>The search is based on the following criteria:</p>
+     * <ul>
+     *     <li>Including files in the search that have the specified
+     *     extensions {@link SearchEngineGitGrep#getIncludeExtensionFilesForSearchGrep}.</li>
+     *     <li>Excluding files from the search that have the specified
+     *     extensions {@link SearchEngineGitGrep#getExcludeExtensionFilesForSearchGrep}.</li>
+     *     <li>Match pattern {@link SearchEngineGitGrep#getPattern}.</li>
+     * </ul>
+     *
+     * @return Search results.
+     * @throws IOException IO exception.
+     */
+    public List<ContainerInfoSearchFileGitRepo> callGrep() throws IOException {
+        try (final ObjectReader objectReader = getGitRepositoryGrep().newObjectReader()) {
+            return grep(objectReader, getGitRepositoryGrep());
         }
     }
 
@@ -68,18 +78,29 @@ class GitRepoCommandGrep extends GitRepoCommandGrepUtils {
                     ObjectLoader objectLoader = objectReader.open(objectId);
 
                     if (!isBinary(objectLoader.openStream())) {
-                        List<ContainerInfoSearchFileMatcherGitRepo> matchers = getMatchedLines(
-                                objectLoader.openStream(), it.getEntryPathString());
-                        if (!matchers.isEmpty()) {
-                            final String extensionFile = FileSystemUtils
-                                    .getExtensionFromRawStrFile(it.getEntryPathString());
-                            infoSearchFileGitRepos.add(new ContainerInfoSearchFileGitRepo(
-                                    it.getEntryPathString(),
-                                    extensionFile,
-                                    GitRepo.getLinkForFile(containerGitRepoMeta, it.getEntryPathString(), "master"),
-                                    matchers));
+                        final String extensionFile = FileSystemUtils
+                                .getExtensionFromRawStrFile(it.getEntryPathString());
 
-                            extensionFiles.add(extensionFile);
+                        if (getWhetherSearchByExcludeFileExtension(extensionFile)) {
+                            continue;
+                        }
+
+                        if (getWhetherSearchByIncludeFileExtension(extensionFile)) {
+                            final List<ContainerInfoSearchFileMatcherGitRepo> matchers = getMatchedLines(
+                                    objectLoader.openStream(), it.getEntryPathString());
+
+                            if (!matchers.isEmpty()) {
+                                infoSearchFileGitRepos.add(new ContainerInfoSearchFileGitRepo(
+                                        it.getEntryPathString(),
+                                        extensionFile,
+                                        GitRepoUtils.getLinkForFile(
+                                                getContainerGitRepoMeta(),
+                                                it.getEntryPathString(),
+                                                getGitRepositoryGrep().getBranch()),
+                                        matchers));
+
+                                addExtensionFilesGrep(extensionFile);
+                            }
                         }
 
                         utilPreviewCode.clearPreviewCodes();
@@ -103,7 +124,7 @@ class GitRepoCommandGrep extends GitRepoCommandGrepUtils {
             String line;
             int lineNumber = 1;
             while ((line = buf.readLine()) != null) {
-                Matcher matcher = pattern.matcher(line);
+                Matcher matcher = getPattern().matcher(line);
                 if (matcher.find()) {
                     Set<ContainerInfoSearchFileMatcherGitRepo> previewCode = new HashSet<>();
                     if (lineNumber != 1 && utilPreviewCode.getPreviewCodeLast(lineNumber) != null) {
@@ -115,8 +136,8 @@ class GitRepoCommandGrep extends GitRepoCommandGrepUtils {
 
                         previewCode.add(new ContainerInfoSearchFileMatcherGitRepo(
                                 previewCodeLineLast,
-                                GitRepo.getLinkForMatcherLine(
-                                        containerGitRepoMeta,
+                                GitRepoUtils.getLinkForMatcherLine(
+                                        getContainerGitRepoMeta(),
                                         file,
                                         "master",
                                         utilPreviewCode.getPreviewLineNumberLast(lineNumber)),
@@ -130,10 +151,10 @@ class GitRepoCommandGrep extends GitRepoCommandGrepUtils {
                             if (previewCodeLineLastByStepOne != null) {
                                 previewCode.add(new ContainerInfoSearchFileMatcherGitRepo(
                                         previewCodeLineLastByStepOne,
-                                        GitRepo.getLinkForMatcherLine(
-                                                containerGitRepoMeta,
+                                        GitRepoUtils.getLinkForMatcherLine(
+                                                getContainerGitRepoMeta(),
                                                 file,
-                                                "master",
+                                                getGitRepositoryGrep().getBranch(),
                                                 utilPreviewCode.getPreviewLineNumberLast(lineNumber, 1)),
                                         utilPreviewCode.getPreviewLineNumberLast(lineNumber, 1),
                                         null
@@ -143,10 +164,10 @@ class GitRepoCommandGrep extends GitRepoCommandGrepUtils {
                     }
                     matchers.add(new ContainerInfoSearchFileMatcherGitRepo(
                             line,
-                            GitRepo.getLinkForMatcherLine(
-                                    containerGitRepoMeta,
+                            GitRepoUtils.getLinkForMatcherLine(
+                                    getContainerGitRepoMeta(),
                                     file,
-                                    "master",
+                                    getGitRepositoryGrep().getBranch(),
                                     lineNumber),
                             lineNumber,
                             previewCode
@@ -165,16 +186,6 @@ class GitRepoCommandGrep extends GitRepoCommandGrepUtils {
                 buf.close();
             }
         }
-    }
-
-    private static boolean isBinary(InputStream stream) throws IOException {
-        try (stream) {
-            return RawText.isBinary(stream);
-        }
-    }
-
-    public Set<String> getExtensionFiles() {
-        return extensionFiles;
     }
 
 }

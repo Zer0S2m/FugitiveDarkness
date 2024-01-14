@@ -75,6 +75,52 @@ public interface GitRepoFilterSearch {
      */
     Set<Path> getSources();
 
+    /**
+     * Set the file extension that will be included in the search filtering.
+     *
+     * @param extensionFiles File extension.
+     * @return Search filter.
+     */
+    GitRepoFilterSearch setIncludeExtensionFile(Collection<String> extensionFiles);
+
+    /**
+     * Set the file extension that will be included in the search filtering.
+     *
+     * @param extensionFile File extension.
+     * @return Search filter.
+     */
+    GitRepoFilterSearch setIncludeExtensionFile(String extensionFile);
+
+    /**
+     * Set file extensions that will be included in file filtering when searching for matches.
+     *
+     * @return File extension.
+     */
+    Set<String> getIncludeExtensionFile();
+
+    /**
+     * Set the file extension to be excluded from search filtering.
+     *
+     * @param extensionFiles File extension.
+     * @return Search filter.
+     */
+    GitRepoFilterSearch setExcludeExtensionFile(Collection<String> extensionFiles);
+
+    /**
+     * Set the file extension to be excluded from search filtering.
+     *
+     * @param extensionFile File extension.
+     * @return Search filter.
+     */
+    GitRepoFilterSearch setExcludeExtensionFile(String extensionFile);
+
+    /**
+     * Get file extensions that will be excluded from file filtering when searching for matches.
+     *
+     * @return File extension.
+     */
+    Set<String> getExcludeExtensionFile();
+
     static GitRepoFilterSearch create() {
         return new GitRepoFilterSearchImpl();
     }
