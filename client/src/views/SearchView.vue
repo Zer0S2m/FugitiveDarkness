@@ -38,12 +38,65 @@ import ButtonSearchGitRepository from '@/components/filters/ButtonSearchGitRepos
 import { useGitRepositoryState } from '@/stores/useGitRepositoryState';
 import GitRepositorySearchList from '@/components/git/GitRepositorySearchList.vue';
 import { HalfCircleSpinner } from 'epic-spinners';
+import router from '@/router';
+import { useRoute } from 'vue-router';
+import { onMounted } from 'vue';
 
 const useGitRepositoryStore = useGitRepositoryState();
+const vueRouteStore = useRoute();
 
 const searchByGrep = async () => {
+  console.log(useGitRepositoryStore.urlSearch['includeFileExt']);
+  console.log(useGitRepositoryStore.urlSearch['excludeFileExt']);
   await useGitRepositoryStore.searchByGrep();
+  await router.push({
+    name: 'search',
+    query: {
+      q: useGitRepositoryStore.urlSearch['q'],
+      repo: useGitRepositoryStore.urlSearch['repo'],
+      includeFileExt: useGitRepositoryStore.urlSearch['includeFileExt'],
+      excludeFileExt: useGitRepositoryStore.urlSearch['excludeFileExt']
+    }
+  });
 };
+
+const loadPage = async () => {
+  if (!useGitRepositoryStore.isLoadData) {
+    if (vueRouteStore.query['q'] && vueRouteStore.query['repo']) {
+      await useGitRepositoryStore.parseUrlSearchAndLoadData(vueRouteStore.query);
+    }
+    return;
+  }
+
+  const query: {
+    [key: string]: string;
+  } = {
+    q: useGitRepositoryStore.urlSearch['q'],
+    repo: useGitRepositoryStore.urlSearch['repo']
+  };
+
+  if (
+    useGitRepositoryStore.urlSearch['includeFileExt'] &&
+    useGitRepositoryStore.urlSearch['includeFileExt'].length
+  ) {
+    query['includeFileExt'] = useGitRepositoryStore.urlSearch['includeFileExt'];
+  }
+  if (
+    useGitRepositoryStore.urlSearch['excludeFileExt'] &&
+    useGitRepositoryStore.urlSearch['excludeFileExt'].length
+  ) {
+    query['excludeFileExt'] = useGitRepositoryStore.urlSearch['excludeFileExt'];
+  }
+
+  await router.push({
+    name: 'search',
+    query
+  });
+};
+
+onMounted(async () => {
+  await loadPage();
+});
 </script>
 
 <style scoped>

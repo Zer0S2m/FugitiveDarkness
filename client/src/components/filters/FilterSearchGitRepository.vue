@@ -110,7 +110,8 @@ import { useGitRepositoryState } from '@/stores/useGitRepositoryState';
 import { HalfCircleSpinner } from 'epic-spinners';
 import type { IGitRepository } from '@/types/gitRepository';
 import TagInput from '@/components/common/TagInput.vue';
-import { type Ref, ref } from 'vue';
+import { onMounted, type Ref, ref } from 'vue';
+import router from '@/router';
 
 const useGitRepositoryStore = useGitRepositoryState();
 useGitRepositoryStore.loadGitRepositories();
@@ -140,6 +141,11 @@ const resetResult = (): void => {
 
   includeFilesExtension.value = [];
   excludeFilesExtension.value = [];
+
+  router.push({
+    name: 'search',
+    query: {}
+  });
 };
 
 const handlerClickCheckboxExtensionFile = (
@@ -158,21 +164,27 @@ const includeFilesExtension: Ref<string[]> = ref([]);
 const excludeFilesExtension: Ref<string[]> = ref([]);
 
 const addIncludeFileExtension = (tag: string): void => {
-  useGitRepositoryStore.addIncludeExtensionFileForFilter(tag);
+  // useGitRepositoryStore.addIncludeExtensionFileForFilter(tag);
 };
 
 const removeIncludeFileExtension = (index: number): void => {
-  console.log(index);
   useGitRepositoryStore.removeIncludeExtensionFileForFilter(includeFilesExtension.value[index]);
 };
 
 const addExcludeFileExtension = (tag: string): void => {
-  useGitRepositoryStore.addExcludeExtensionFileForFilter(tag);
+  // useGitRepositoryStore.addExcludeExtensionFileForFilter(tag);
 };
 
 const removeExcludeFileExtension = (index: number): void => {
   useGitRepositoryStore.removeExcludeExtensionFileForFilter(excludeFilesExtension.value[index]);
 };
+
+onMounted(() => {
+  includeFilesExtension.value =
+    useGitRepositoryStore.filtersForSearch.filters.includeExtensionFiles;
+  excludeFilesExtension.value =
+    useGitRepositoryStore.filtersForSearch.filters.excludeExtensionFiles;
+});
 </script>
 
 <style scoped>
