@@ -278,9 +278,6 @@ export const useGitRepositoryState = defineStore('gitRepository', () => {
     let queryParamExcludeFileExtension =
       filtersForSearch.value.filters.excludeExtensionFiles.join(',');
 
-    console.log(queryParamIncludeFileExtension);
-    console.log(queryParamExcludeFileExtension);
-
     filtersForSearch.value.filters.git.forEach((gitRepo: IControlGitRepository): void => {
       queryParamGitRepo += `${gitRepo.group}_${gitRepo.project}+`;
     });

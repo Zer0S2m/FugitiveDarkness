@@ -124,7 +124,7 @@ public abstract class SearchEngineGitGrepAbstract implements SearchEngineGitGrep
     }
 
     /**
-     * Set the file extension to be excluded from search filtering..
+     * Set the file extension to be excluded from search filtering.
      *
      * @param extensionFiles File extension.
      */

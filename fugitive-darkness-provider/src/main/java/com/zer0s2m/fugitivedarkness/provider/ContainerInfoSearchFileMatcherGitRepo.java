@@ -10,6 +10,32 @@ public record ContainerInfoSearchFileMatcherGitRepo(
 
         int lineNumber,
 
-        Set<ContainerInfoSearchFileMatcherGitRepo> previewLast
+        Set<ContainerInfoSearchFileMatcherGitRepo> previewLast,
 
-) { }
+        Set<ContainerInfoSearchFileMatcherGitRepo> previewNext
+
+) {
+
+    public ContainerInfoSearchFileMatcherGitRepo copyAndSetPreviewLast(
+            final Set<ContainerInfoSearchFileMatcherGitRepo> previewLast) {
+        return new ContainerInfoSearchFileMatcherGitRepo(
+                matcher,
+                link,
+                lineNumber,
+                previewLast,
+                previewNext
+        );
+    }
+
+    public ContainerInfoSearchFileMatcherGitRepo copyAndSetPreviewNext(
+            final Set<ContainerInfoSearchFileMatcherGitRepo> previewNext) {
+        return new ContainerInfoSearchFileMatcherGitRepo(
+                matcher,
+                link,
+                lineNumber,
+                previewLast,
+                previewNext
+        );
+    }
+
+}

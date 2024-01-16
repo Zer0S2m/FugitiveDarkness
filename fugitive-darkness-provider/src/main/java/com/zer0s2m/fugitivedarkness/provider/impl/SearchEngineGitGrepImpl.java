@@ -12,7 +12,7 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.*;
-import java.util.regex.Matcher;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Pattern;
 
 /**
@@ -86,8 +86,9 @@ class SearchEngineGitGrepImpl extends SearchEngineGitGrepAbstract implements Sea
                         }
 
                         if (getWhetherSearchByIncludeFileExtension(extensionFile)) {
-                            final List<ContainerInfoSearchFileMatcherGitRepo> matchers = getMatchedLines(
+                            List<ContainerInfoSearchFileMatcherGitRepo> matchers = getMatchedLines(
                                     objectLoader.openStream(), it.getEntryPathString());
+                            matchers = collectPreviewCode(matchers, it.getEntryPathString());
 
                             if (!matchers.isEmpty()) {
                                 infoSearchFileGitRepos.add(new ContainerInfoSearchFileGitRepo(
@@ -104,7 +105,6 @@ class SearchEngineGitGrepImpl extends SearchEngineGitGrepAbstract implements Sea
                         }
 
                         utilPreviewCode.clearPreviewCodes();
-                        utilPreviewCode.clearUsedLineCodes();
                     }
                 }
             }
@@ -116,76 +116,150 @@ class SearchEngineGitGrepImpl extends SearchEngineGitGrepAbstract implements Sea
     private List<ContainerInfoSearchFileMatcherGitRepo> getMatchedLines(
             InputStream stream,
             final String file) throws IOException {
-        BufferedReader buf = null;
-        try {
-            List<ContainerInfoSearchFileMatcherGitRepo> matchers = new ArrayList<>();
-            InputStreamReader reader = new InputStreamReader(stream, StandardCharsets.UTF_8);
-            buf = new BufferedReader(reader);
-            String line;
-            int lineNumber = 1;
-            while ((line = buf.readLine()) != null) {
-                Matcher matcher = getPattern().matcher(line);
-                if (matcher.find()) {
-                    Set<ContainerInfoSearchFileMatcherGitRepo> previewCode = new HashSet<>();
-                    if (lineNumber != 1 && utilPreviewCode.getPreviewCodeLast(lineNumber) != null) {
-                        final String previewCodeLineLast = utilPreviewCode.getPreviewCodeLast(lineNumber);
+        final List<ContainerInfoSearchFileMatcherGitRepo> matchers = new ArrayList<>();
+        final AtomicInteger lineNumber = new AtomicInteger(1);
 
-                        if (previewCodeLineLast == null) {
-                            continue;
-                        }
+        try (final InputStreamReader reader = new InputStreamReader(stream, StandardCharsets.UTF_8)) {
+            try (final BufferedReader buf = new BufferedReader(reader)) {
+                String line;
 
-                        previewCode.add(new ContainerInfoSearchFileMatcherGitRepo(
-                                previewCodeLineLast,
+                while ((line = buf.readLine()) != null) {
+                    if (getPattern().matcher(line).find()) {
+                        matchers.add(new ContainerInfoSearchFileMatcherGitRepo(
+                                line,
                                 GitRepoUtils.getLinkForMatcherLine(
                                         getContainerGitRepoMeta(),
                                         file,
-                                        "master",
-                                        utilPreviewCode.getPreviewLineNumberLast(lineNumber)),
-                                utilPreviewCode.getPreviewLineNumberLast(lineNumber),
+                                        getGitRepositoryGrep().getBranch(),
+                                        lineNumber.get()),
+                                lineNumber.get(),
+                                null,
                                 null
                         ));
-
-                        if (lineNumber > 2 && previewCodeLineLast.trim().isEmpty()) {
-                            final String previewCodeLineLastByStepOne = utilPreviewCode.getPreviewCodeLast(lineNumber, 1);
-
-                            if (previewCodeLineLastByStepOne != null) {
-                                previewCode.add(new ContainerInfoSearchFileMatcherGitRepo(
-                                        previewCodeLineLastByStepOne,
-                                        GitRepoUtils.getLinkForMatcherLine(
-                                                getContainerGitRepoMeta(),
-                                                file,
-                                                getGitRepositoryGrep().getBranch(),
-                                                utilPreviewCode.getPreviewLineNumberLast(lineNumber, 1)),
-                                        utilPreviewCode.getPreviewLineNumberLast(lineNumber, 1),
-                                        null
-                                ));
-                            }
-                        }
+                    } else {
+                        utilPreviewCode.addPreviewCodes(lineNumber.get(), line);
                     }
-                    matchers.add(new ContainerInfoSearchFileMatcherGitRepo(
-                            line,
+
+                    lineNumber.set(lineNumber.get() + 1);
+                }
+            }
+        }
+
+        return matchers;
+    }
+
+    /**
+     * Set hints to preview past lines before the main match and next lines after the match
+     * if there is no obvious match.
+     * <p>Uses the helper class {@link GitRepoCommandGrepUtils.GitRepoCommandGrepUtilPreviewCode}</p>
+     *
+     * @param matchers Raw search results.
+     * @param file The name of the file where the search for matches took place.
+     * @return Collected search results.
+     */
+    private List<ContainerInfoSearchFileMatcherGitRepo> collectPreviewCode(
+            final List<ContainerInfoSearchFileMatcherGitRepo> matchers,
+            final String file) {
+        final List<ContainerInfoSearchFileMatcherGitRepo> collectedMatchers = new ArrayList<>();
+        final AtomicInteger currentLineNumber = new AtomicInteger(1);
+
+        matchers.forEach(matcher -> {
+            ContainerInfoSearchFileMatcherGitRepo collectedMatcher = new ContainerInfoSearchFileMatcherGitRepo(
+                    matcher.matcher(),
+                    matcher.link(),
+                    matcher.lineNumber(),
+                    matcher.previewLast(),
+                    matcher.previewNext());
+            currentLineNumber.set(matcher.lineNumber());
+
+            if (currentLineNumber.get() != 1 && utilPreviewCode.getPreviewCodeLast(currentLineNumber.get()) != null) {
+                final Set<ContainerInfoSearchFileMatcherGitRepo> previewLastCode = new HashSet<>();
+                final String previewCodeLineLast = utilPreviewCode.getPreviewCodeLast(currentLineNumber.get());
+
+                try {
+                    previewLastCode.add(new ContainerInfoSearchFileMatcherGitRepo(
+                            previewCodeLineLast,
                             GitRepoUtils.getLinkForMatcherLine(
                                     getContainerGitRepoMeta(),
                                     file,
                                     getGitRepositoryGrep().getBranch(),
-                                    lineNumber),
-                            lineNumber,
-                            previewCode
+                                    utilPreviewCode.getPreviewLineNumberLast(currentLineNumber.get())),
+                            utilPreviewCode.getPreviewLineNumberLast(currentLineNumber.get()),
+                            null,
+                            null
                     ));
 
-                    utilPreviewCode.addUsedLineCodes(lineNumber);
-                } else {
-                    utilPreviewCode.addPreviewCodes(lineNumber, line);
+                    if (currentLineNumber.get() > 2 && previewCodeLineLast.trim().isEmpty()) {
+                        final String previewCodeLineLastByStepOne = utilPreviewCode.getPreviewCodeLast(
+                                currentLineNumber.get(), 1);
+
+                        if (previewCodeLineLastByStepOne != null) {
+                            previewLastCode.add(new ContainerInfoSearchFileMatcherGitRepo(
+                                    previewCodeLineLastByStepOne,
+                                    GitRepoUtils.getLinkForMatcherLine(
+                                            getContainerGitRepoMeta(),
+                                            file,
+                                            getGitRepositoryGrep().getBranch(),
+                                            utilPreviewCode.getPreviewLineNumberLast(currentLineNumber.get(), 1)),
+                                    utilPreviewCode.getPreviewLineNumberLast(currentLineNumber.get(), 1),
+                                    null,
+                                    null
+                            ));
+                        }
+                    }
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
                 }
 
-                lineNumber++;
+                collectedMatcher = collectedMatcher.copyAndSetPreviewLast(previewLastCode);
             }
-            return matchers;
-        } finally {
-            if (buf != null) {
-                buf.close();
+
+            if (utilPreviewCode.getPreviewCodeNext(currentLineNumber.get()) != null) {
+                final Set<ContainerInfoSearchFileMatcherGitRepo> previewNextCode = new HashSet<>();
+                final String previewCodeLineNext = utilPreviewCode.getPreviewCodeNext(currentLineNumber.get());
+
+                try {
+                    previewNextCode.add(new ContainerInfoSearchFileMatcherGitRepo(
+                            previewCodeLineNext,
+                            GitRepoUtils.getLinkForMatcherLine(
+                                    getContainerGitRepoMeta(),
+                                    file,
+                                    getGitRepositoryGrep().getBranch(),
+                                    utilPreviewCode.getPreviewLineNumberNext(currentLineNumber.get())),
+                            utilPreviewCode.getPreviewLineNumberNext(currentLineNumber.get()),
+                            null,
+                            null
+                    ));
+
+                    if (previewCodeLineNext.trim().isEmpty()) {
+                        final String previewCodeLineNextByStepOne = utilPreviewCode.getPreviewCodeNext(
+                                currentLineNumber.get(), 1);
+
+                        if (previewCodeLineNextByStepOne != null) {
+                            previewNextCode.add(new ContainerInfoSearchFileMatcherGitRepo(
+                                    previewCodeLineNextByStepOne,
+                                    GitRepoUtils.getLinkForMatcherLine(
+                                            getContainerGitRepoMeta(),
+                                            file,
+                                            getGitRepositoryGrep().getBranch(),
+                                            utilPreviewCode.getPreviewLineNumberNext(currentLineNumber.get(), 1)),
+                                    utilPreviewCode.getPreviewLineNumberNext(currentLineNumber.get(), 1),
+                                    null,
+                                    null
+                            ));
+                        }
+                    }
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+
+                collectedMatcher = collectedMatcher.copyAndSetPreviewNext(previewNextCode);
             }
-        }
+
+            collectedMatchers.add(collectedMatcher);
+        });
+
+        return collectedMatchers;
     }
 
 }

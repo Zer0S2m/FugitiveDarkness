@@ -79,22 +79,26 @@ const collectCode = computed((): string[] => {
 
   props.matcher.matchers.forEach((matcher, index) => {
     if (matcher.previewLast !== null && matcher.previewLast.length !== 0) {
-      if (matcher.previewLast.length > 1) {
-        matcher.previewLast
-          .sort((matcherPreviewLastFirst, matcherPreviewLastSecond) => {
-            return matcherPreviewLastFirst.lineNumber - matcherPreviewLastSecond.lineNumber;
-          })
-          .forEach((matcherPreviewLast) => {
-            code += `${matcherPreviewLast.matcher}\n`;
-          });
-      } else {
-        matcher.previewLast.forEach((matcherPreviewLast) => {
+      matcher.previewLast
+        .sort((matcherPreviewLastFirst, matcherPreviewLastSecond) => {
+          return matcherPreviewLastFirst.lineNumber - matcherPreviewLastSecond.lineNumber;
+        })
+        .forEach((matcherPreviewLast) => {
           code += `${matcherPreviewLast.matcher}\n`;
         });
-      }
     }
 
     code += `${matcher.matcher}\n`;
+
+    if (matcher.previewNext !== null && matcher.previewNext.length !== 0) {
+      matcher.previewNext
+        .sort((matcherPreviewNextFirst, matcherPreviewNextSecond) => {
+          return matcherPreviewNextFirst.lineNumber - matcherPreviewNextSecond.lineNumber;
+        })
+        .forEach((matcherPreviewNext) => {
+          code += `${matcherPreviewNext.matcher}\n`;
+        });
+    }
 
     if (!getIsSequelLineCodeMatcher(matcher, index)) {
       codes.push(code);
@@ -113,36 +117,51 @@ const collectCode = computed((): string[] => {
 const matchersLinks = computed((): { link: string; lineNumber: number; isSequel: boolean }[] => {
   const links: { link: string; lineNumber: number; isSequel: boolean }[] = [];
 
-  props.matcher.matchers.forEach((matcher, index) => {
+  props.matcher.matchers.forEach((matcher, indexMatcher) => {
     if (matcher.previewLast !== null && matcher.previewLast.length !== 0) {
-      if (matcher.previewLast.length > 1) {
-        matcher.previewLast
-          .sort((matcherPreviewLastFirst, matcherPreviewLastSecond) => {
-            return matcherPreviewLastFirst.lineNumber - matcherPreviewLastSecond.lineNumber;
-          })
-          .forEach((matcherPreviewLast) => {
-            links.push({
-              link: matcherPreviewLast.link,
-              lineNumber: matcherPreviewLast.lineNumber,
-              isSequel: true
-            });
-          });
-      } else {
-        matcher.previewLast.forEach((matcherPreviewLast) => {
+      matcher.previewLast
+        .sort((matcherPreviewLastFirst, matcherPreviewLastSecond) => {
+          return matcherPreviewLastFirst.lineNumber - matcherPreviewLastSecond.lineNumber;
+        })
+        .forEach((matcherPreviewLast) => {
           links.push({
             link: matcherPreviewLast.link,
             lineNumber: matcherPreviewLast.lineNumber,
             isSequel: true
           });
         });
-      }
     }
 
     links.push({
       link: matcher.link,
       lineNumber: matcher.lineNumber,
-      isSequel: getIsSequelLineCodeMatcher(matcher, index)
+      isSequel: true
     });
+
+    if (matcher.previewNext !== null && matcher.previewNext.length !== 0) {
+      matcher.previewNext
+        .sort((matcherPreviewNextFirst, matcherPreviewNextSecond) => {
+          return matcherPreviewNextFirst.lineNumber - matcherPreviewNextSecond.lineNumber;
+        })
+        .forEach((matcherPreviewNext, indexPreviewNext) => {
+          if (
+            matcher.previewNext?.length === indexPreviewNext + 1 &&
+            props.matcher.matchers.length !== indexMatcher - 1
+          ) {
+            links.push({
+              link: matcherPreviewNext.link,
+              lineNumber: matcherPreviewNext.lineNumber,
+              isSequel: false
+            });
+          } else {
+            links.push({
+              link: matcherPreviewNext.link,
+              lineNumber: matcherPreviewNext.lineNumber,
+              isSequel: true
+            });
+          }
+        });
+    }
   });
 
   return links;
@@ -199,14 +218,14 @@ const copyPath = (): void => {
 
 .matcher-found__result--lines {
   margin-right: 30px;
-  padding: 8px 12px 8px 0;
+  padding: 10px 12px 10px 0;
   max-width: 68px;
   width: 100%;
   background-color: var(--color-border);
 }
 
 .matcher-found__result--line-sequel {
-  margin-bottom: 8px;
+  margin-bottom: 10px;
 }
 
 .matcher-found__result--lines > p {
@@ -217,17 +236,21 @@ const copyPath = (): void => {
   line-height: 1.3;
 }
 
+.matcher-found__result--lines > p:last-child {
+  margin-bottom: 0;
+}
+
 .matcher-found__result--code {
-  padding: 0 8px 0 0;
+  padding: 0;
   overflow-x: scroll;
 }
 
 .matcher-found__result--code.code--multi {
-  margin-bottom: 8px;
+  margin-bottom: 10px;
 }
 
 .matcher-found__result--code.code--multi:first-child {
-  padding: 8px 8px 0 0;
+  padding-top: 10px;
 }
 
 .matcher-found__result--cod.code--multi:last-child {
