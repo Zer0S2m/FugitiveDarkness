@@ -47,6 +47,7 @@ public class FugitiveDarknessApp extends AbstractVerticle {
                                 Setting routes:
                                 \tPOST   [/api/v1/operation/search]
                                 \tGET    [/api/v1/operation/get-git-repo-provider]
+                                \tPOST   [/api/v1/operation/get-file-from-git]
                                 \tGET    [/api/v1/git/repo]
                                 \tPOST   [/api/v1/git/repo/install]
                                 \tDELETE [/api/v1/git/repo/delete]
@@ -126,6 +127,13 @@ public class FugitiveDarknessApp extends AbstractVerticle {
         router
                 .get("/api/v1/git/provider")
                 .handler(new ControllerApiGitProviderGet());
+        router
+                .post("/api/v1/operation/get-file-from-git")
+                .handler(BodyHandler
+                        .create()
+                        .setHandleFileUploads(false))
+                .handler(ControllerApiGitRepoGetFileContent.GitRepoGetFileValidation.validator(vertx))
+                .handler(new ControllerApiGitRepoGetFileContent());
         router
                 .delete("/api/v1/git/provider/delete")
                 .consumes("application/json")

@@ -63,6 +63,17 @@ public interface GitRepo {
     void gFetch(String group, String project) throws IOException, GitAPIException;
 
     /**
+     * Open and get the contents of a file from a git repository by group and project name.
+     *
+     * @param group   The name of the git repository group.
+     * @param project The name of the git repository project.
+     * @param file    File name.
+     * @return Collected file content from git repository.
+     * @throws IOException If an IO error occurred.
+     */
+    List<ContainerInfoFileContent> gShowFile(String group, String project, String file) throws IOException;
+
+    /**
      * Search for matches in files in git repositories by pattern. Git grep command.
      * <p>Uses a search engine {@link SearchEngineGitGrep}.</p>
      *

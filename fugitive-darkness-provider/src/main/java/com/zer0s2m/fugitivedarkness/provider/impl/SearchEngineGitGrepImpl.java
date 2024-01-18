@@ -61,7 +61,7 @@ class SearchEngineGitGrepImpl extends SearchEngineGitGrepAbstract implements Sea
     private List<ContainerInfoSearchFileGitRepo> grep(
             final ObjectReader objectReader, final Repository repository) throws IOException {
         final List<ContainerInfoSearchFileGitRepo> infoSearchFileGitRepos = new ArrayList<>();
-        ObjectId commitId = repository.resolve(Constants.HEAD);
+        ObjectId commitId = SearchEngineGitUtils.getRevision(repository);
 
         try (final RevWalk revWalk = new RevWalk(objectReader)) {
             try (final TreeWalk treeWalk = new TreeWalk(objectReader)) {

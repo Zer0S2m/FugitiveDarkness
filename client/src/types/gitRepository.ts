@@ -71,3 +71,19 @@ export interface IResponseSearchByGrepGitRepository {
   success: boolean;
   searchResult: ISearchByGrepGitRepository[];
 }
+
+export interface IGetFileFromGitRepository {
+  group: string;
+  project: string;
+  file: string;
+}
+
+export interface IResponseFileFromGitRepositoryContent {
+  lineNumber: number;
+  line: string;
+}
+
+export interface IResponseFileFromGitRepository {
+  success: boolean;
+  content: IResponseFileFromGitRepositoryContent[];
+}

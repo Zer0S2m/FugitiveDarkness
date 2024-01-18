@@ -10,6 +10,7 @@
   >
     <h6 class="matcher-found--title">
       <a
+        class="matcher-found--title_link"
         :href="matcher.link"
         target="_blank"
         >{{ lineSlice(matcher.filename, 80) }}</a
@@ -20,6 +21,14 @@
       >
         <IconCopy />
       </button>
+      <a
+        type="button"
+        target="#"
+        class="open-file"
+        @click="onClickShowFile"
+      >
+        <IconView />
+      </a>
     </h6>
     <div class="matcher-found__result">
       <div class="matcher-found__result--wrapper">
@@ -56,6 +65,7 @@
 
 <script setup lang="ts">
 import IconCopy from '@/assets/icon-copy.svg';
+import IconView from '@/assets/icon-view.svg';
 import type {
   IMatcherFoundByGrepGitRepository,
   ISearchFoundByGrepGitRepository
@@ -64,6 +74,7 @@ import { useGitRepositoryState } from '@/stores/useGitRepositoryState';
 import Highlightjs from '@lib/highlightjs';
 import { computed } from 'vue';
 import { lineSlice } from '@/utils/stringFormat';
+import router from '@/router';
 
 const useGitRepositoryStore = useGitRepositoryState();
 
@@ -177,110 +188,41 @@ const getIsSequelLineCodeMatcher = (matcher: IMatcherFoundByGrepGitRepository, i
 const copyPath = (): void => {
   navigator.clipboard.writeText(props.matcher.filename);
 };
+
+const onClickShowFile = async (): Promise<void> => {
+  useGitRepositoryStore.setActiveShowFile(
+    {
+      group: props.groupRepository,
+      project: props.projectRepository,
+      file: props.matcher.filename
+    },
+    props.matcher.extension
+  );
+
+  await router.push({
+    name: 'git-show-file-from-git'
+  });
+};
 </script>
 
 <style scoped>
-.matcher-found--title {
-  display: flex;
-  align-items: center;
-}
-
-.matcher-found--title > a {
-  line-height: 1.5;
-}
-
-.matcher-found--title > a,
-.matcher-found__result--lines > p > a {
-  text-decoration: none;
-  color: var(--color-text);
-}
-
-.matcher-found--title > a:hover,
-.matcher-found__result--lines > p > a:hover {
-  color: var(--color-secondary);
-}
-
-.matcher-found__result {
-  border: 1px solid var(--color-border);
-  width: 100%;
-  border-radius: 4px;
-  margin-top: 6px;
-}
-
-.matcher-found__result--wrapper {
-  display: flex;
-  overflow-x: scroll;
-}
-
-.matcher-found:hover .matcher-found__result {
-  border: 1px solid var(--color-secondary);
-}
-
-.matcher-found__result--lines {
-  margin-right: 30px;
-  padding: 10px 12px 10px 0;
-  max-width: 68px;
-  width: 100%;
-  background-color: var(--color-border);
-}
-
-.matcher-found__result--line-sequel {
-  margin-bottom: 10px;
-}
-
-.matcher-found__result--lines > p {
-  width: 100%;
-  text-align: end;
-  font-family: 'Fira Code', serif;
-  font-size: 14px;
-  line-height: 1.3;
-}
-
-.matcher-found__result--lines > p:last-child {
-  margin-bottom: 0;
-}
-
-.matcher-found__result--code {
-  padding: 0;
-  overflow-x: scroll;
-}
-
-.matcher-found__result--code.code--multi {
-  margin-bottom: 10px;
-}
-
-.matcher-found__result--code.code--multi:first-child {
-  padding-top: 10px;
-}
-
-.matcher-found__result--cod.code--multi:last-child {
-  padding: 0 8px 8px 0;
-  margin-bottom: 0;
-}
-
-.code--one {
-  padding: 8px 8px 8px 0;
-}
-
-.matcher-found__result--code > p {
-  font-family: 'Fira Code', serif;
-  font-size: 14px;
-}
-
-.copy-path {
-  margin-left: 8px;
+.copy-path,
+.open-file {
+  cursor: pointer;
   display: inline-flex;
-  padding: 0 6px;
 }
 
-.copy-path > svg {
+.copy-path > svg,
+.open-file > svg {
   transform: scale(0.55);
 }
-.copy-path:hover svg {
+.copy-path:hover svg,
+.open-file:hover > svg {
   fill: var(--color-secondary);
 }
 
-.copy-path > svg:hover {
+.copy-path > svg:hover,
+.open-file > svg:hover {
   fill: var(--color-secondary);
 }
 </style>

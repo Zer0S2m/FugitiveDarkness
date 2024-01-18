@@ -1,5 +1,6 @@
 @import './base.css';
 @import './modal.css';
+@import './matcher-found.css';
 
 code.code {
   font-size: 14px;

@@ -4,13 +4,20 @@ import com.zer0s2m.fugitivedarkness.common.Environment;
 import com.zer0s2m.fugitivedarkness.provider.*;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.lib.ObjectId;
+import org.eclipse.jgit.lib.ObjectLoader;
+import org.eclipse.jgit.lib.ObjectReader;
+import org.eclipse.jgit.lib.Repository;
+import org.eclipse.jgit.treewalk.TreeWalk;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Service for interacting with git repositories
@@ -74,6 +81,66 @@ public class GitRepoImpl implements GitRepo {
         Git.open(sourceGitRepository.toFile())
                 .fetch()
                 .call();
+    }
+
+    /**
+     * Open and get the contents of a file from a git repository by group and project name.
+     *
+     * @param group   The name of the git repository group.
+     * @param project The name of the git repository project.
+     * @param file    File name.
+     * @return Collected file content from git repository.
+     * @throws IOException If an IO error occurred.
+     */
+    @Override
+    public List<ContainerInfoFileContent> gShowFile(String group, String project, String file) throws IOException {
+        final Path source = HelperGitRepo.getSourceGitRepository(group, project);
+
+        try (final Repository repository = Git.open(source.toFile())
+                .checkout()
+                .getRepository()) {
+            final ObjectId revision = SearchEngineGitUtils
+                    .getRevisionTree(repository, repository.getBranch());
+
+            try (final TreeWalk treeWalk = TreeWalk.forPath(repository, file, revision)) {
+                try (final ObjectReader objectReader = repository.newObjectReader()) {
+                    ObjectLoader objectLoader = objectReader.open(treeWalk.getObjectId(0));
+                    try (final InputStream stream = objectLoader.openStream()) {
+                        return gShowFileReadContent(stream);
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Collect file content from a git repository with line numbering.
+     *
+     * @param stream Obtain an input stream to read this object's data.
+     * @return Collected file content from git repository.
+     */
+    private List<ContainerInfoFileContent> gShowFileReadContent(final InputStream stream) {
+        final AtomicInteger lineNumber = new AtomicInteger(1);
+        final List<ContainerInfoFileContent> collectedContent = new ArrayList<>();
+
+        try (final InputStreamReader reader = new InputStreamReader(stream, StandardCharsets.UTF_8)) {
+            try (final BufferedReader buf = new BufferedReader(reader)) {
+                String line;
+
+                while ((line = buf.readLine()) != null) {
+                    collectedContent.add(new ContainerInfoFileContent(
+                            lineNumber.get(),
+                            line
+                    ));
+
+                    lineNumber.set(lineNumber.get() + 1);
+                }
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        return collectedContent;
     }
 
     /**

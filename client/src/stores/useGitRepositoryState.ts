@@ -3,6 +3,7 @@ import type { IResponseInstallError } from '@/types/api';
 import type {
   IControlGitRepository,
   IFilterSearchGitRepository,
+  IGetFileFromGitRepository,
   IGitRepository,
   IInstallGitRepository,
   IResponseInstallingGitRepository,
@@ -44,6 +45,17 @@ export const useGitRepositoryState = defineStore('gitRepository', () => {
   const urlSearch: Ref<{
     [key: string]: string;
   }> = ref({});
+  const activeShowFile: Ref<{
+    file: IGetFileFromGitRepository;
+    language: string;
+  }> = ref({
+    file: {
+      group: '',
+      project: '',
+      file: ''
+    },
+    language: ''
+  });
 
   const loadGitRepositories = async (): Promise<void> => {
     if (isLoadData.value) return;
@@ -336,6 +348,11 @@ export const useGitRepositoryState = defineStore('gitRepository', () => {
     await searchByGrep();
   };
 
+  const setActiveShowFile = (activeFile: IGetFileFromGitRepository, language: string): void => {
+    activeShowFile.value.file = activeFile;
+    activeShowFile.value.language = language;
+  };
+
   return {
     loadGitRepositories,
     deleteGitRepository,
@@ -360,6 +377,7 @@ export const useGitRepositoryState = defineStore('gitRepository', () => {
     removeExcludeExtensionFileForFilter,
     updateGitRepositoryOperationFetch,
     parseUrlSearchAndLoadData,
+    setActiveShowFile,
 
     gitRepositories,
     resultSearchByGrepGitRepositories,
@@ -370,6 +388,7 @@ export const useGitRepositoryState = defineStore('gitRepository', () => {
     filtersByExtensionFiles,
     filtersByRepository,
     stateFormAddGitRepositoryErrors,
-    urlSearch
+    urlSearch,
+    activeShowFile
   };
 });
