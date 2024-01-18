@@ -121,6 +121,10 @@ const openModalAddGitRepository = () => {
   margin-bottom: 28px;
 }
 
+.git-from__providers {
+  padding-bottom: 20px;
+}
+
 .git-from__providers-item--title {
   font-size: 16px;
   font-weight: 500;

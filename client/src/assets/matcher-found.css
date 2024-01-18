@@ -36,6 +36,13 @@
   overflow-x: scroll;
 }
 
+.matcher-found__result::-webkit-scrollbar,
+.matcher-found__result--wrapper::-webkit-scrollbar,
+.matcher-found__result--code::-webkit-scrollbar,
+.matcher-found__result--code > .code::-webkit-scrollbar {
+  display: none;
+}
+
 .matcher-found:hover .matcher-found__result {
   border: 1px solid var(--color-secondary);
 }

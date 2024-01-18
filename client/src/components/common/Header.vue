@@ -45,6 +45,9 @@ import { RouterLink } from 'vue-router';
 .nav-header {
   width: 100%;
   height: 40px;
+  position: sticky;
+  top: 0;
+  background-color: var(--color-background);
 }
 
 .nav-header__wrapper {
