@@ -187,6 +187,22 @@ public interface SearchEngineGitGrep extends SearchEngineGitUtils {
     }
 
     /**
+     * Set a limit on the number of matches per file.
+     * <a href="https://git-scm.com/docs/git-grep#Documentation/git-grep.txt---max-countltnumgt">More about</a>.
+     *
+     * @param maxCount Limit.
+     * @throws SearchEngineGitSetMaxCountException Exception for setting maximum search depth.
+     */
+    void setMaxCount(int maxCount) throws SearchEngineGitSetMaxCountException;
+
+    /**
+     * Get the limit on the number of matches per file.
+     *
+     * @return limit
+     */
+    int getMaxCount();
+
+    /**
      * Set additional Information.
      *
      * @param containerGitRepoMeta Additional Information.

@@ -20,6 +20,8 @@ public class GitRepoFilterSearchImpl implements GitRepoFilterSearch {
 
     private Pattern patternForExcludeFile = null;
 
+    private int maxCount = -1;
+
     private final Map<Path, ContainerGitRepoMeta> meta = new HashMap<>();
 
     private final Set<String> includeExtensionFiles = new HashSet<>();
@@ -235,6 +237,29 @@ public class GitRepoFilterSearchImpl implements GitRepoFilterSearch {
     @Override
     public Pattern getPatternForExcludeFile() {
         return patternForExcludeFile;
+    }
+
+    /**
+     * Set a limit on the number of matches per file.
+     * <a href="https://git-scm.com/docs/git-grep#Documentation/git-grep.txt---max-countltnumgt">More about</a>.
+     *
+     * @param maxCount Limit.
+     * @return Search filter.
+     */
+    @Override
+    public GitRepoFilterSearch setMaxCount(int maxCount) {
+        this.maxCount = maxCount;
+        return this;
+    }
+
+    /**
+     * Get the limit on the number of matches per file.
+     *
+     * @return limit
+     */
+    @Override
+    public int getMaxCount() {
+        return maxCount;
     }
 
 }

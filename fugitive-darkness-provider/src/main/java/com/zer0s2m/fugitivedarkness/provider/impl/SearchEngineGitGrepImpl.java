@@ -28,6 +28,12 @@ class SearchEngineGitGrepImpl extends SearchEngineGitGrepAbstract implements Sea
             new GitRepoCommandGrepUtils.GitRepoCommandGrepUtilPreviewCode();
 
     /**
+     * matcher counter in one file.
+     * <p>Required to set a specific parameter {@link SearchEngineGitGrep#getMaxCount}.</p>
+     */
+    private boolean isUseMatcherCounterInFile = false;
+
+    /**
      * @param pattern              A pattern for finding matches in files.
      * @param source               Source path to the git repository.
      * @param containerGitRepoMeta Additional Information.
@@ -53,6 +59,10 @@ class SearchEngineGitGrepImpl extends SearchEngineGitGrepAbstract implements Sea
      * @throws IOException IO exception.
      */
     public List<ContainerInfoSearchFileGitRepo> callGrep() throws IOException {
+        if (getMaxCount() != -1) {
+            isUseMatcherCounterInFile = true;
+        }
+
         try (final ObjectReader objectReader = getGitRepositoryGrep().newObjectReader()) {
             return grep(objectReader, getGitRepositoryGrep());
         }
@@ -87,11 +97,8 @@ class SearchEngineGitGrepImpl extends SearchEngineGitGrepAbstract implements Sea
                             continue;
                         }
 
-                        if (getWhetherSearchByExcludeFileByPattern(it.getEntryPathString())) {
-                            continue;
-                        }
-
-                        if (!getWhetherSearchByIncludeFileByPattern(it.getEntryPathString())) {
+                        if ((getWhetherSearchByExcludeFileByPattern(it.getEntryPathString())) ||
+                                (!getWhetherSearchByIncludeFileByPattern(it.getEntryPathString()))) {
                             continue;
                         }
 
@@ -126,6 +133,7 @@ class SearchEngineGitGrepImpl extends SearchEngineGitGrepAbstract implements Sea
             final String file) throws IOException {
         final List<ContainerInfoSearchFileMatcherGitRepo> matchers = new ArrayList<>();
         final AtomicInteger lineNumber = new AtomicInteger(1);
+        final AtomicInteger matcherCounterInFile = new AtomicInteger(0);
 
         try (final InputStreamReader reader = new InputStreamReader(stream, StandardCharsets.UTF_8)) {
             try (final BufferedReader buf = new BufferedReader(reader)) {
@@ -133,6 +141,10 @@ class SearchEngineGitGrepImpl extends SearchEngineGitGrepAbstract implements Sea
 
                 while ((line = buf.readLine()) != null) {
                     if (getPattern().matcher(line).find()) {
+                        if (isUseMatcherCounterInFile && matcherCounterInFile.get() == getMaxCount()) {
+                            break;
+                        }
+
                         matchers.add(new ContainerInfoSearchFileMatcherGitRepo(
                                 line,
                                 GitRepoUtils.getLinkForMatcherLine(
@@ -144,6 +156,10 @@ class SearchEngineGitGrepImpl extends SearchEngineGitGrepAbstract implements Sea
                                 null,
                                 null
                         ));
+
+                        if (isUseMatcherCounterInFile) {
+                            matcherCounterInFile.set(matcherCounterInFile.get() + 1);
+                        }
                     } else {
                         utilPreviewCode.addPreviewCodes(lineNumber.get(), line);
                     }
@@ -162,7 +178,7 @@ class SearchEngineGitGrepImpl extends SearchEngineGitGrepAbstract implements Sea
      * <p>Uses the helper class {@link GitRepoCommandGrepUtils.GitRepoCommandGrepUtilPreviewCode}</p>
      *
      * @param matchers Raw search results.
-     * @param file The name of the file where the search for matches took place.
+     * @param file     The name of the file where the search for matches took place.
      * @return Collected search results.
      */
     private List<ContainerInfoSearchFileMatcherGitRepo> collectPreviewCode(

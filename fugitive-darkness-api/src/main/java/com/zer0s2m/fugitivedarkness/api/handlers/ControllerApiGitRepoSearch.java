@@ -77,6 +77,8 @@ final public class ControllerApiGitRepoSearch implements Handler<RoutingContext>
                     Pattern.compile(gitRepoSearch.filters().patternForExcludeFile()));
         }
 
+        gitRepoFilterSearch.setMaxCount(gitRepoSearch.filters().maxCount());
+
         JsonObject object = new JsonObject();
         object.put("success", true);
 
@@ -164,7 +166,8 @@ final public class ControllerApiGitRepoSearch implements Handler<RoutingContext>
                                                     .items(stringSchema())
                                                     .nullable())
                                             .optionalProperty("patternForIncludeFile", stringSchema())
-                                            .optionalProperty("patternForExcludeFile", stringSchema()))
+                                            .optionalProperty("patternForExcludeFile", stringSchema())
+                                            .optionalProperty("maxCount", intSchema()))
                             )
                     )
                     .build();

@@ -51,6 +51,12 @@ public abstract class SearchEngineGitGrepAbstract implements SearchEngineGitGrep
      */
     private final Set<String> extensionFilesForIncludeExcludeSearch = new HashSet<>();
 
+    /**
+     * Limit number of matches per file.
+     * <a href="https://git-scm.com/docs/git-grep#Documentation/git-grep.txt---max-countltnumgt">More about</a>.
+     */
+    private int maxCount = -1;
+
     private Repository repository;
 
     /**
@@ -240,6 +246,35 @@ public abstract class SearchEngineGitGrepAbstract implements SearchEngineGitGrep
     @Override
     public Pattern getPatternForExcludeFile() {
         return patternForExcludeFile;
+    }
+
+    /**
+     * Set a limit on the number of matches per file.
+     * <a href="https://git-scm.com/docs/git-grep#Documentation/git-grep.txt---max-countltnumgt">More about</a>.
+     *
+     * @param maxCount Limit.
+     * @throws SearchEngineGitSetMaxCountException Exception for setting maximum search depth.
+     */
+    @Override
+    public void setMaxCount(int maxCount) throws SearchEngineGitSetMaxCountException {
+        if (maxCount < -1) {
+            throw new SearchEngineGitSetMaxCountException();
+        }
+        if (maxCount == 0) {
+            this.maxCount = -1;
+        } else {
+            this.maxCount = maxCount;
+        }
+    }
+
+    /**
+     * Get the limit on the number of matches per file.
+     *
+     * @return limit
+     */
+    @Override
+    public int getMaxCount() {
+        return maxCount;
     }
 
 }

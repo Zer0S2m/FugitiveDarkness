@@ -167,6 +167,8 @@ public class GitRepoImpl implements GitRepo {
                             commandGrep.setPatternForExcludeFile(filterSearch.getPatternForExcludeFile());
                         }
 
+                        commandGrep.setMaxCount(filterSearch.getMaxCount());
+
                         final List<ContainerInfoSearchFileGitRepo> searchResult = commandGrep.callGrep();
 
                         searchFileGitRepos.add(new ContainerInfoSearchGitRepo(
@@ -177,7 +179,7 @@ public class GitRepoImpl implements GitRepo {
                                 commandGrep.getExtensionFilesGrep(),
                                 searchResult
                         ));
-                    } catch (IOException e) {
+                    } catch (IOException | SearchEngineGitSetMaxCountException e) {
                         throw new RuntimeException(e);
                     }
                 });

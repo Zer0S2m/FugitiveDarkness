@@ -151,6 +151,22 @@ public interface GitRepoFilterSearch {
      */
     Pattern getPatternForExcludeFile();
 
+    /**
+     * Set a limit on the number of matches per file.
+     * <a href="https://git-scm.com/docs/git-grep#Documentation/git-grep.txt---max-countltnumgt">More about</a>.
+     *
+     * @param maxCount Limit.
+     * @return Search filter.
+     */
+    GitRepoFilterSearch setMaxCount(int maxCount);
+
+    /**
+     * Get the limit on the number of matches per file.
+     *
+     * @return limit
+     */
+    int getMaxCount();
+
     static GitRepoFilterSearch create() {
         return new GitRepoFilterSearchImpl();
     }

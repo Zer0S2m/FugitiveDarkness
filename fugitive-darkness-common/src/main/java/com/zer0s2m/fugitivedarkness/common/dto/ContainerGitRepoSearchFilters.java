@@ -12,7 +12,9 @@ public record ContainerGitRepoSearchFilters(
 
         String patternForIncludeFile,
 
-        String patternForExcludeFile
+        String patternForExcludeFile,
+
+        int maxCount
 
 ) {
 }
