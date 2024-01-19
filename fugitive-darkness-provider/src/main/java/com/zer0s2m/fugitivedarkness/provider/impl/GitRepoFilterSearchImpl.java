@@ -16,6 +16,8 @@ public class GitRepoFilterSearchImpl implements GitRepoFilterSearch {
 
     private Pattern pattern;
 
+    private Pattern patternForIncludeFile = null;
+
     private final Map<Path, ContainerGitRepoMeta> meta = new HashMap<>();
 
     private final Set<String> includeExtensionFiles = new HashSet<>();
@@ -187,6 +189,28 @@ public class GitRepoFilterSearchImpl implements GitRepoFilterSearch {
     @Override
     public Set<String> getExcludeExtensionFile() {
         return excludeExtensionFiles;
+    }
+
+    /**
+     * Set a pattern for files that will be included in the search.
+     *
+     * @param patternForIncludeFile Pattern.
+     * @return Search filter.
+     */
+    @Override
+    public GitRepoFilterSearch setPatternForIncludeFile(Pattern patternForIncludeFile) {
+        this.patternForIncludeFile = patternForIncludeFile;
+        return this;
+    }
+
+    /**
+     * Get a pattern for files that will be included in the search.
+     *
+     * @return Pattern.
+     */
+    @Override
+    public Pattern getPatternForIncludeFile() {
+        return patternForIncludeFile;
     }
 
 }

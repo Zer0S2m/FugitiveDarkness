@@ -3,7 +3,9 @@
 ## [Unreleased]
 
 ### Added
-- Limit the output result of found matches
+- Limit the output result of found matches.
+- Updating the git grep search engine:
+  - Set a pattern for files that will be included in the search.
 
 ## [0.0.1] 2024-01-18
 

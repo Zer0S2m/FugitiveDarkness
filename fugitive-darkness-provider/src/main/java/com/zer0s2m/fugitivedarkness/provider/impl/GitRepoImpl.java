@@ -158,6 +158,11 @@ public class GitRepoImpl implements GitRepo {
                     final ContainerGitRepoMeta gitRepo = filterSearch.getGitMeta(source);
                     try {
                         final SearchEngineGitGrep commandGrep = searchEngineGitGrep(filterSearch, source, gitRepo);
+
+                        if (filterSearch.getPatternForIncludeFile() != null) {
+                            commandGrep.setPatternForIncludeFile(filterSearch.getPatternForIncludeFile());
+                        }
+
                         final List<ContainerInfoSearchFileGitRepo> searchResult = commandGrep.callGrep();
 
                         searchFileGitRepos.add(new ContainerInfoSearchGitRepo(

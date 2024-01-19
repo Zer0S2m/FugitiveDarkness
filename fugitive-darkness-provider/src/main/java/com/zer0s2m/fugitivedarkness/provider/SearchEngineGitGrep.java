@@ -129,6 +129,35 @@ public interface SearchEngineGitGrep extends SearchEngineGitUtils {
     Pattern getPattern();
 
     /**
+     * Set a pattern for files that will be included in the search.
+     *
+     * @param patternForIncludeFile Pattern.
+     */
+    void setPatternForIncludeFile(Pattern patternForIncludeFile);
+
+    /**
+     * Get a pattern for files that will be included in the search.
+     *
+     * @return Pattern.
+     */
+    Pattern getPatternForIncludeFile();
+
+    /**
+     * Should the file be searched if the pattern matches {@link SearchEngineGitGrep#getPatternForIncludeFile}.
+     *
+     * @param file The file in which the check will be carried out.
+     * @return Whether to search.
+     */
+    default boolean getWhetherSearchByIncludeFileByPattern(final String file) {
+        if (getPatternForIncludeFile() != null) {
+            return getPatternForIncludeFile()
+                    .matcher(FileSystemUtils.getFileName(file))
+                    .find();
+        }
+        return true;
+    }
+
+    /**
      * Set additional Information.
      *
      * @param containerGitRepoMeta Additional Information.

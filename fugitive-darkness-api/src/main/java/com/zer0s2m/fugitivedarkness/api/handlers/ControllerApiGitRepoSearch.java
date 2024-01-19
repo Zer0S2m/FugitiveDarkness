@@ -29,6 +29,7 @@ import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import static io.vertx.json.schema.common.dsl.Schemas.*;
 
@@ -64,6 +65,11 @@ final public class ControllerApiGitRepoSearch implements Handler<RoutingContext>
         if (gitRepoSearch.filters().excludeExtensionFiles() != null &&
                 !gitRepoSearch.filters().excludeExtensionFiles().isEmpty()) {
             gitRepoFilterSearch.setExcludeExtensionFile(gitRepoSearch.filters().excludeExtensionFiles());
+        }
+        if (gitRepoSearch.filters().patternForIncludeFile() != null &&
+                !gitRepoSearch.filters().patternForIncludeFile().isEmpty()) {
+            gitRepoFilterSearch.setPatternForIncludeFile(
+                    Pattern.compile(gitRepoSearch.filters().patternForIncludeFile()));
         }
 
         JsonObject object = new JsonObject();
@@ -151,7 +157,8 @@ final public class ControllerApiGitRepoSearch implements Handler<RoutingContext>
                                                     .nullable())
                                             .optionalProperty("excludeExtensionFiles", arraySchema()
                                                     .items(stringSchema())
-                                                    .nullable()))
+                                                    .nullable())
+                                            .optionalProperty("patternForIncludeFile", stringSchema()))
                             )
                     )
                     .build();

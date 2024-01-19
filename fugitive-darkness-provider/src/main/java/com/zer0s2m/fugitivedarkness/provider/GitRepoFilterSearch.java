@@ -121,6 +121,21 @@ public interface GitRepoFilterSearch {
      */
     Set<String> getExcludeExtensionFile();
 
+    /**
+     * Set a pattern for files that will be included in the search.
+     *
+     * @param patternForIncludeFile Pattern.
+     * @return Search filter.
+     */
+    GitRepoFilterSearch setPatternForIncludeFile(Pattern patternForIncludeFile);
+
+    /**
+     * Get a pattern for files that will be included in the search.
+     *
+     * @return Pattern.
+     */
+    Pattern getPatternForIncludeFile();
+
     static GitRepoFilterSearch create() {
         return new GitRepoFilterSearchImpl();
     }

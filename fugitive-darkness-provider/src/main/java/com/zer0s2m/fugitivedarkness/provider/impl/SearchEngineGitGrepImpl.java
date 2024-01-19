@@ -85,6 +85,10 @@ class SearchEngineGitGrepImpl extends SearchEngineGitGrepAbstract implements Sea
                             continue;
                         }
 
+                        if (!getWhetherSearchByIncludeFileByPattern(it.getEntryPathString())) {
+                            continue;
+                        }
+
                         if (getWhetherSearchByIncludeFileExtension(extensionFile)) {
                             List<ContainerInfoSearchFileMatcherGitRepo> matchers = getMatchedLines(
                                     objectLoader.openStream(), it.getEntryPathString());
