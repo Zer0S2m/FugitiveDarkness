@@ -8,12 +8,27 @@
       )
     "
   >
-    <h6>
+    <h6 class="matcher-found--title">
       <a
+        class="matcher-found--title_link"
         :href="matcher.link"
         target="_blank"
         >{{ lineSlice(matcher.filename, 80) }}</a
       >
+      <button
+        class="copy-path"
+        @click="copyPath"
+      >
+        <IconCopy />
+      </button>
+      <a
+        type="button"
+        target="#"
+        class="open-file"
+        @click="onClickShowFile"
+      >
+        <IconView />
+      </a>
     </h6>
     <div class="matcher-found__result">
       <div class="matcher-found__result--wrapper">
@@ -49,6 +64,8 @@
 </template>
 
 <script setup lang="ts">
+import IconCopy from '@/assets/icon-copy.svg';
+import IconView from '@/assets/icon-view.svg';
 import type {
   IMatcherFoundByGrepGitRepository,
   ISearchFoundByGrepGitRepository
@@ -57,6 +74,7 @@ import { useGitRepositoryState } from '@/stores/useGitRepositoryState';
 import Highlightjs from '@lib/highlightjs';
 import { computed } from 'vue';
 import { lineSlice } from '@/utils/stringFormat';
+import router from '@/router';
 
 const useGitRepositoryStore = useGitRepositoryState();
 
@@ -72,22 +90,26 @@ const collectCode = computed((): string[] => {
 
   props.matcher.matchers.forEach((matcher, index) => {
     if (matcher.previewLast !== null && matcher.previewLast.length !== 0) {
-      if (matcher.previewLast.length > 1) {
-        matcher.previewLast
-          .sort((matcherPreviewLastFirst, matcherPreviewLastSecond) => {
-            return matcherPreviewLastFirst.lineNumber - matcherPreviewLastSecond.lineNumber;
-          })
-          .forEach((matcherPreviewLast) => {
-            code += `${matcherPreviewLast.matcher}\n`;
-          });
-      } else {
-        matcher.previewLast.forEach((matcherPreviewLast) => {
+      matcher.previewLast
+        .sort((matcherPreviewLastFirst, matcherPreviewLastSecond) => {
+          return matcherPreviewLastFirst.lineNumber - matcherPreviewLastSecond.lineNumber;
+        })
+        .forEach((matcherPreviewLast) => {
           code += `${matcherPreviewLast.matcher}\n`;
         });
-      }
     }
 
     code += `${matcher.matcher}\n`;
+
+    if (matcher.previewNext !== null && matcher.previewNext.length !== 0) {
+      matcher.previewNext
+        .sort((matcherPreviewNextFirst, matcherPreviewNextSecond) => {
+          return matcherPreviewNextFirst.lineNumber - matcherPreviewNextSecond.lineNumber;
+        })
+        .forEach((matcherPreviewNext) => {
+          code += `${matcherPreviewNext.matcher}\n`;
+        });
+    }
 
     if (!getIsSequelLineCodeMatcher(matcher, index)) {
       codes.push(code);
@@ -106,36 +128,51 @@ const collectCode = computed((): string[] => {
 const matchersLinks = computed((): { link: string; lineNumber: number; isSequel: boolean }[] => {
   const links: { link: string; lineNumber: number; isSequel: boolean }[] = [];
 
-  props.matcher.matchers.forEach((matcher, index) => {
+  props.matcher.matchers.forEach((matcher, indexMatcher) => {
     if (matcher.previewLast !== null && matcher.previewLast.length !== 0) {
-      if (matcher.previewLast.length > 1) {
-        matcher.previewLast
-          .sort((matcherPreviewLastFirst, matcherPreviewLastSecond) => {
-            return matcherPreviewLastFirst.lineNumber - matcherPreviewLastSecond.lineNumber;
-          })
-          .forEach((matcherPreviewLast) => {
-            links.push({
-              link: matcherPreviewLast.link,
-              lineNumber: matcherPreviewLast.lineNumber,
-              isSequel: true
-            });
-          });
-      } else {
-        matcher.previewLast.forEach((matcherPreviewLast) => {
+      matcher.previewLast
+        .sort((matcherPreviewLastFirst, matcherPreviewLastSecond) => {
+          return matcherPreviewLastFirst.lineNumber - matcherPreviewLastSecond.lineNumber;
+        })
+        .forEach((matcherPreviewLast) => {
           links.push({
             link: matcherPreviewLast.link,
             lineNumber: matcherPreviewLast.lineNumber,
             isSequel: true
           });
         });
-      }
     }
 
     links.push({
       link: matcher.link,
       lineNumber: matcher.lineNumber,
-      isSequel: getIsSequelLineCodeMatcher(matcher, index)
+      isSequel: true
     });
+
+    if (matcher.previewNext !== null && matcher.previewNext.length !== 0) {
+      matcher.previewNext
+        .sort((matcherPreviewNextFirst, matcherPreviewNextSecond) => {
+          return matcherPreviewNextFirst.lineNumber - matcherPreviewNextSecond.lineNumber;
+        })
+        .forEach((matcherPreviewNext, indexPreviewNext) => {
+          if (
+            matcher.previewNext?.length === indexPreviewNext + 1 &&
+            props.matcher.matchers.length !== indexMatcher - 1
+          ) {
+            links.push({
+              link: matcherPreviewNext.link,
+              lineNumber: matcherPreviewNext.lineNumber,
+              isSequel: false
+            });
+          } else {
+            links.push({
+              link: matcherPreviewNext.link,
+              lineNumber: matcherPreviewNext.lineNumber,
+              isSequel: true
+            });
+          }
+        });
+    }
   });
 
   return links;
@@ -147,80 +184,45 @@ const getIsSequelLineCodeMatcher = (matcher: IMatcherFoundByGrepGitRepository, i
     matcher.lineNumber !== props.matcher.matchers[index + 1].lineNumber - 1
   );
 };
+
+const copyPath = (): void => {
+  navigator.clipboard.writeText(props.matcher.filename);
+};
+
+const onClickShowFile = async (): Promise<void> => {
+  useGitRepositoryStore.setActiveShowFile(
+    {
+      group: props.groupRepository,
+      project: props.projectRepository,
+      file: props.matcher.filename
+    },
+    props.matcher.extension
+  );
+
+  await router.push({
+    name: 'git-show-file-from-git'
+  });
+};
 </script>
 
 <style scoped>
-h6 > a,
-.matcher-found__result--lines > p > a {
-  text-decoration: none;
-  color: var(--color-text);
+.copy-path,
+.open-file {
+  cursor: pointer;
+  display: inline-flex;
 }
 
-h6 > a:hover,
-.matcher-found__result--lines > p > a:hover {
-  color: var(--color-secondary);
+.copy-path > svg,
+.open-file > svg {
+  transform: scale(0.55);
+}
+.copy-path:hover svg,
+.open-file:hover > svg {
+  fill: var(--color-secondary);
 }
 
-.matcher-found__result {
-  border: 1px solid var(--color-border);
-  width: 100%;
-  border-radius: 4px;
-  margin-top: 6px;
-}
-
-.matcher-found__result--wrapper {
-  display: flex;
-  overflow-x: scroll;
-}
-
-.matcher-found:hover .matcher-found__result {
-  border: 1px solid var(--color-secondary);
-}
-
-.matcher-found__result--lines {
-  margin-right: 30px;
-  padding: 8px 12px 8px 0;
-  max-width: 68px;
-  width: 100%;
-  background-color: var(--color-border);
-}
-
-.matcher-found__result--line-sequel {
-  margin-bottom: 8px;
-}
-
-.matcher-found__result--lines > p {
-  width: 100%;
-  text-align: end;
-  font-family: 'Fira Code', serif;
-  font-size: 14px;
-  line-height: 1.3;
-}
-
-.matcher-found__result--code {
-  padding: 0 8px 0 0;
-  overflow-x: scroll;
-}
-
-.matcher-found__result--code.code--multi {
-  margin-bottom: 8px;
-}
-
-.matcher-found__result--code.code--multi:first-child {
-  padding: 8px 8px 0 0;
-}
-
-.matcher-found__result--cod.code--multi:last-child {
-  padding: 0 8px 8px 0;
-  margin-bottom: 0;
-}
-
-.code--one {
-  padding: 8px 8px 8px 0;
-}
-
-.matcher-found__result--code > p {
-  font-family: 'Fira Code', serif;
-  font-size: 14px;
+.copy-path > svg:hover,
+.open-file > svg:hover {
+  fill: var(--color-secondary);
 }
 </style>

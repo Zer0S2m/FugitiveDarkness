@@ -3,6 +3,8 @@ import type { IResponseInstallError } from '@/types/api';
 import type {
   IControlGitRepository,
   IFilterSearchGitRepository,
+  IGetFileFromGitRepository,
+  IResponseFileFromGitRepository,
   IResponseGitRepository,
   IResponseInstallingGitRepository,
   IResponseSearchByGrepGitRepository
@@ -41,12 +43,24 @@ export default {
       data
     });
   },
+  async updateGitRepository(data: IControlGitRepository): Promise<any> {
+    return apiClient.put('/git/repo/fetch', {
+      ...data
+    });
+  },
   async searchByGrep(
     data: IFilterSearchGitRepository
   ): Promise<AxiosResponse<IResponseSearchByGrepGitRepository>> {
     return apiClient.post('/operation/search', {
       filters: data.filters,
       pattern: data.pattern
+    });
+  },
+  async getFileContent(
+    data: IGetFileFromGitRepository
+  ): Promise<AxiosResponse<IResponseFileFromGitRepository>> {
+    return apiClient.post('/operation/get-file-from-git', {
+      ...data
     });
   },
 

@@ -3,7 +3,7 @@
     <div class="filter-search__wrapper">
       <h5 class="filter-search__title">Filter</h5>
       <div class="filter-search__tool--grep">
-        <h6 class="filter-search__tool-title--grep">Command - grep</h6>
+        <h6 class="filter-search__tool-title">Command - grep</h6>
         <div class="filter-search__tool tool--grep scroll">
           <ul>
             <li>
@@ -71,12 +71,30 @@
             </li>
           </ul>
         </div>
+        <div class="filter-search__tool--files">
+          <h6 class="filter-search__tool-title--second">Include extension files</h6>
+          <TagInput
+            @addTag="addIncludeFileExtension"
+            @removeTag="removeIncludeFileExtension"
+            :tags="includeFilesExtension"
+            class="filter-search__tool--files-input"
+          />
+        </div>
+        <div class="filter-search__tool--files">
+          <h6 class="filter-search__tool-title--second">Exclude extension files</h6>
+          <TagInput
+            @addTag="addExcludeFileExtension"
+            @removeTag="removeExcludeFileExtension"
+            :tags="excludeFilesExtension"
+            class="filter-search__tool--files-input"
+          />
+        </div>
       </div>
     </div>
     <div class="filter-search__reset">
       <div class="filter-search__reset--wrapper">
         <button
-          @click="useGitRepositoryStore.resetResult()"
+          @click="resetResult"
           class="filter-search__reset-btn"
         >
           Reset everything
@@ -91,6 +109,9 @@ import Checkbox from '@/components/common/Checkbox.vue';
 import { useGitRepositoryState } from '@/stores/useGitRepositoryState';
 import { HalfCircleSpinner } from 'epic-spinners';
 import type { IGitRepository } from '@/types/gitRepository';
+import TagInput from '@/components/common/TagInput.vue';
+import { onMounted, type Ref, ref } from 'vue';
+import router from '@/router';
 
 const useGitRepositoryStore = useGitRepositoryState();
 useGitRepositoryStore.loadGitRepositories();
@@ -115,6 +136,18 @@ const handlerClickCheckboxGitRepository = (meta: IGitRepository, isActivity: boo
   useGitRepositoryStore.setFilterByRepository(`${meta.group_}/${meta.project}`, isActivity);
 };
 
+const resetResult = (): void => {
+  useGitRepositoryStore.resetResult();
+
+  includeFilesExtension.value = [];
+  excludeFilesExtension.value = [];
+
+  router.push({
+    name: 'search',
+    query: {}
+  });
+};
+
 const handlerClickCheckboxExtensionFile = (
   meta: IGitRepositoryFileExtension,
   isActivity: boolean
@@ -126,6 +159,32 @@ const handlerClickCheckboxExtensionFile = (
     true
   );
 };
+
+const includeFilesExtension: Ref<string[]> = ref([]);
+const excludeFilesExtension: Ref<string[]> = ref([]);
+
+const addIncludeFileExtension = (tag: string): void => {
+  // useGitRepositoryStore.addIncludeExtensionFileForFilter(tag);
+};
+
+const removeIncludeFileExtension = (index: number): void => {
+  useGitRepositoryStore.removeIncludeExtensionFileForFilter(includeFilesExtension.value[index]);
+};
+
+const addExcludeFileExtension = (tag: string): void => {
+  // useGitRepositoryStore.addExcludeExtensionFileForFilter(tag);
+};
+
+const removeExcludeFileExtension = (index: number): void => {
+  useGitRepositoryStore.removeExcludeExtensionFileForFilter(excludeFilesExtension.value[index]);
+};
+
+onMounted(() => {
+  includeFilesExtension.value =
+    useGitRepositoryStore.filtersForSearch.filters.includeExtensionFiles;
+  excludeFilesExtension.value =
+    useGitRepositoryStore.filtersForSearch.filters.excludeExtensionFiles;
+});
 </script>
 
 <style scoped>
@@ -148,7 +207,7 @@ const handlerClickCheckboxExtensionFile = (
 }
 
 .filter-search__tool {
-  margin-bottom: 20px;
+  margin-bottom: 12px;
 }
 
 .filter-search__tool:last-child {
@@ -157,16 +216,24 @@ const handlerClickCheckboxExtensionFile = (
 
 .filter-search__tool.tool--grep {
   overflow: scroll;
-  height: 100%;
-}
-
-.filter-search__tool--grep {
   height: 320px;
 }
 
-.filter-search__tool-title--grep {
+.filter-search__tool-title {
   font-weight: 600;
   margin-bottom: 8px;
+}
+
+.filter-search__tool-title--second {
+  font-weight: 500;
+}
+
+.filter-search__tool--files {
+  margin-bottom: 12px;
+}
+
+.filter-search__tool--files:last-child {
+  margin-bottom: 0;
 }
 
 .filter-search__tool-repositories {
@@ -175,6 +242,10 @@ const handlerClickCheckboxExtensionFile = (
 
 .filter-search__tool-repository {
   margin-bottom: 8px;
+}
+
+.filter-search__tool--files-input {
+  margin-top: 4px;
 }
 
 .filter-search__tool-repository--extension_files {

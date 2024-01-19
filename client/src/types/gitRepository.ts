@@ -39,6 +39,8 @@ export interface IFilterSearchGitRepository {
 
 export interface IFilterSearchGitRepositories {
   git: IControlGitRepository[];
+  includeExtensionFiles: string[];
+  excludeExtensionFiles: string[];
 }
 
 export interface IMatcherFoundByGrepGitRepository {
@@ -46,6 +48,7 @@ export interface IMatcherFoundByGrepGitRepository {
   link: string;
   lineNumber: number;
   previewLast: IMatcherFoundByGrepGitRepository[] | null;
+  previewNext: IMatcherFoundByGrepGitRepository[] | null;
 }
 
 export interface ISearchFoundByGrepGitRepository {
@@ -67,4 +70,20 @@ export interface ISearchByGrepGitRepository {
 export interface IResponseSearchByGrepGitRepository {
   success: boolean;
   searchResult: ISearchByGrepGitRepository[];
+}
+
+export interface IGetFileFromGitRepository {
+  group: string;
+  project: string;
+  file: string;
+}
+
+export interface IResponseFileFromGitRepositoryContent {
+  lineNumber: number;
+  line: string;
+}
+
+export interface IResponseFileFromGitRepository {
+  success: boolean;
+  content: IResponseFileFromGitRepositoryContent[];
 }

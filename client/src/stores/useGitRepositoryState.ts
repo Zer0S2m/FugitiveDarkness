@@ -3,6 +3,7 @@ import type { IResponseInstallError } from '@/types/api';
 import type {
   IControlGitRepository,
   IFilterSearchGitRepository,
+  IGetFileFromGitRepository,
   IGitRepository,
   IInstallGitRepository,
   IResponseInstallingGitRepository,
@@ -12,6 +13,7 @@ import api from '@/services/api';
 import type { Ref } from 'vue';
 import { ref } from 'vue';
 import type { AxiosResponse } from 'axios';
+import type { LocationQuery } from 'vue-router';
 
 export const useGitRepositoryState = defineStore('gitRepository', () => {
   const gitRepositories: Ref<IGitRepository[]> = ref([]);
@@ -21,7 +23,9 @@ export const useGitRepositoryState = defineStore('gitRepository', () => {
   const isLoadingSearch: Ref<boolean> = ref(false);
   const filtersForSearch: Ref<IFilterSearchGitRepository> = ref({
     filters: {
-      git: [] as IControlGitRepository[]
+      git: [] as IControlGitRepository[],
+      includeExtensionFiles: [],
+      excludeExtensionFiles: []
     },
     pattern: '' as string
   });
@@ -37,6 +41,20 @@ export const useGitRepositoryState = defineStore('gitRepository', () => {
     success: true,
     msg: null,
     type: null
+  });
+  const urlSearch: Ref<{
+    [key: string]: string;
+  }> = ref({});
+  const activeShowFile: Ref<{
+    file: IGetFileFromGitRepository;
+    language: string;
+  }> = ref({
+    file: {
+      group: '',
+      project: '',
+      file: ''
+    },
+    language: ''
   });
 
   const loadGitRepositories = async (): Promise<void> => {
@@ -87,6 +105,8 @@ export const useGitRepositoryState = defineStore('gitRepository', () => {
   };
 
   const searchByGrep = async (): Promise<void> => {
+    setQueryParamsForSearchPage();
+
     isLoadingSearch.value = true;
     filtersByExtensionFiles.value = new Map();
 
@@ -180,12 +200,15 @@ export const useGitRepositoryState = defineStore('gitRepository', () => {
     resultSearchByGrepGitRepositories.value = [];
     filtersForSearch.value = {
       filters: {
-        git: [] as IControlGitRepository[]
+        git: [] as IControlGitRepository[],
+        includeExtensionFiles: [],
+        excludeExtensionFiles: []
       },
       pattern: '' as string
     };
     filtersByExtensionFiles.value = new Map();
     filtersByRepository.value = new Map();
+    urlSearch.value = {};
   };
 
   const installingGitRepository = async (payload: IInstallGitRepository): Promise<void> => {
@@ -227,6 +250,109 @@ export const useGitRepositoryState = defineStore('gitRepository', () => {
     };
   };
 
+  const addIncludeExtensionFileForFilter = (fileExtension: string): void => {
+    filtersForSearch.value.filters.includeExtensionFiles.push(fileExtension);
+  };
+
+  const addExcludeExtensionFileForFilter = (fileExtension: string): void => {
+    filtersForSearch.value.filters.excludeExtensionFiles.push(fileExtension);
+  };
+
+  const removeIncludeExtensionFileForFilter = (fileExtension: string): void => {
+    filtersForSearch.value.filters.includeExtensionFiles =
+      filtersForSearch.value.filters.includeExtensionFiles.filter((item) => {
+        return !(item === fileExtension);
+      });
+  };
+
+  const removeExcludeExtensionFileForFilter = (fileExtension: string): void => {
+    filtersForSearch.value.filters.excludeExtensionFiles =
+      filtersForSearch.value.filters.excludeExtensionFiles.filter((item) => {
+        return !(item === fileExtension);
+      });
+  };
+
+  const updateGitRepositoryOperationFetch = async (
+    gitRepo: IControlGitRepository
+  ): Promise<void> => {
+    gitRepositories.value.map(async (gitRepository) => {
+      if (gitRepository.group_ === gitRepo.group && gitRepository.project === gitRepo.project) {
+        gitRepository.is_load = false;
+        await api.updateGitRepository(gitRepo);
+      }
+    });
+  };
+
+  const setQueryParamsForSearchPage = (): void => {
+    let queryParamGitRepo = '';
+    let queryParamIncludeFileExtension =
+      filtersForSearch.value.filters.includeExtensionFiles.join(',');
+    let queryParamExcludeFileExtension =
+      filtersForSearch.value.filters.excludeExtensionFiles.join(',');
+
+    filtersForSearch.value.filters.git.forEach((gitRepo: IControlGitRepository): void => {
+      queryParamGitRepo += `${gitRepo.group}_${gitRepo.project}+`;
+    });
+
+    queryParamGitRepo = queryParamGitRepo.slice(0, -1);
+
+    urlSearch.value['q'] = filtersForSearch.value.pattern;
+    urlSearch.value['repo'] = queryParamGitRepo;
+
+    if (queryParamIncludeFileExtension.length) {
+      urlSearch.value['includeFileExt'] = queryParamIncludeFileExtension;
+    } else {
+      delete urlSearch.value['includeFileExt'];
+    }
+    if (queryParamExcludeFileExtension.length) {
+      urlSearch.value['excludeFileExt'] = queryParamExcludeFileExtension;
+    } else {
+      delete urlSearch.value['excludeFileExt'];
+    }
+  };
+
+  const parseUrlSearchAndLoadData = async (query: LocationQuery): Promise<void> => {
+    if (isLoadData.value) return;
+
+    urlSearch.value['q'] = <string>query['q'];
+    urlSearch.value['repo'] = <string>query['repo'];
+    if (query['includeFileExt']?.length) {
+      urlSearch.value['includeFileExt'] = <string>query['includeFileExt'];
+    }
+    if (query['excludeFileExt']?.length) {
+      urlSearch.value['excludeFileExt'] = <string>query['excludeFileExt'];
+    }
+
+    setPatternFilterSearch(urlSearch.value['q']);
+
+    urlSearch.value['repo'].split('+').forEach((gitRepo) => {
+      const gitRepoGroupAndProject = gitRepo.split('_');
+      setGitRepositoryFilterSearch({
+        group: gitRepoGroupAndProject[0],
+        project: gitRepoGroupAndProject[1]
+      });
+      setFilterByRepository(`${gitRepoGroupAndProject[0]}/${gitRepoGroupAndProject[1]}`, true);
+    });
+
+    if (urlSearch.value['includeFileExt'] && urlSearch.value['includeFileExt'].length) {
+      urlSearch.value['includeFileExt'].split(',').forEach((includeFileExtension: string): void => {
+        addIncludeExtensionFileForFilter(includeFileExtension);
+      });
+    }
+    if (urlSearch.value['excludeFileExt'] && urlSearch.value['excludeFileExt'].length) {
+      urlSearch.value['excludeFileExt'].split(',').forEach((excludeFileExtension: string): void => {
+        addExcludeExtensionFileForFilter(excludeFileExtension);
+      });
+    }
+
+    await searchByGrep();
+  };
+
+  const setActiveShowFile = (activeFile: IGetFileFromGitRepository, language: string): void => {
+    activeShowFile.value.file = activeFile;
+    activeShowFile.value.language = language;
+  };
+
   return {
     loadGitRepositories,
     deleteGitRepository,
@@ -245,6 +371,13 @@ export const useGitRepositoryState = defineStore('gitRepository', () => {
     resetResult,
     installingGitRepository,
     clearStateFormAddGitRepositoryErrors,
+    addIncludeExtensionFileForFilter,
+    addExcludeExtensionFileForFilter,
+    removeIncludeExtensionFileForFilter,
+    removeExcludeExtensionFileForFilter,
+    updateGitRepositoryOperationFetch,
+    parseUrlSearchAndLoadData,
+    setActiveShowFile,
 
     gitRepositories,
     resultSearchByGrepGitRepositories,
@@ -254,6 +387,8 @@ export const useGitRepositoryState = defineStore('gitRepository', () => {
     filtersForSearch,
     filtersByExtensionFiles,
     filtersByRepository,
-    stateFormAddGitRepositoryErrors
+    stateFormAddGitRepositoryErrors,
+    urlSearch,
+    activeShowFile
   };
 });

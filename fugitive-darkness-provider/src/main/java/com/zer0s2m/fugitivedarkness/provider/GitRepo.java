@@ -13,8 +13,6 @@ import java.util.List;
  */
 public interface GitRepo {
 
-    String LINE_NUMBER_POINTER = "#L";
-
     /**
      * Clone a git repository from a remote host into a set path environment variable {@link Environment#ROOT_PATH_REPO}.
      *
@@ -55,7 +53,29 @@ public interface GitRepo {
     void gDelete(String group, String project) throws IOException;
 
     /**
+     * Update from remote repository by group and project.
+     *
+     * @param group   Project group. Must not be {@literal null}.
+     * @param project Project. Must not be {@literal null}.
+     * @throws IOException     If an IO error occurred.
+     * @throws GitAPIException The exception is caused by the internal functionality of managing git repositories.
+     */
+    void gFetch(String group, String project) throws IOException, GitAPIException;
+
+    /**
+     * Open and get the contents of a file from a git repository by group and project name.
+     *
+     * @param group   The name of the git repository group.
+     * @param project The name of the git repository project.
+     * @param file    File name.
+     * @return Collected file content from git repository.
+     * @throws IOException If an IO error occurred.
+     */
+    List<ContainerInfoFileContent> gShowFile(String group, String project, String file) throws IOException;
+
+    /**
      * Search for matches in files in git repositories by pattern. Git grep command.
+     * <p>Uses a search engine {@link SearchEngineGitGrep}.</p>
      *
      * @param filterSearch Filter for searching git repositories.
      * @return Search result in git repository.
@@ -64,21 +84,6 @@ public interface GitRepo {
 
     static GitRepo create() {
         return new GitRepoImpl();
-    }
-
-    static String getLinkForFile(
-            final ContainerGitRepoMeta gitRepoMeta,
-            final String file,
-            final String targetBranch) {
-        return gitRepoMeta.getLink(false) + "/tree/" + targetBranch + "/" + file;
-    }
-
-    static String getLinkForMatcherLine(
-            final ContainerGitRepoMeta gitRepoMeta,
-            final String file,
-            final String targetBranch,
-            final int lineNumber) {
-        return getLinkForFile(gitRepoMeta, file, targetBranch) + LINE_NUMBER_POINTER + lineNumber;
     }
 
 }
