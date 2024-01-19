@@ -136,6 +136,21 @@ public interface GitRepoFilterSearch {
      */
     Pattern getPatternForIncludeFile();
 
+    /**
+     * Set a pattern for files that will be excluded from the search.
+     *
+     * @param patternForExcludeFile Pattern.
+     * @return Search filter.
+     */
+    GitRepoFilterSearch setPatternForExcludeFile(Pattern patternForExcludeFile);
+
+    /**
+     * Get a template for files that will be excluded from the search.
+     *
+     * @return Pattern.
+     */
+    Pattern getPatternForExcludeFile();
+
     static GitRepoFilterSearch create() {
         return new GitRepoFilterSearchImpl();
     }

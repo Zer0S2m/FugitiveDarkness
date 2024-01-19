@@ -72,7 +72,7 @@ public interface SearchEngineGitGrep extends SearchEngineGitUtils {
     }
 
     /**
-     * Set the file extension to be excluded from search filtering..
+     * Set the file extension to be excluded from search filtering.
      *
      * @param extensionFiles File extension.
      */
@@ -155,6 +155,35 @@ public interface SearchEngineGitGrep extends SearchEngineGitUtils {
                     .find();
         }
         return true;
+    }
+
+    /**
+     * Set a pattern for files that will be excluded from the search.
+     *
+     * @param patternForExcludeFile Pattern.
+     */
+    void setPatternForExcludeFile(Pattern patternForExcludeFile);
+
+    /**
+     * Get a template for files that will be excluded from the search.
+     *
+     * @return Pattern.
+     */
+    Pattern getPatternForExcludeFile();
+
+    /**
+     * Should the file be searched if the pattern matches {@link SearchEngineGitGrep#getPatternForExcludeFile}.
+     *
+     * @param file The file in which the check will be carried out.
+     * @return Whether to search.
+     */
+    default boolean getWhetherSearchByExcludeFileByPattern(final String file) {
+        if (getPatternForExcludeFile() != null) {
+            return getPatternForExcludeFile()
+                    .matcher(FileSystemUtils.getFileName(file))
+                    .find();
+        }
+        return false;
     }
 
     /**

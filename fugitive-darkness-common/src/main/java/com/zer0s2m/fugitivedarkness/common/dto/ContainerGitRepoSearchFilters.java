@@ -10,7 +10,9 @@ public record ContainerGitRepoSearchFilters(
 
         List<String> excludeExtensionFiles,
 
-        String patternForIncludeFile
+        String patternForIncludeFile,
+
+        String patternForExcludeFile
 
 ) {
 }

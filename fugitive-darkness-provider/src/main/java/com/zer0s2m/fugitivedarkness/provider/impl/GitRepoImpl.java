@@ -163,6 +163,10 @@ public class GitRepoImpl implements GitRepo {
                             commandGrep.setPatternForIncludeFile(filterSearch.getPatternForIncludeFile());
                         }
 
+                        if (filterSearch.getPatternForExcludeFile() != null) {
+                            commandGrep.setPatternForExcludeFile(filterSearch.getPatternForExcludeFile());
+                        }
+
                         final List<ContainerInfoSearchFileGitRepo> searchResult = commandGrep.callGrep();
 
                         searchFileGitRepos.add(new ContainerInfoSearchGitRepo(

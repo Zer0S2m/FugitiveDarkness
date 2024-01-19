@@ -71,6 +71,11 @@ final public class ControllerApiGitRepoSearch implements Handler<RoutingContext>
             gitRepoFilterSearch.setPatternForIncludeFile(
                     Pattern.compile(gitRepoSearch.filters().patternForIncludeFile()));
         }
+        if (gitRepoSearch.filters().patternForExcludeFile() != null &&
+                !gitRepoSearch.filters().patternForExcludeFile().isEmpty()) {
+            gitRepoFilterSearch.setPatternForExcludeFile(
+                    Pattern.compile(gitRepoSearch.filters().patternForExcludeFile()));
+        }
 
         JsonObject object = new JsonObject();
         object.put("success", true);
@@ -158,7 +163,8 @@ final public class ControllerApiGitRepoSearch implements Handler<RoutingContext>
                                             .optionalProperty("excludeExtensionFiles", arraySchema()
                                                     .items(stringSchema())
                                                     .nullable())
-                                            .optionalProperty("patternForIncludeFile", stringSchema()))
+                                            .optionalProperty("patternForIncludeFile", stringSchema())
+                                            .optionalProperty("patternForExcludeFile", stringSchema()))
                             )
                     )
                     .build();

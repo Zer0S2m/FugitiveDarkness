@@ -81,7 +81,13 @@ class SearchEngineGitGrepImpl extends SearchEngineGitGrepAbstract implements Sea
                         final String extensionFile = FileSystemUtils
                                 .getExtensionFromRawStrFile(it.getEntryPathString());
 
-                        if (getWhetherSearchByExcludeFileExtension(extensionFile)) {
+                        if ((getWhetherSearchByExcludeFileExtension(extensionFile)) ||
+                                (!getWhetherSearchByIncludeFileExtension(extensionFile))
+                        ) {
+                            continue;
+                        }
+
+                        if (getWhetherSearchByExcludeFileByPattern(it.getEntryPathString())) {
                             continue;
                         }
 
@@ -89,23 +95,21 @@ class SearchEngineGitGrepImpl extends SearchEngineGitGrepAbstract implements Sea
                             continue;
                         }
 
-                        if (getWhetherSearchByIncludeFileExtension(extensionFile)) {
-                            List<ContainerInfoSearchFileMatcherGitRepo> matchers = getMatchedLines(
-                                    objectLoader.openStream(), it.getEntryPathString());
-                            matchers = collectPreviewCode(matchers, it.getEntryPathString());
+                        List<ContainerInfoSearchFileMatcherGitRepo> matchers = getMatchedLines(
+                                objectLoader.openStream(), it.getEntryPathString());
+                        matchers = collectPreviewCode(matchers, it.getEntryPathString());
 
-                            if (!matchers.isEmpty()) {
-                                infoSearchFileGitRepos.add(new ContainerInfoSearchFileGitRepo(
-                                        it.getEntryPathString(),
-                                        extensionFile,
-                                        GitRepoUtils.getLinkForFile(
-                                                getContainerGitRepoMeta(),
-                                                it.getEntryPathString(),
-                                                getGitRepositoryGrep().getBranch()),
-                                        matchers));
+                        if (!matchers.isEmpty()) {
+                            infoSearchFileGitRepos.add(new ContainerInfoSearchFileGitRepo(
+                                    it.getEntryPathString(),
+                                    extensionFile,
+                                    GitRepoUtils.getLinkForFile(
+                                            getContainerGitRepoMeta(),
+                                            it.getEntryPathString(),
+                                            getGitRepositoryGrep().getBranch()),
+                                    matchers));
 
-                                addExtensionFilesGrep(extensionFile);
-                            }
+                            addExtensionFilesGrep(extensionFile);
                         }
 
                         utilPreviewCode.clearPreviewCodes();

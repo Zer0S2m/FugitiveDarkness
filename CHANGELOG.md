@@ -6,6 +6,7 @@
 - Limit the output result of found matches.
 - Updating the git grep search engine:
   - Set a pattern for files that will be included in the search.
+  - Set a pattern for files that will be excluded from the search.
 
 ## [0.0.1] 2024-01-18
 

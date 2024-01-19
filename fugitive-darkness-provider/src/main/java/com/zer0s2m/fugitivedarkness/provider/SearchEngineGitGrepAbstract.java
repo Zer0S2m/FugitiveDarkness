@@ -27,6 +27,11 @@ public abstract class SearchEngineGitGrepAbstract implements SearchEngineGitGrep
     private Pattern patternForIncludeFile = null;
 
     /**
+     * Pattern for files that will be excluded from the search.
+     */
+    private Pattern patternForExcludeFile = null;
+
+    /**
      * Additional Information.
      */
     private ContainerGitRepoMeta containerGitRepoMeta;
@@ -213,6 +218,28 @@ public abstract class SearchEngineGitGrepAbstract implements SearchEngineGitGrep
     @Override
     public Pattern getPatternForIncludeFile() {
         return patternForIncludeFile;
+    }
+
+    /**
+     * Set a pattern for files that will be excluded from the search.
+     *
+     * @param patternForExcludeFile Pattern.
+     */
+    @Override
+    public void setPatternForExcludeFile(Pattern patternForExcludeFile) {
+        Objects.requireNonNull(patternForExcludeFile, "The file pattern must not be null");
+
+        this.patternForExcludeFile = patternForExcludeFile;
+    }
+
+    /**
+     * Get a template for files that will be excluded from the search.
+     *
+     * @return Pattern.
+     */
+    @Override
+    public Pattern getPatternForExcludeFile() {
+        return patternForExcludeFile;
     }
 
 }
