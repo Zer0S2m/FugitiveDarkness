@@ -1,5 +1,10 @@
 # Change Log
 
+## [Unreleased]
+
+### Added
+- Limit the output result of found matches
+
 ## [0.0.1] 2024-01-18
 
 ### Added
@@ -8,9 +13,9 @@
   - Exclude files from search by extension.
   - Include files by extension in your search.
 - Basic operations for git repositories:
-    - Add local git repository.
-    - Delete local git repository.
-    - Update local git repository branches.
+  - Add local git repository.
+  - Delete local git repository.
+  - Update local git repository branches.
 - Add a git repository provider:
   - Add support for provider types: `GITHUB` and `GITLAB`.
   - Get git repositories from supported providers.
