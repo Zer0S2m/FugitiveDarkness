@@ -57,6 +57,12 @@ public abstract class SearchEngineGitGrepAbstract implements SearchEngineGitGrep
      */
     private int maxCount = -1;
 
+    /**
+     * Search depth.
+     * <a href="https://git-scm.com/docs/git-grep#Documentation/git-grep.txt---max-depthltdepthgt">More about</a>.
+     */
+    private int maxDepth = -1;
+
     private Repository repository;
 
     /**
@@ -253,7 +259,7 @@ public abstract class SearchEngineGitGrepAbstract implements SearchEngineGitGrep
      * <a href="https://git-scm.com/docs/git-grep#Documentation/git-grep.txt---max-countltnumgt">More about</a>.
      *
      * @param maxCount Limit.
-     * @throws SearchEngineGitSetMaxCountException Exception for setting maximum search depth.
+     * @throws SearchEngineGitSetMaxCountException Exception for setting the maximum number of matches in one file.
      */
     @Override
     public void setMaxCount(int maxCount) throws SearchEngineGitSetMaxCountException {
@@ -275,6 +281,35 @@ public abstract class SearchEngineGitGrepAbstract implements SearchEngineGitGrep
     @Override
     public int getMaxCount() {
         return maxCount;
+    }
+
+    /**
+     * Set the maximum search depth.
+     * <a href="https://git-scm.com/docs/git-grep#Documentation/git-grep.txt---max-depthltdepthgt">More about</a>.
+     *
+     * @param maxDepth Depth.
+     * @throws SearchEngineGitSetMaxDepthException Exception for setting maximum search depth.
+     */
+    @Override
+    public void setMaxDepth(int maxDepth) throws SearchEngineGitSetMaxDepthException {
+        if (maxDepth < -1) {
+            throw new SearchEngineGitSetMaxDepthException();
+        }
+        if (maxCount == 0) {
+            this.maxDepth = -1;
+        } else {
+            this.maxDepth = maxDepth;
+        }
+    }
+
+    /**
+     * Get maximum search depth.
+     *
+     * @return Depth.
+     */
+    @Override
+    public int getMaxDepth() {
+        return maxDepth;
     }
 
 }

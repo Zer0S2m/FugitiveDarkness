@@ -9,6 +9,7 @@
     - Set a pattern for files that will be included in the search.
     - Set a pattern for files that will be excluded from the search.
     - Set a limit on the number of matches per file.
+    - Set the maximum search depth.
 
 ## [0.0.1] 2024-01-18
 

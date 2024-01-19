@@ -14,7 +14,9 @@ public record ContainerGitRepoSearchFilters(
 
         String patternForExcludeFile,
 
-        int maxCount
+        int maxCount,
+
+        int maxDepth
 
 ) {
 }

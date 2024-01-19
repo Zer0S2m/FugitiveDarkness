@@ -22,6 +22,8 @@ public class GitRepoFilterSearchImpl implements GitRepoFilterSearch {
 
     private int maxCount = -1;
 
+    private int maxDepth = -1;
+
     private final Map<Path, ContainerGitRepoMeta> meta = new HashMap<>();
 
     private final Set<String> includeExtensionFiles = new HashSet<>();
@@ -260,6 +262,29 @@ public class GitRepoFilterSearchImpl implements GitRepoFilterSearch {
     @Override
     public int getMaxCount() {
         return maxCount;
+    }
+
+    /**
+     * Set the maximum search depth.
+     * <a href="https://git-scm.com/docs/git-grep#Documentation/git-grep.txt---max-depthltdepthgt">More about</a>.
+     *
+     * @param maxDepth Depth.
+     * @return Search filter.
+     */
+    @Override
+    public GitRepoFilterSearch setMaxDepth(int maxDepth) {
+        this.maxDepth = maxDepth;
+        return this;
+    }
+
+    /**
+     * Get maximum search depth.
+     *
+     * @return Depth.
+     */
+    @Override
+    public int getMaxDepth() {
+        return maxDepth;
     }
 
 }

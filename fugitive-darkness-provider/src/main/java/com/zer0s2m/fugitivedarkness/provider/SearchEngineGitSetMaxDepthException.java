@@ -1,9 +1,9 @@
 package com.zer0s2m.fugitivedarkness.provider;
 
 /**
- * Exception for setting the maximum number of matches in one file.
+ * Exception for setting maximum search depth.
  */
-public class SearchEngineGitSetMaxCountException extends SearchEngineGitException {
+public class SearchEngineGitSetMaxDepthException extends SearchEngineGitException {
 
     public static final SearchEngineGitExceptionType TYPE = SearchEngineGitExceptionType.SET;
 

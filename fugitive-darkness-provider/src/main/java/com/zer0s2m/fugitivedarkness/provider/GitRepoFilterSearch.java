@@ -167,6 +167,22 @@ public interface GitRepoFilterSearch {
      */
     int getMaxCount();
 
+    /**
+     * Set the maximum search depth.
+     * <a href="https://git-scm.com/docs/git-grep#Documentation/git-grep.txt---max-depthltdepthgt">More about</a>.
+     *
+     * @param maxDepth Depth.
+     * @return Search filter.
+     */
+    GitRepoFilterSearch setMaxDepth(int maxDepth);
+
+    /**
+     * Get maximum search depth.
+     *
+     * @return Depth.
+     */
+    int getMaxDepth();
+
     static GitRepoFilterSearch create() {
         return new GitRepoFilterSearchImpl();
     }

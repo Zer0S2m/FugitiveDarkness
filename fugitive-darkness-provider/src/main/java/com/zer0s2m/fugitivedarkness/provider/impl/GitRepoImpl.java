@@ -168,6 +168,7 @@ public class GitRepoImpl implements GitRepo {
                         }
 
                         commandGrep.setMaxCount(filterSearch.getMaxCount());
+                        commandGrep.setMaxDepth(filterSearch.getMaxDepth());
 
                         final List<ContainerInfoSearchFileGitRepo> searchResult = commandGrep.callGrep();
 
@@ -179,7 +180,7 @@ public class GitRepoImpl implements GitRepo {
                                 commandGrep.getExtensionFilesGrep(),
                                 searchResult
                         ));
-                    } catch (IOException | SearchEngineGitSetMaxCountException e) {
+                    } catch (IOException | SearchEngineGitException e) {
                         throw new RuntimeException(e);
                     }
                 });

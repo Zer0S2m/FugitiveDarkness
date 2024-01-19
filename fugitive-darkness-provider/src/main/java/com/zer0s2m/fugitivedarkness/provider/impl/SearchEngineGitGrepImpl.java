@@ -28,10 +28,16 @@ class SearchEngineGitGrepImpl extends SearchEngineGitGrepAbstract implements Sea
             new GitRepoCommandGrepUtils.GitRepoCommandGrepUtilPreviewCode();
 
     /**
-     * matcher counter in one file.
+     * Matcher counter in one file.
      * <p>Required to set a specific parameter {@link SearchEngineGitGrep#getMaxCount}.</p>
      */
     private boolean isUseMatcherCounterInFile = false;
+
+    /**
+     * Whether to use maximum search depth.
+     * <p>Required to set a specific parameter {@link SearchEngineGitGrep#getMaxDepth()}.</p>
+     */
+    private boolean isUseMaxDepth = false;
 
     /**
      * @param pattern              A pattern for finding matches in files.
@@ -62,6 +68,9 @@ class SearchEngineGitGrepImpl extends SearchEngineGitGrepAbstract implements Sea
         if (getMaxCount() != -1) {
             isUseMatcherCounterInFile = true;
         }
+        if (getMaxDepth() != -1) {
+            isUseMaxDepth = true;
+        }
 
         try (final ObjectReader objectReader = getGitRepositoryGrep().newObjectReader()) {
             return grep(objectReader, getGitRepositoryGrep());
@@ -90,6 +99,10 @@ class SearchEngineGitGrepImpl extends SearchEngineGitGrepAbstract implements Sea
                     if (!isBinary(objectLoader.openStream())) {
                         final String extensionFile = FileSystemUtils
                                 .getExtensionFromRawStrFile(it.getEntryPathString());
+
+                        if (isUseMaxDepth && !whetherSourceMatchesMaximumDepth(it.getEntryPathString())) {
+                            continue;
+                        }
 
                         if ((getWhetherSearchByExcludeFileExtension(extensionFile)) ||
                                 (!getWhetherSearchByIncludeFileExtension(extensionFile))

@@ -191,7 +191,7 @@ public interface SearchEngineGitGrep extends SearchEngineGitUtils {
      * <a href="https://git-scm.com/docs/git-grep#Documentation/git-grep.txt---max-countltnumgt">More about</a>.
      *
      * @param maxCount Limit.
-     * @throws SearchEngineGitSetMaxCountException Exception for setting maximum search depth.
+     * @throws SearchEngineGitSetMaxCountException Exception for setting the maximum number of matches in one file.
      */
     void setMaxCount(int maxCount) throws SearchEngineGitSetMaxCountException;
 
@@ -201,6 +201,33 @@ public interface SearchEngineGitGrep extends SearchEngineGitUtils {
      * @return limit
      */
     int getMaxCount();
+
+    /**
+     * Set the maximum search depth.
+     * <a href="https://git-scm.com/docs/git-grep#Documentation/git-grep.txt---max-depthltdepthgt">More about</a>.
+     *
+     * @param maxDepth Depth.
+     * @throws SearchEngineGitSetMaxDepthException Exception for setting maximum search depth.
+     */
+    void setMaxDepth(int maxDepth) throws SearchEngineGitSetMaxDepthException;
+
+    /**
+     * Get maximum search depth.
+     *
+     * @return Depth.
+     */
+    int getMaxDepth();
+
+    /**
+     * Whether the original path matches the maximum depth.
+     *
+     * @param source Source file.
+     * @return Is it compliant.
+     */
+    default boolean whetherSourceMatchesMaximumDepth(String source) {
+        final String[] sourceSplit = source.split("/");
+        return sourceSplit.length == getMaxDepth() || sourceSplit.length < getMaxDepth();
+    }
 
     /**
      * Set additional Information.
