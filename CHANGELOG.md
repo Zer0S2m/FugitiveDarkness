@@ -8,8 +8,11 @@
 - Updating the git grep search engine:
     - Set a pattern for files that will be included in the search.
     - Set a pattern for files that will be excluded from the search.
-    - Set a limit on the number of matches per file.
-    - Set the maximum search depth.
+    - Set a limit on the number of matches per file (_[more about](https://git-scm.com/docs/git-grep#Documentation/git-grep.txt---max-countltnumgt)_).
+    - Set the maximum search depth (_[more about](https://git-scm.com/docs/git-grep#Documentation/git-grep.txt---max-depthltdepthgt)_).
+    - Set the code preview BEFORE and AFTER the match (_[more about](https://git-scm.com/docs/git-grep#Documentation/git-grep.txt---contextltnumgt)_).
+    - Set the code preview BEFORE a match (_[more about](https://git-scm.com/docs/git-grep#Documentation/git-grep.txt---after-contextltnumgt)_).
+    - Set the code preview AFTER match (_[more about](https://git-scm.com/docs/git-grep#Documentation/git-grep.txt---before-contextltnumgt)_).
 
 ## [0.0.1] 2024-01-18
 

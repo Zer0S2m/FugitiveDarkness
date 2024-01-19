@@ -183,6 +183,51 @@ public interface GitRepoFilterSearch {
      */
     int getMaxDepth();
 
+    /**
+     * Set the code preview <b>after</b> and <b>before</b> the match.
+     *
+     * @param context Code preview.
+     * @return Search filter.
+     */
+    GitRepoFilterSearch setContext(int context);
+
+    /**
+     * Get the code preview after and before the match.
+     *
+     * @return Code preview.
+     */
+    int getContext();
+
+    /**
+     * Set code preview <b>before</b> showing match.
+     * <a href="https://git-scm.com/docs/git-grep#Documentation/git-grep.txt---before-contextltnumgt">More about</a>.
+     *
+     * @param contextBefore Preview.
+     */
+    GitRepoFilterSearch setContextBefore(int contextBefore);
+
+    /**
+     * Get a code preview <b>before</b> showing a match.
+     *
+     * @return Preview.
+     */
+    int getContextBefore();
+
+    /**
+     * Set code preview <b>after</b> showing a match.
+     * <a href="https://git-scm.com/docs/git-grep#Documentation/git-grep.txt---after-contextltnumgt">More about</a>.
+     *
+     * @param contextAfter Preview.
+     */
+    GitRepoFilterSearch setContextAfter(int contextAfter);
+
+    /**
+     * Get a code preview <b>after</b> showing a match.
+     *
+     * @return Preview.
+     */
+    int getContextAfter();
+
     static GitRepoFilterSearch create() {
         return new GitRepoFilterSearchImpl();
     }

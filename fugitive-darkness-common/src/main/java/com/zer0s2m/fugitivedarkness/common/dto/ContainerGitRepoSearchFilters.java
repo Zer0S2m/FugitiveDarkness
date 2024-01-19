@@ -16,7 +16,13 @@ public record ContainerGitRepoSearchFilters(
 
         int maxCount,
 
-        int maxDepth
+        int maxDepth,
+
+        int context,
+
+        int contextBefore,
+
+        int contextAfter
 
 ) {
 }

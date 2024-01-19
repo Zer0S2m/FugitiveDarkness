@@ -169,6 +169,9 @@ public class GitRepoImpl implements GitRepo {
 
                         commandGrep.setMaxCount(filterSearch.getMaxCount());
                         commandGrep.setMaxDepth(filterSearch.getMaxDepth());
+                        commandGrep.setContextBefore(filterSearch.getContextBefore());
+                        commandGrep.setContextAfter(filterSearch.getContextAfter());
+                        commandGrep.setContext(filterSearch.getContext());
 
                         final List<ContainerInfoSearchFileGitRepo> searchResult = commandGrep.callGrep();
 

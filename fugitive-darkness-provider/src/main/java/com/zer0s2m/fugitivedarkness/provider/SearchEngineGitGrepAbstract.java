@@ -63,6 +63,16 @@ public abstract class SearchEngineGitGrepAbstract implements SearchEngineGitGrep
      */
     private int maxDepth = -1;
 
+    /**
+     * <a href="https://git-scm.com/docs/git-grep#Documentation/git-grep.txt---before-contextltnumgt">More about</a>.
+     */
+    private int contextBefore = -1;
+
+    /**
+     * <a href="https://git-scm.com/docs/git-grep#Documentation/git-grep.txt---after-contextltnumgt">More about</a>.
+     */
+    private int contextAfter = -1;
+
     private Repository repository;
 
     /**
@@ -295,7 +305,7 @@ public abstract class SearchEngineGitGrepAbstract implements SearchEngineGitGrep
         if (maxDepth < -1) {
             throw new SearchEngineGitSetMaxDepthException();
         }
-        if (maxCount == 0) {
+        if (maxDepth == 0) {
             this.maxDepth = -1;
         } else {
             this.maxDepth = maxDepth;
@@ -310,6 +320,64 @@ public abstract class SearchEngineGitGrepAbstract implements SearchEngineGitGrep
     @Override
     public int getMaxDepth() {
         return maxDepth;
+    }
+
+    /**
+     * Set code preview <b>before</b> showing match.
+     * <a href="https://git-scm.com/docs/git-grep#Documentation/git-grep.txt---before-contextltnumgt">More about</a>.
+     *
+     * @param contextBefore Preview.
+     * @throws SearchEngineGitSetContextException Exception for setting preview code after and before matches.
+     */
+    @Override
+    public void setContextBefore(int contextBefore) throws SearchEngineGitSetContextException {
+        if (contextBefore < -1) {
+            throw new SearchEngineGitSetContextException();
+        }
+        if (maxCount == 0) {
+            this.contextBefore = -1;
+        } else {
+            this.contextBefore = contextBefore;
+        }
+    }
+
+    /**
+     * Get a code preview <b>before</b> showing a match.
+     *
+     * @return Preview.
+     */
+    @Override
+    public int getContextBefore() {
+        return contextBefore;
+    }
+
+    /**
+     * Set code preview <b>after</b> showing a match.
+     * <a href="https://git-scm.com/docs/git-grep#Documentation/git-grep.txt---after-contextltnumgt">More about</a>.
+     *
+     * @param contextAfter Preview.
+     * @throws SearchEngineGitSetContextException Exception for setting preview code after and before matches.
+     */
+    @Override
+    public void setContextAfter(int contextAfter) throws SearchEngineGitSetContextException {
+        if (contextAfter < -1) {
+            throw new SearchEngineGitSetContextException();
+        }
+        if (maxCount == 0) {
+            this.contextAfter = -1;
+        } else {
+            this.contextAfter = contextAfter;
+        }
+    }
+
+    /**
+     * Get a code preview <b>after</b> showing a match.
+     *
+     * @return Preview.
+     */
+    @Override
+    public int getContextAfter() {
+        return contextAfter;
     }
 
 }

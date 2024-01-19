@@ -79,6 +79,9 @@ final public class ControllerApiGitRepoSearch implements Handler<RoutingContext>
 
         gitRepoFilterSearch.setMaxCount(gitRepoSearch.filters().maxCount());
         gitRepoFilterSearch.setMaxDepth(gitRepoSearch.filters().maxDepth());
+        gitRepoFilterSearch.setContextBefore(gitRepoSearch.filters().contextBefore());
+        gitRepoFilterSearch.setContextAfter(gitRepoSearch.filters().contextAfter());
+        gitRepoFilterSearch.setContext(gitRepoSearch.filters().context());
 
         JsonObject object = new JsonObject();
         object.put("success", true);
@@ -169,7 +172,10 @@ final public class ControllerApiGitRepoSearch implements Handler<RoutingContext>
                                             .optionalProperty("patternForIncludeFile", stringSchema())
                                             .optionalProperty("patternForExcludeFile", stringSchema())
                                             .optionalProperty("maxCount", intSchema())
-                                            .optionalProperty("maxDepth", intSchema()))
+                                            .optionalProperty("maxDepth", intSchema())
+                                            .optionalProperty("context", intSchema())
+                                            .optionalProperty("contextBefore", intSchema())
+                                            .optionalProperty("contextAfter", intSchema()))
                             )
                     )
                     .build();

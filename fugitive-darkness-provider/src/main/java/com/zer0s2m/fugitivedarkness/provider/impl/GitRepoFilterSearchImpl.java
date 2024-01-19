@@ -24,6 +24,12 @@ public class GitRepoFilterSearchImpl implements GitRepoFilterSearch {
 
     private int maxDepth = -1;
 
+    private int contextBefore = -1;
+
+    private int contextAfter = -1;
+
+    private int context = -1;
+
     private final Map<Path, ContainerGitRepoMeta> meta = new HashMap<>();
 
     private final Set<String> includeExtensionFiles = new HashSet<>();
@@ -285,6 +291,76 @@ public class GitRepoFilterSearchImpl implements GitRepoFilterSearch {
     @Override
     public int getMaxDepth() {
         return maxDepth;
+    }
+
+    /**
+     * Set the code preview <b>after</b> and <b>before</b> the match.
+     *
+     * @param context Code preview.
+     * @return Search filter.
+     */
+    @Override
+    public GitRepoFilterSearch setContext(int context) {
+        setContextBefore(context);
+        setContextAfter(context);
+
+        this.context = context;
+
+        return this;
+    }
+
+    /**
+     * Get the code preview after and before the match.
+     *
+     * @return Code preview.
+     */
+    @Override
+    public int getContext() {
+        return context;
+    }
+
+    /**
+     * Set code preview <b>before</b> showing match.
+     * <a href="https://git-scm.com/docs/git-grep#Documentation/git-grep.txt---before-contextltnumgt">More about</a>.
+     *
+     * @param contextBefore Preview.
+     */
+    @Override
+    public GitRepoFilterSearch setContextBefore(int contextBefore) {
+        this.contextBefore = contextBefore;
+        return this;
+    }
+
+    /**
+     * Get a code preview <b>before</b> showing a match.
+     *
+     * @return Preview.
+     */
+    @Override
+    public int getContextBefore() {
+        return contextBefore;
+    }
+
+    /**
+     * Set code preview <b>after</b> showing a match.
+     * <a href="https://git-scm.com/docs/git-grep#Documentation/git-grep.txt---after-contextltnumgt">More about</a>.
+     *
+     * @param contextAfter Preview.
+     */
+    @Override
+    public GitRepoFilterSearch setContextAfter(int contextAfter) {
+        this.contextAfter = contextAfter;
+        return this;
+    }
+
+    /**
+     * Get a code preview <b>after</b> showing a match.
+     *
+     * @return Preview.
+     */
+    @Override
+    public int getContextAfter() {
+        return contextAfter;
     }
 
 }
