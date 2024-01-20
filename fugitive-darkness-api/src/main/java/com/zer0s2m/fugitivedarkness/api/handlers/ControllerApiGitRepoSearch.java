@@ -79,9 +79,12 @@ final public class ControllerApiGitRepoSearch implements Handler<RoutingContext>
 
         gitRepoFilterSearch.setMaxCount(gitRepoSearch.filters().maxCount());
         gitRepoFilterSearch.setMaxDepth(gitRepoSearch.filters().maxDepth());
-        gitRepoFilterSearch.setContextBefore(gitRepoSearch.filters().contextBefore());
-        gitRepoFilterSearch.setContextAfter(gitRepoSearch.filters().contextAfter());
-        gitRepoFilterSearch.setContext(gitRepoSearch.filters().context());
+        if (gitRepoSearch.filters().context() == -1 || gitRepoSearch.filters().context() == 0) {
+            gitRepoFilterSearch.setContextBefore(gitRepoSearch.filters().contextBefore());
+            gitRepoFilterSearch.setContextAfter(gitRepoSearch.filters().contextAfter());
+        } else {
+            gitRepoFilterSearch.setContext(gitRepoSearch.filters().context());
+        }
 
         JsonObject object = new JsonObject();
         object.put("success", true);
