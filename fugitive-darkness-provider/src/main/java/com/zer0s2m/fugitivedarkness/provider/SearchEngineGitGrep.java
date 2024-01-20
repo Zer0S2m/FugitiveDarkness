@@ -22,6 +22,10 @@ public interface SearchEngineGitGrep extends SearchEngineGitUtils {
      *     <li>Excluding files from the search that have the specified
      *     extensions {@link SearchEngineGitGrep#getExcludeExtensionFilesForSearchGrep}.</li>
      *     <li>Match pattern {@link SearchEngineGitGrep#getPattern}.</li>
+     *     <li>Include files by pattern {@link SearchEngineGitGrep#getPatternForIncludeFile} in the search.</li>
+     *     <li>Exclude files from the search by pattern {@link SearchEngineGitGrep#getPatternForExcludeFile}.</li>
+     *     <li>Maximum search depth {@link SearchEngineGitGrep#getMaxDepth()}.</li>
+     *     <li>Maximum number of matches in one file {@link SearchEngineGitGrep#getMaxCount()}.</li>
      * </ul>
      *
      * @return Search results.
@@ -72,7 +76,7 @@ public interface SearchEngineGitGrep extends SearchEngineGitUtils {
     }
 
     /**
-     * Set the file extension to be excluded from search filtering..
+     * Set the file extension to be excluded from search filtering.
      *
      * @param extensionFiles File extension.
      */
@@ -127,6 +131,153 @@ public interface SearchEngineGitGrep extends SearchEngineGitUtils {
      * @return A pattern for finding matches in files.
      */
     Pattern getPattern();
+
+    /**
+     * Set a pattern for files that will be included in the search.
+     *
+     * @param patternForIncludeFile Pattern.
+     */
+    void setPatternForIncludeFile(Pattern patternForIncludeFile);
+
+    /**
+     * Get a pattern for files that will be included in the search.
+     *
+     * @return Pattern.
+     */
+    Pattern getPatternForIncludeFile();
+
+    /**
+     * Should the file be searched if the pattern matches {@link SearchEngineGitGrep#getPatternForIncludeFile}.
+     *
+     * @param file The file in which the check will be carried out.
+     * @return Whether to search.
+     */
+    default boolean getWhetherSearchByIncludeFileByPattern(final String file) {
+        if (getPatternForIncludeFile() != null) {
+            return getPatternForIncludeFile()
+                    .matcher(FileSystemUtils.getFileName(file))
+                    .find();
+        }
+        return true;
+    }
+
+    /**
+     * Set a pattern for files that will be excluded from the search.
+     *
+     * @param patternForExcludeFile Pattern.
+     */
+    void setPatternForExcludeFile(Pattern patternForExcludeFile);
+
+    /**
+     * Get a template for files that will be excluded from the search.
+     *
+     * @return Pattern.
+     */
+    Pattern getPatternForExcludeFile();
+
+    /**
+     * Should the file be searched if the pattern matches {@link SearchEngineGitGrep#getPatternForExcludeFile}.
+     *
+     * @param file The file in which the check will be carried out.
+     * @return Whether to search.
+     */
+    default boolean getWhetherSearchByExcludeFileByPattern(final String file) {
+        if (getPatternForExcludeFile() != null) {
+            return getPatternForExcludeFile()
+                    .matcher(FileSystemUtils.getFileName(file))
+                    .find();
+        }
+        return false;
+    }
+
+    /**
+     * Set a limit on the number of matches per file.
+     * <a href="https://git-scm.com/docs/git-grep#Documentation/git-grep.txt---max-countltnumgt">More about</a>.
+     *
+     * @param maxCount Limit.
+     * @throws SearchEngineGitSetMaxCountException Exception for setting the maximum number of matches in one file.
+     */
+    void setMaxCount(int maxCount) throws SearchEngineGitSetMaxCountException;
+
+    /**
+     * Get the limit on the number of matches per file.
+     *
+     * @return limit
+     */
+    int getMaxCount();
+
+    /**
+     * Set the maximum search depth.
+     * <a href="https://git-scm.com/docs/git-grep#Documentation/git-grep.txt---max-depthltdepthgt">More about</a>.
+     *
+     * @param maxDepth Depth.
+     * @throws SearchEngineGitSetMaxDepthException Exception for setting maximum search depth.
+     */
+    void setMaxDepth(int maxDepth) throws SearchEngineGitSetMaxDepthException;
+
+    /**
+     * Get maximum search depth.
+     *
+     * @return Depth.
+     */
+    int getMaxDepth();
+
+    /**
+     * Whether the original path matches the maximum depth.
+     *
+     * @param source Source file.
+     * @return Is it compliant.
+     */
+    default boolean whetherSourceMatchesMaximumDepth(String source) {
+        if (getMaxDepth() == -1) {
+            return true;
+        }
+        final String[] sourceSplit = source.split("/");
+        return sourceSplit.length == getMaxDepth() || sourceSplit.length < getMaxDepth();
+    }
+
+    /**
+     * Set the code preview <b>after</b> and <b>before</b> the match.
+     *
+     * @param context Code preview.
+     * @throws SearchEngineGitSetContextException Exception for setting preview code after and before matches.
+     */
+    default void setContext(int context) throws SearchEngineGitSetContextException {
+        setContextBefore(context);
+        setContextAfter(context);
+    }
+
+    /**
+     * Set code preview <b>before</b> showing match.
+     * <a href="https://git-scm.com/docs/git-grep#Documentation/git-grep.txt---before-contextltnumgt">More about</a>.
+     *
+     * @param contextBefore Preview.
+     * @throws SearchEngineGitSetContextException Exception for setting preview code after and before matches.
+     */
+    void setContextBefore(int contextBefore) throws SearchEngineGitSetContextException;
+
+    /**
+     * Get a code preview <b>before</b> showing a match.
+     *
+     * @return Preview.
+     */
+    int getContextBefore();
+
+    /**
+     * Set code preview <b>after</b> showing a match.
+     * <a href="https://git-scm.com/docs/git-grep#Documentation/git-grep.txt---after-contextltnumgt">More about</a>.
+     *
+     * @param contextAfter Preview.
+     * @throws SearchEngineGitSetContextException Exception for setting preview code after and before matches.
+     */
+    void setContextAfter(int contextAfter) throws SearchEngineGitSetContextException;
+
+    /**
+     * Get a code preview <b>after</b> showing a match.
+     *
+     * @return Preview.
+     */
+    int getContextAfter();
 
     /**
      * Set additional Information.

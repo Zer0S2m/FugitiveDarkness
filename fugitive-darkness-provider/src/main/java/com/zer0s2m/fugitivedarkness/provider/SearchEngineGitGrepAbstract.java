@@ -22,6 +22,16 @@ public abstract class SearchEngineGitGrepAbstract implements SearchEngineGitGrep
     private Pattern pattern;
 
     /**
+     * Pattern for files that will be included in the search.
+     */
+    private Pattern patternForIncludeFile = null;
+
+    /**
+     * Pattern for files that will be excluded from the search.
+     */
+    private Pattern patternForExcludeFile = null;
+
+    /**
      * Additional Information.
      */
     private ContainerGitRepoMeta containerGitRepoMeta;
@@ -39,7 +49,29 @@ public abstract class SearchEngineGitGrepAbstract implements SearchEngineGitGrep
     /**
      * The file extension that will be excluded from files when searching for matches.
      */
-            private final Set<String> extensionFilesForIncludeExcludeSearch = new HashSet<>();
+    private final Set<String> extensionFilesForIncludeExcludeSearch = new HashSet<>();
+
+    /**
+     * Limit number of matches per file.
+     * <a href="https://git-scm.com/docs/git-grep#Documentation/git-grep.txt---max-countltnumgt">More about</a>.
+     */
+    private int maxCount = -1;
+
+    /**
+     * Search depth.
+     * <a href="https://git-scm.com/docs/git-grep#Documentation/git-grep.txt---max-depthltdepthgt">More about</a>.
+     */
+    private int maxDepth = -1;
+
+    /**
+     * <a href="https://git-scm.com/docs/git-grep#Documentation/git-grep.txt---before-contextltnumgt">More about</a>.
+     */
+    private int contextBefore = -1;
+
+    /**
+     * <a href="https://git-scm.com/docs/git-grep#Documentation/git-grep.txt---after-contextltnumgt">More about</a>.
+     */
+    private int contextAfter = -1;
 
     private Repository repository;
 
@@ -163,7 +195,6 @@ public abstract class SearchEngineGitGrepAbstract implements SearchEngineGitGrep
      *
      * @return Git repository.
      */
-
     @Override
     public Repository getGitRepositoryGrep() {
         return repository;
@@ -187,6 +218,166 @@ public abstract class SearchEngineGitGrepAbstract implements SearchEngineGitGrep
     @Override
     public ContainerGitRepoMeta getContainerGitRepoMeta() {
         return containerGitRepoMeta;
+    }
+
+    /**
+     * Set a pattern for files that will be included in the search.
+     *
+     * @param patternForIncludeFile Pattern.
+     */
+    @Override
+    public void setPatternForIncludeFile(Pattern patternForIncludeFile) {
+        Objects.requireNonNull(patternForIncludeFile, "The file pattern must not be null");
+
+        this.patternForIncludeFile = patternForIncludeFile;
+    }
+
+    /**
+     * Get a pattern for files that will be included in the search.
+     *
+     * @return Pattern.
+     */
+    @Override
+    public Pattern getPatternForIncludeFile() {
+        return patternForIncludeFile;
+    }
+
+    /**
+     * Set a pattern for files that will be excluded from the search.
+     *
+     * @param patternForExcludeFile Pattern.
+     */
+    @Override
+    public void setPatternForExcludeFile(Pattern patternForExcludeFile) {
+        Objects.requireNonNull(patternForExcludeFile, "The file pattern must not be null");
+
+        this.patternForExcludeFile = patternForExcludeFile;
+    }
+
+    /**
+     * Get a template for files that will be excluded from the search.
+     *
+     * @return Pattern.
+     */
+    @Override
+    public Pattern getPatternForExcludeFile() {
+        return patternForExcludeFile;
+    }
+
+    /**
+     * Set a limit on the number of matches per file.
+     * <a href="https://git-scm.com/docs/git-grep#Documentation/git-grep.txt---max-countltnumgt">More about</a>.
+     *
+     * @param maxCount Limit.
+     * @throws SearchEngineGitSetMaxCountException Exception for setting the maximum number of matches in one file.
+     */
+    @Override
+    public void setMaxCount(int maxCount) throws SearchEngineGitSetMaxCountException {
+        if (maxCount < -1) {
+            throw new SearchEngineGitSetMaxCountException();
+        }
+        if (maxCount == 0) {
+            this.maxCount = -1;
+        } else {
+            this.maxCount = maxCount;
+        }
+    }
+
+    /**
+     * Get the limit on the number of matches per file.
+     *
+     * @return limit
+     */
+    @Override
+    public int getMaxCount() {
+        return maxCount;
+    }
+
+    /**
+     * Set the maximum search depth.
+     * <a href="https://git-scm.com/docs/git-grep#Documentation/git-grep.txt---max-depthltdepthgt">More about</a>.
+     *
+     * @param maxDepth Depth.
+     * @throws SearchEngineGitSetMaxDepthException Exception for setting maximum search depth.
+     */
+    @Override
+    public void setMaxDepth(int maxDepth) throws SearchEngineGitSetMaxDepthException {
+        if (maxDepth < -1) {
+            throw new SearchEngineGitSetMaxDepthException();
+        }
+        if (maxDepth == 0) {
+            this.maxDepth = -1;
+        } else {
+            this.maxDepth = maxDepth;
+        }
+    }
+
+    /**
+     * Get maximum search depth.
+     *
+     * @return Depth.
+     */
+    @Override
+    public int getMaxDepth() {
+        return maxDepth;
+    }
+
+    /**
+     * Set code preview <b>before</b> showing match.
+     * <a href="https://git-scm.com/docs/git-grep#Documentation/git-grep.txt---before-contextltnumgt">More about</a>.
+     *
+     * @param contextBefore Preview.
+     * @throws SearchEngineGitSetContextException Exception for setting preview code after and before matches.
+     */
+    @Override
+    public void setContextBefore(int contextBefore) throws SearchEngineGitSetContextException {
+        if (contextBefore < -1) {
+            throw new SearchEngineGitSetContextException();
+        }
+        if (maxCount == 0) {
+            this.contextBefore = -1;
+        } else {
+            this.contextBefore = contextBefore;
+        }
+    }
+
+    /**
+     * Get a code preview <b>before</b> showing a match.
+     *
+     * @return Preview.
+     */
+    @Override
+    public int getContextBefore() {
+        return contextBefore;
+    }
+
+    /**
+     * Set code preview <b>after</b> showing a match.
+     * <a href="https://git-scm.com/docs/git-grep#Documentation/git-grep.txt---after-contextltnumgt">More about</a>.
+     *
+     * @param contextAfter Preview.
+     * @throws SearchEngineGitSetContextException Exception for setting preview code after and before matches.
+     */
+    @Override
+    public void setContextAfter(int contextAfter) throws SearchEngineGitSetContextException {
+        if (contextAfter < -1) {
+            throw new SearchEngineGitSetContextException();
+        }
+        if (maxCount == 0) {
+            this.contextAfter = -1;
+        } else {
+            this.contextAfter = contextAfter;
+        }
+    }
+
+    /**
+     * Get a code preview <b>after</b> showing a match.
+     *
+     * @return Preview.
+     */
+    @Override
+    public int getContextAfter() {
+        return contextAfter;
     }
 
 }

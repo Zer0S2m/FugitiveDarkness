@@ -16,6 +16,20 @@ public class GitRepoFilterSearchImpl implements GitRepoFilterSearch {
 
     private Pattern pattern;
 
+    private Pattern patternForIncludeFile = null;
+
+    private Pattern patternForExcludeFile = null;
+
+    private int maxCount = -1;
+
+    private int maxDepth = -1;
+
+    private int contextBefore = -1;
+
+    private int contextAfter = -1;
+
+    private int context = -1;
+
     private final Map<Path, ContainerGitRepoMeta> meta = new HashMap<>();
 
     private final Set<String> includeExtensionFiles = new HashSet<>();
@@ -187,6 +201,166 @@ public class GitRepoFilterSearchImpl implements GitRepoFilterSearch {
     @Override
     public Set<String> getExcludeExtensionFile() {
         return excludeExtensionFiles;
+    }
+
+    /**
+     * Set a pattern for files that will be included in the search.
+     *
+     * @param patternForIncludeFile Pattern.
+     * @return Search filter.
+     */
+    @Override
+    public GitRepoFilterSearch setPatternForIncludeFile(Pattern patternForIncludeFile) {
+        this.patternForIncludeFile = patternForIncludeFile;
+        return this;
+    }
+
+    /**
+     * Get a pattern for files that will be included in the search.
+     *
+     * @return Pattern.
+     */
+    @Override
+    public Pattern getPatternForIncludeFile() {
+        return patternForIncludeFile;
+    }
+
+    /**
+     * Set a pattern for files that will be excluded from the search.
+     *
+     * @param patternForExcludeFile Pattern.
+     * @return Search filter.
+     */
+    @Override
+    public GitRepoFilterSearch setPatternForExcludeFile(Pattern patternForExcludeFile) {
+        this.patternForExcludeFile = patternForExcludeFile;
+        return this;
+    }
+
+    /**
+     * Get a template for files that will be excluded from the search.
+     *
+     * @return Pattern.
+     */
+    @Override
+    public Pattern getPatternForExcludeFile() {
+        return patternForExcludeFile;
+    }
+
+    /**
+     * Set a limit on the number of matches per file.
+     * <a href="https://git-scm.com/docs/git-grep#Documentation/git-grep.txt---max-countltnumgt">More about</a>.
+     *
+     * @param maxCount Limit.
+     * @return Search filter.
+     */
+    @Override
+    public GitRepoFilterSearch setMaxCount(int maxCount) {
+        this.maxCount = maxCount;
+        return this;
+    }
+
+    /**
+     * Get the limit on the number of matches per file.
+     *
+     * @return limit
+     */
+    @Override
+    public int getMaxCount() {
+        return maxCount;
+    }
+
+    /**
+     * Set the maximum search depth.
+     * <a href="https://git-scm.com/docs/git-grep#Documentation/git-grep.txt---max-depthltdepthgt">More about</a>.
+     *
+     * @param maxDepth Depth.
+     * @return Search filter.
+     */
+    @Override
+    public GitRepoFilterSearch setMaxDepth(int maxDepth) {
+        this.maxDepth = maxDepth;
+        return this;
+    }
+
+    /**
+     * Get maximum search depth.
+     *
+     * @return Depth.
+     */
+    @Override
+    public int getMaxDepth() {
+        return maxDepth;
+    }
+
+    /**
+     * Set the code preview <b>after</b> and <b>before</b> the match.
+     *
+     * @param context Code preview.
+     * @return Search filter.
+     */
+    @Override
+    public GitRepoFilterSearch setContext(int context) {
+        setContextBefore(context);
+        setContextAfter(context);
+
+        this.context = context;
+
+        return this;
+    }
+
+    /**
+     * Get the code preview after and before the match.
+     *
+     * @return Code preview.
+     */
+    @Override
+    public int getContext() {
+        return context;
+    }
+
+    /**
+     * Set code preview <b>before</b> showing match.
+     * <a href="https://git-scm.com/docs/git-grep#Documentation/git-grep.txt---before-contextltnumgt">More about</a>.
+     *
+     * @param contextBefore Preview.
+     */
+    @Override
+    public GitRepoFilterSearch setContextBefore(int contextBefore) {
+        this.contextBefore = contextBefore;
+        return this;
+    }
+
+    /**
+     * Get a code preview <b>before</b> showing a match.
+     *
+     * @return Preview.
+     */
+    @Override
+    public int getContextBefore() {
+        return contextBefore;
+    }
+
+    /**
+     * Set code preview <b>after</b> showing a match.
+     * <a href="https://git-scm.com/docs/git-grep#Documentation/git-grep.txt---after-contextltnumgt">More about</a>.
+     *
+     * @param contextAfter Preview.
+     */
+    @Override
+    public GitRepoFilterSearch setContextAfter(int contextAfter) {
+        this.contextAfter = contextAfter;
+        return this;
+    }
+
+    /**
+     * Get a code preview <b>after</b> showing a match.
+     *
+     * @return Preview.
+     */
+    @Override
+    public int getContextAfter() {
+        return contextAfter;
     }
 
 }

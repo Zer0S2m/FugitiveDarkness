@@ -1,5 +1,6 @@
 @import './base.css';
 @import './modal.css';
+@import './input.css';
 @import './matcher-found.css';
 
 code.code {

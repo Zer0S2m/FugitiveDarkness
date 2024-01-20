@@ -46,8 +46,6 @@ const useGitRepositoryStore = useGitRepositoryState();
 const vueRouteStore = useRoute();
 
 const searchByGrep = async () => {
-  console.log(useGitRepositoryStore.urlSearch['includeFileExt']);
-  console.log(useGitRepositoryStore.urlSearch['excludeFileExt']);
   await useGitRepositoryStore.searchByGrep();
   await router.push({
     name: 'search',

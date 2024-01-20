@@ -41,6 +41,13 @@ export interface IFilterSearchGitRepositories {
   git: IControlGitRepository[];
   includeExtensionFiles: string[];
   excludeExtensionFiles: string[];
+  patternForIncludeFile: string;
+  patternForExcludeFile: string;
+  maxCount: number;
+  maxDepth: number;
+  context: number;
+  contextBefore: number;
+  contextAfter: number;
 }
 
 export interface IMatcherFoundByGrepGitRepository {

@@ -121,6 +121,113 @@ public interface GitRepoFilterSearch {
      */
     Set<String> getExcludeExtensionFile();
 
+    /**
+     * Set a pattern for files that will be included in the search.
+     *
+     * @param patternForIncludeFile Pattern.
+     * @return Search filter.
+     */
+    GitRepoFilterSearch setPatternForIncludeFile(Pattern patternForIncludeFile);
+
+    /**
+     * Get a pattern for files that will be included in the search.
+     *
+     * @return Pattern.
+     */
+    Pattern getPatternForIncludeFile();
+
+    /**
+     * Set a pattern for files that will be excluded from the search.
+     *
+     * @param patternForExcludeFile Pattern.
+     * @return Search filter.
+     */
+    GitRepoFilterSearch setPatternForExcludeFile(Pattern patternForExcludeFile);
+
+    /**
+     * Get a template for files that will be excluded from the search.
+     *
+     * @return Pattern.
+     */
+    Pattern getPatternForExcludeFile();
+
+    /**
+     * Set a limit on the number of matches per file.
+     * <a href="https://git-scm.com/docs/git-grep#Documentation/git-grep.txt---max-countltnumgt">More about</a>.
+     *
+     * @param maxCount Limit.
+     * @return Search filter.
+     */
+    GitRepoFilterSearch setMaxCount(int maxCount);
+
+    /**
+     * Get the limit on the number of matches per file.
+     *
+     * @return limit
+     */
+    int getMaxCount();
+
+    /**
+     * Set the maximum search depth.
+     * <a href="https://git-scm.com/docs/git-grep#Documentation/git-grep.txt---max-depthltdepthgt">More about</a>.
+     *
+     * @param maxDepth Depth.
+     * @return Search filter.
+     */
+    GitRepoFilterSearch setMaxDepth(int maxDepth);
+
+    /**
+     * Get maximum search depth.
+     *
+     * @return Depth.
+     */
+    int getMaxDepth();
+
+    /**
+     * Set the code preview <b>after</b> and <b>before</b> the match.
+     *
+     * @param context Code preview.
+     * @return Search filter.
+     */
+    GitRepoFilterSearch setContext(int context);
+
+    /**
+     * Get the code preview after and before the match.
+     *
+     * @return Code preview.
+     */
+    int getContext();
+
+    /**
+     * Set code preview <b>before</b> showing match.
+     * <a href="https://git-scm.com/docs/git-grep#Documentation/git-grep.txt---before-contextltnumgt">More about</a>.
+     *
+     * @param contextBefore Preview.
+     */
+    GitRepoFilterSearch setContextBefore(int contextBefore);
+
+    /**
+     * Get a code preview <b>before</b> showing a match.
+     *
+     * @return Preview.
+     */
+    int getContextBefore();
+
+    /**
+     * Set code preview <b>after</b> showing a match.
+     * <a href="https://git-scm.com/docs/git-grep#Documentation/git-grep.txt---after-contextltnumgt">More about</a>.
+     *
+     * @param contextAfter Preview.
+     */
+    GitRepoFilterSearch setContextAfter(int contextAfter);
+
+    /**
+     * Get a code preview <b>after</b> showing a match.
+     *
+     * @return Preview.
+     */
+    int getContextAfter();
+
     static GitRepoFilterSearch create() {
         return new GitRepoFilterSearchImpl();
     }

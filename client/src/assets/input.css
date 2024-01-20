@@ -1,0 +1,20 @@
+.base-input {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 4px 12px;
+  font-size: 14px;
+  line-height: 1.5;
+  list-style: none;
+  position: relative;
+  display: inline-block;
+  width: 100%;
+  min-width: 0;
+  background-color: var(--color-background);
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+}
+
+.base-input:hover,
+.base-input:focus {
+  border-color: var(--color-secondary);
+}
