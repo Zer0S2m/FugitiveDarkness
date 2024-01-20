@@ -46,4 +46,6 @@ public interface Repository<T, D> {
      */
     boolean mapToExistsColumn(final T rows);
 
+    Future<Void> closeClient();
+
 }

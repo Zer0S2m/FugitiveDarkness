@@ -94,9 +94,14 @@ public class ControllerApiGitRepoProvider implements Handler<RoutingContext> {
                                     event
                                             .response()
                                             .end();
+
+                                    gitProviderRepository.closeClient();
+
                                     logger.info("Finish receiving repositories from the supplier");
                                 })
                                 .onFailure(handler -> {
+                                    gitProviderRepository.closeClient();
+
                                     logger.error("Failure (HTTP CLIENT): " + handler.fillInStackTrace());
 
                                     event
@@ -106,6 +111,7 @@ public class ControllerApiGitRepoProvider implements Handler<RoutingContext> {
                                     event.response().end();
                                 });
                     } else {
+                        gitProviderRepository.closeClient();
                         logger.error("Failure (DB): " + ar.cause());
                     }
                 });

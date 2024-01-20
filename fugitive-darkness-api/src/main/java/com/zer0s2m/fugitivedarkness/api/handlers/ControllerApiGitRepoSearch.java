@@ -126,6 +126,8 @@ final public class ControllerApiGitRepoSearch implements Handler<RoutingContext>
                             final List<ContainerInfoSearchGitRepo> resultSearch = serviceGit
                                     .searchByGrep(gitRepoFilterSearch);
 
+                            gitRepoRepository.closeClient();
+
                             logger.info("Search ends");
 
                             return resultSearch;

@@ -74,13 +74,23 @@ public class ControllerApiGitRepoFetch implements Handler<RoutingContext> {
 
                                 return null;
                             }, false)
-                            .onFailure(error -> logger.error("Failure (GIT): " + error.fillInStackTrace()))
+                            .onFailure(error -> {
+                                repositoryGit.closeClient();
+                                logger.error("Failure (GIT): " + error.fillInStackTrace());
+                            })
                             .onSuccess(ar -> repositoryGit.updateIsLoadByGroupAndProject(
                                             containerGitRepoDelete.group(),
                                             containerGitRepoDelete.project(),
                                             true)
-                                    .onFailure(error -> logger.error("Failure (DB): " + error.fillInStackTrace()))))
-                    .onFailure(error -> logger.error("Failure (DB): " + error.fillInStackTrace()));
+                                    .onFailure(error -> {
+                                        repositoryGit.closeClient();
+                                        logger.error("Failure (DB): " + error.fillInStackTrace());
+                                    })
+                                    .onSuccess((ar2) -> repositoryGit.closeClient()))
+                    .onFailure(error -> {
+                        repositoryGit.closeClient();
+                        logger.error("Failure (DB): " + error.fillInStackTrace());
+                    }));
 
             event.response()
                     .setStatusCode(HttpResponseStatus.NO_CONTENT.code())

@@ -46,6 +46,7 @@ public class ControllerApiGitProviderDelete implements Handler<RoutingContext> {
 
         gitProviderRepository
                 .deleteByTypeAndTarget(containerInfoGitProviderDelete.type(), containerInfoGitProviderDelete.target());
+        gitProviderRepository.closeClient();
 
         event
                 .response()
@@ -110,6 +111,8 @@ public class ControllerApiGitProviderDelete implements Handler<RoutingContext> {
                         } else {
                             event.next();
                         }
+
+                        gitProviderRepository.closeClient();
                     });
         }
 

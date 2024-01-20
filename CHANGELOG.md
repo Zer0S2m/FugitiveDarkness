@@ -14,6 +14,10 @@
     - Set the code preview BEFORE a match (_[more about](https://git-scm.com/docs/git-grep#Documentation/git-grep.txt---after-contextltnumgt)_).
     - Set the code preview AFTER match (_[more about](https://git-scm.com/docs/git-grep#Documentation/git-grep.txt---before-contextltnumgt)_).
 
+### Fixed
+
+- Closing the client for the database
+
 ## [0.0.1] 2024-01-18
 
 ### Added

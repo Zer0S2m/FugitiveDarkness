@@ -80,14 +80,17 @@ final public class ControllerApiGitRepoInstall implements Handler<RoutingContext
                     executor
                             .executeBlocking(() -> {
                                 try {
+                                    repositoryGit.closeClient();
                                     return serviceGit.gClone(containerGitRepoInstall.remote());
                                 } catch (GitAPIException e) {
+                                    repositoryGit.closeClient();
                                     logger.error("Failure (GIT): " + e.fillInStackTrace());
                                     throw new RuntimeException(e);
                                 }
                             }, false)
                             .onFailure((fail) -> {
                                 repositoryGit.deleteByGroupAndProject(infoRepo.group(), infoRepo.project());
+                                repositoryGit.closeClient();
                             })
                             .onSuccess(result -> repositoryGit
                                     .updateIsLoadByGroupAndProject(result.group(), result.project(), true)
@@ -95,6 +98,8 @@ final public class ControllerApiGitRepoInstall implements Handler<RoutingContext
                                         if (!ar.succeeded()) {
                                             logger.error("Failure (DB): " + ar.cause());
                                         }
+
+                                        repositoryGit.closeClient();
                                     }));
                 });
 
