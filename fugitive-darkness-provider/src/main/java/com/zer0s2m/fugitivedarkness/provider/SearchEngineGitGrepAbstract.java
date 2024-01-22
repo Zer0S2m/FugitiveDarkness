@@ -185,7 +185,7 @@ public abstract class SearchEngineGitGrepAbstract implements SearchEngineGitGrep
      */
     @Override
     public void setGitRepositoryGrep(Path source) throws IOException {
-        this.repository = Git.open(source.toFile())
+        this.repository = Git.open(HelperGitRepo.cleanPathForGitRepo(source).toFile())
                 .checkout()
                 .getRepository();
     }

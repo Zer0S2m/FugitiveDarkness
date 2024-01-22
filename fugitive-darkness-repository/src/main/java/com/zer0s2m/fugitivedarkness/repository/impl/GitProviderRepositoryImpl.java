@@ -81,8 +81,8 @@ public class GitProviderRepositoryImpl extends RepositoryImpl implements GitProv
      * @param target Provider target.
      */
     @Override
-    public void deleteByTypeAndTarget(String type, String target) {
-        sqlClient(vertx)
+    public Future<RowSet<Row>> deleteByTypeAndTarget(String type, String target) {
+        return sqlClient(vertx)
                 .preparedQuery("""
                         DELETE
                         FROM "git_providers"

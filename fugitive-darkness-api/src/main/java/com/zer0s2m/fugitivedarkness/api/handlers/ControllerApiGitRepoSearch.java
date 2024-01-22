@@ -3,10 +3,7 @@ package com.zer0s2m.fugitivedarkness.api.handlers;
 import com.zer0s2m.fugitivedarkness.common.Environment;
 import com.zer0s2m.fugitivedarkness.common.dto.ContainerGitRepoSearch;
 import com.zer0s2m.fugitivedarkness.models.GitRepoModel;
-import com.zer0s2m.fugitivedarkness.provider.ContainerGitRepoMeta;
-import com.zer0s2m.fugitivedarkness.provider.ContainerInfoSearchGitRepo;
-import com.zer0s2m.fugitivedarkness.provider.GitRepo;
-import com.zer0s2m.fugitivedarkness.provider.GitRepoFilterSearch;
+import com.zer0s2m.fugitivedarkness.provider.*;
 import com.zer0s2m.fugitivedarkness.repository.GitRepoRepository;
 import com.zer0s2m.fugitivedarkness.repository.impl.GitRepoRepositoryImpl;
 import io.netty.handler.codec.http.HttpResponseStatus;
@@ -107,11 +104,8 @@ final public class ControllerApiGitRepoSearch implements Handler<RoutingContext>
 
                             gitRepoSearch.filters().git()
                                     .forEach(repo -> {
-                                        final Path source = Path.of(
-                                                Environment.ROOT_PATH_REPO,
-                                                repo.group(),
-                                                repo.project(),
-                                                ".git");
+                                        final Path source = HelperGitRepo
+                                                .getSourceGitRepository(repo.group(), repo.project());
 
                                         gitRepoFilterSearch
                                                 .addGitRepo(source)

@@ -16,7 +16,8 @@
 
 ### Fixed
 
-- Closing the client for the database
+- Closing the client for the database.
+- Fixed double commit .git.
 
 ## [0.0.1] 2024-01-18
 

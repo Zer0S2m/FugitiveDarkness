@@ -80,23 +80,24 @@ final public class ControllerApiGitRepoInstall implements Handler<RoutingContext
                     executor
                             .executeBlocking(() -> {
                                 try {
-                                    repositoryGit.closeClient();
                                     return serviceGit.gClone(containerGitRepoInstall.remote());
                                 } catch (GitAPIException e) {
-                                    repositoryGit.closeClient();
                                     logger.error("Failure (GIT): " + e.fillInStackTrace());
                                     throw new RuntimeException(e);
                                 }
                             }, false)
-                            .onFailure((fail) -> {
-                                repositoryGit.deleteByGroupAndProject(infoRepo.group(), infoRepo.project());
-                                repositoryGit.closeClient();
-                            })
+                            .onFailure((fail) -> repositoryGit
+                                    .deleteByGroupAndProject(infoRepo.group(), infoRepo.project())
+                                    .onSuccess(ar -> repositoryGit.closeClient())
+                                    .onFailure(fail2 -> {
+                                        logger.error("Failure (DB 1): " + fail2.getMessage());
+                                        repositoryGit.closeClient();
+                                    }))
                             .onSuccess(result -> repositoryGit
                                     .updateIsLoadByGroupAndProject(result.group(), result.project(), true)
                                     .onComplete(ar -> {
                                         if (!ar.succeeded()) {
-                                            logger.error("Failure (DB): " + ar.cause());
+                                            logger.error("Failure (DB 2): " + ar.cause());
                                         }
 
                                         repositoryGit.closeClient();

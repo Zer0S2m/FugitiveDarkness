@@ -13,7 +13,7 @@ public interface GitRepoRepository extends Repository<RowSet<Row>, GitRepoModel>
      * @param group   Must not be null.
      * @param project Must not be null.
      */
-    void deleteByGroupAndProject(String group, String project);
+    Future<RowSet<Row>> deleteByGroupAndProject(String group, String project);
 
     /**
      * Check entry for existence by group and project.

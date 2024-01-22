@@ -45,8 +45,12 @@ public class ControllerApiGitProviderDelete implements Handler<RoutingContext> {
                 .mapTo(ContainerInfoGitProviderDelete.class);
 
         gitProviderRepository
-                .deleteByTypeAndTarget(containerInfoGitProviderDelete.type(), containerInfoGitProviderDelete.target());
-        gitProviderRepository.closeClient();
+                .deleteByTypeAndTarget(containerInfoGitProviderDelete.type(), containerInfoGitProviderDelete.target())
+                .onSuccess(ar -> gitProviderRepository.closeClient())
+                .onFailure((fail) -> {
+                    logger.error("Failure (DB): " + fail.fillInStackTrace());
+                    gitProviderRepository.closeClient();
+                });
 
         event
                 .response()

@@ -4,6 +4,8 @@ import com.zer0s2m.fugitivedarkness.common.Environment;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Arrays;
+import java.util.List;
 import java.util.regex.Pattern;
 
 /**
@@ -54,7 +56,23 @@ public interface HelperGitRepo {
      * @return Source path.
      */
     static Path getSourceGitRepository(final String group, final String project) {
-        return Path.of(Environment.ROOT_PATH_REPO, group, project, ".git");
+        return Path.of(Environment.ROOT_PATH_REPO, group, project);
+    }
+
+    /**
+     * Clear source path from .git folder.
+     *
+     * @param source The raw source.
+     * @return Collected source.
+     */
+    static Path cleanPathForGitRepo(Path source) {
+        List<String> splitSource = Arrays.asList(source.toString().split("/"));
+        if (splitSource.get(splitSource.size() - 1).contains(".git")) {
+            splitSource.remove(splitSource.size() - 1);
+            return Path.of(String.join("/", splitSource));
+        } else {
+            return source;
+        }
     }
 
 }

@@ -84,12 +84,12 @@ public class ControllerApiGitRepoFetch implements Handler<RoutingContext> {
                                             true)
                                     .onFailure(error -> {
                                         repositoryGit.closeClient();
-                                        logger.error("Failure (DB): " + error.fillInStackTrace());
+                                        logger.error("Failure (DB 1): " + error.fillInStackTrace());
                                     })
                                     .onSuccess((ar2) -> repositoryGit.closeClient()))
                     .onFailure(error -> {
                         repositoryGit.closeClient();
-                        logger.error("Failure (DB): " + error.fillInStackTrace());
+                        logger.error("Failure (DB 2): " + error.fillInStackTrace());
                     }));
 
             event.response()
