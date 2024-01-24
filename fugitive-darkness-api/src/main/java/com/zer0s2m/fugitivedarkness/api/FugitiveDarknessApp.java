@@ -3,6 +3,7 @@ package com.zer0s2m.fugitivedarkness.api;
 import com.zer0s2m.fugitivedarkness.api.exception.NotFoundException;
 import com.zer0s2m.fugitivedarkness.api.exception.ObjectISExistsInSystemException;
 import com.zer0s2m.fugitivedarkness.api.handlers.*;
+import com.zer0s2m.fugitivedarkness.api.handlers.validation.MatcherNoteValidationExists;
 import com.zer0s2m.fugitivedarkness.common.Environment;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.vertx.core.AbstractVerticle;
@@ -16,6 +17,7 @@ import io.vertx.ext.web.handler.BodyHandler;
 import io.vertx.ext.web.handler.CorsHandler;
 import io.vertx.ext.web.validation.BadRequestException;
 import io.vertx.ext.web.validation.BodyProcessorException;
+import io.vertx.ext.web.validation.ParameterProcessorException;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,6 +54,10 @@ public class FugitiveDarknessApp extends AbstractVerticle {
                                 \tPOST   [/api/v1/git/repo/install]
                                 \tDELETE [/api/v1/git/repo/delete]
                                 \tPUT    [/api/v1/git/repo/fetch]
+                                \tGET    [/api/v1/git/matcher/note]
+                                \tPOST   [/api/v1/git/matcher/note]
+                                \tPUT    [/api/v1/git/matcher/note/:ID]
+                                \tDELETE [/api/v1/git/matcher/note/:ID]
                                 \tGET    [/api/v1/git/provider]
                                 \tDELETE [/api/v1/git/provider/delete]
                                 \tPOST   [/api/v1/git/provider/install]""");
@@ -154,6 +160,33 @@ public class FugitiveDarknessApp extends AbstractVerticle {
                 .handler(new ControllerApiGitProviderInstall.GitProviderInstallValidationIsExistsInSystem())
                 .handler(new ControllerApiGitProviderInstall.GitProviderInstallValidationIsExistsInExternalSystem())
                 .handler(new ControllerApiGitProviderInstall());
+        router
+                .get("/api/v1/git/matcher/note")
+                .handler(new ControllerApiMatcherNoteGet());
+        router
+                .post("/api/v1/git/matcher/note")
+                .consumes("application/json")
+                .handler(BodyHandler
+                        .create()
+                        .setHandleFileUploads(false))
+                .handler(ControllerApiMatcherNoteCreate.MatcherNoteValidation.validator(vertx))
+                .handler(new ControllerApiMatcherNoteCreate.MatcherNoteValidationExistsGitRepo())
+                .handler(new ControllerApiMatcherNoteCreate());
+        router
+                .put("/api/v1/git/matcher/note/:ID")
+                .consumes("application/json")
+                .handler(BodyHandler
+                        .create()
+                        .setHandleFileUploads(false))
+                .handler(ControllerApiValidation.MatcherNoteControlID.validator(vertx))
+                .handler(ControllerApiMatcherNoteEdit.MatcherNoteValidation.validator(vertx))
+                .handler(new MatcherNoteValidationExists())
+                .handler(new ControllerApiMatcherNoteEdit());
+        router
+                .delete("/api/v1/git/matcher/note/:ID")
+                .handler(ControllerApiValidation.MatcherNoteControlID.validator(vertx))
+                .handler(new MatcherNoteValidationExists())
+                .handler(new ControllerApiMatcherNoteDelete());
     }
 
     /**
@@ -164,18 +197,23 @@ public class FugitiveDarknessApp extends AbstractVerticle {
     private void installingHandlerErrorsAPI(final @NotNull Router router) {
         router.errorHandler(400, ctx -> {
             if (ctx.failure() instanceof BadRequestException) {
+                Buffer errorMsg = Buffer.buffer("Bad request");
+
                 if (ctx.failure() instanceof BodyProcessorException) {
-                    Buffer errorMsg = ((BodyProcessorException) ctx.failure()).toJson().toBuffer();
-                    ctx
-                            .response()
-                            .putHeader(HttpHeaders.CONTENT_LENGTH, String.valueOf(errorMsg.length()))
-                            .setStatusCode(HttpResponseStatus.BAD_REQUEST.code())
-                            .write(errorMsg);
-                    ctx
-                            .response()
-                            .end();
+                    errorMsg = ((BodyProcessorException) ctx.failure()).toJson().toBuffer();
+                } else if (ctx.failure() instanceof ParameterProcessorException) {
+                    errorMsg = ((ParameterProcessorException) ctx.failure()).toJson().toBuffer();
                 }
-            } else if (ctx.failure() instanceof ObjectISExistsInSystemException) {
+
+                ctx
+                        .response()
+                        .putHeader(HttpHeaders.CONTENT_LENGTH, String.valueOf(errorMsg.length()))
+                        .setStatusCode(HttpResponseStatus.BAD_REQUEST.code())
+                        .write(errorMsg);
+                ctx
+                        .response()
+                        .end();
+            }  else if (ctx.failure() instanceof ObjectISExistsInSystemException) {
                 Buffer errorMsg = ((ObjectISExistsInSystemException) ctx.failure()).toJson().toBuffer();
                 ctx
                         .response()

@@ -160,6 +160,8 @@ final public class ControllerApiGitRepoInstall implements Handler<RoutingContext
             repositoryGit
                     .existsByGroupAndProject(infoRepo.group(), infoRepo.project())
                     .onSuccess((ar) -> {
+                        repositoryGit.closeClient();
+
                         if (repositoryGit.mapToExistsColumn(ar)) {
                             event.fail(
                                     HttpResponseStatus.BAD_REQUEST.code(),

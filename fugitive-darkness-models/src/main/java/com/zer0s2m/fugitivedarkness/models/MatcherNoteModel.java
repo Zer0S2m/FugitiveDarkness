@@ -4,8 +4,13 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class MatcherNoteModel {
 
+    @SuppressWarnings("unused")
     @JsonProperty("id")
     private long id;
+
+    @SuppressWarnings("unused")
+    @JsonProperty("created_at")
+    private String createdAt;
 
     @JsonProperty("value")
     private String value;
@@ -16,12 +21,13 @@ public class MatcherNoteModel {
     @JsonProperty("line")
     private String line;
 
-    @JsonProperty("lineNumber")
+    @JsonProperty("line_number")
     private int lineNumber;
 
     @JsonProperty("git_repository_id")
     private long gitRepositoryId;
 
+    @SuppressWarnings("unused")
     public MatcherNoteModel() {
     }
 
@@ -31,6 +37,26 @@ public class MatcherNoteModel {
         this.line = line;
         this.lineNumber = lineNumber;
         this.gitRepositoryId = gitRepositoryId;
+    }
+
+    public String getValue() {
+        return value;
+    }
+
+    public String getFile() {
+        return file;
+    }
+
+    public String getLine() {
+        return line;
+    }
+
+    public int getLineNumber() {
+        return lineNumber;
+    }
+
+    public long getGitRepositoryId() {
+        return gitRepositoryId;
     }
 
 }
