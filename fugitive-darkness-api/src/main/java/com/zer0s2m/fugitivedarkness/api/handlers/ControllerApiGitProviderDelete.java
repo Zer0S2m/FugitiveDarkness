@@ -25,7 +25,7 @@ import static io.vertx.json.schema.common.dsl.Schemas.*;
 /**
  * Request handler for removing git provider.
  */
-public class ControllerApiGitProviderDelete implements Handler<RoutingContext> {
+final public class ControllerApiGitProviderDelete implements Handler<RoutingContext> {
 
     static private final Logger logger = LoggerFactory.getLogger(ControllerApiGitProviderDelete.class);
 
