@@ -71,23 +71,99 @@
             </li>
           </ul>
         </div>
-        <div class="filter-search__tool--files">
-          <h6 class="filter-search__tool-title--second">Include extension files</h6>
-          <TagInput
-            @addTag="addIncludeFileExtension"
-            @removeTag="removeIncludeFileExtension"
-            :tags="includeFilesExtension"
-            class="filter-search__tool--files-input"
-          />
-        </div>
-        <div class="filter-search__tool--files">
-          <h6 class="filter-search__tool-title--second">Exclude extension files</h6>
-          <TagInput
-            @addTag="addExcludeFileExtension"
-            @removeTag="removeExcludeFileExtension"
-            :tags="excludeFilesExtension"
-            class="filter-search__tool--files-input"
-          />
+        <div class="filter-search__tool--args">
+          <h6 class="filter-search__tool-title">Arguments</h6>
+          <div class="filter-search__tool--files">
+            <h6 class="filter-search__tool-title--second">Include extension files</h6>
+            <TagInput
+              @addTag="addIncludeFileExtension"
+              @removeTag="removeIncludeFileExtension"
+              :tags="includeFilesExtension"
+              class="filter-search__tool--files-input"
+            />
+          </div>
+          <div class="filter-search__tool--files">
+            <h6 class="filter-search__tool-title--second">Exclude extension files</h6>
+            <TagInput
+              @addTag="addExcludeFileExtension"
+              @removeTag="removeExcludeFileExtension"
+              :tags="excludeFilesExtension"
+              class="filter-search__tool--files-input"
+            />
+          </div>
+          <div class="filter-search__tool--pattern-files">
+            <h6 class="filter-search__tool-title--second">Include files by pattern</h6>
+            <BaseInput
+              class="filter-search__tool--pattern-files-input"
+              :model-value="useGitRepositoryStore.filtersForSearch.filters.patternForIncludeFile"
+              @update:model-value="useGitRepositoryStore.setPatternForIncludeFileForFilter"
+            />
+          </div>
+          <div class="filter-search__tool--pattern-files">
+            <h6 class="filter-search__tool-title--second">Exclude files by pattern</h6>
+            <BaseInput
+              class="filter-search__tool--pattern-files-input"
+              :model-value="useGitRepositoryStore.filtersForSearch.filters.patternForExcludeFile"
+              @update:model-value="useGitRepositoryStore.setPatternForExcludeFileForFilter"
+            />
+          </div>
+          <div class="filter-search__tool--context">
+            <h6 class="filter-search__tool-title--second">Show leading and trailing lines</h6>
+            <ul class="filter-search__tool--context-items">
+              <li class="filter-search__tool--context-item">
+                <BaseInput
+                  class="filter-search__tool--context-item-input"
+                  type="number"
+                  min="-1"
+                  :model-value="String(useGitRepositoryStore.filtersForSearch.filters.context)"
+                  @update:model-value="useGitRepositoryStore.setContextForFilter"
+                />
+                <span>Common</span>
+              </li>
+              <li class="filter-search__tool--context-item">
+                <BaseInput
+                  class="filter-search__tool--context-item-input"
+                  type="number"
+                  min="-1"
+                  :model-value="
+                    String(useGitRepositoryStore.filtersForSearch.filters.contextBefore)
+                  "
+                  @update:model-value="useGitRepositoryStore.setContextBeforeForFilter"
+                />
+                <span>Before</span>
+              </li>
+              <li class="filter-search__tool--context-item">
+                <BaseInput
+                  class="filter-search__tool--context-item-input"
+                  type="number"
+                  min="-1"
+                  :model-value="String(useGitRepositoryStore.filtersForSearch.filters.contextAfter)"
+                  @update:model-value="useGitRepositoryStore.setContextAfterForFilter"
+                />
+                <span>After</span>
+              </li>
+            </ul>
+          </div>
+          <div class="filter-search__tool--max_depth">
+            <h6 class="filter-search__tool-title--second">Maximum search depth</h6>
+            <BaseInput
+              class="filter-search__tool--max_depth-input"
+              type="number"
+              min="-1"
+              :model-value="String(useGitRepositoryStore.filtersForSearch.filters.maxDepth)"
+              @update:model-value="useGitRepositoryStore.setMaxDepthForFilter"
+            />
+          </div>
+          <div class="filter-search__tool--max_count">
+            <h6 class="filter-search__tool-title--second">Maximum number of matches per file</h6>
+            <BaseInput
+              class="filter-search__tool--max_count-input"
+              type="number"
+              min="-1"
+              :model-value="String(useGitRepositoryStore.filtersForSearch.filters.maxCount)"
+              @update:model-value="useGitRepositoryStore.setMaxCountForFilter"
+            />
+          </div>
         </div>
       </div>
     </div>
@@ -112,6 +188,7 @@ import type { IGitRepository } from '@/types/gitRepository';
 import TagInput from '@/components/common/TagInput.vue';
 import { onMounted, type Ref, ref } from 'vue';
 import router from '@/router';
+import BaseInput from '@/components/common/BaseInput.vue';
 
 const useGitRepositoryStore = useGitRepositoryState();
 useGitRepositoryStore.loadGitRepositories();
@@ -228,11 +305,18 @@ onMounted(() => {
   font-weight: 500;
 }
 
-.filter-search__tool--files {
+.filter-search__tool--args {
+  height: 280px;
+  overflow-y: scroll;
+}
+
+.filter-search__tool--files,
+.filter-search__tool--pattern-files {
   margin-bottom: 12px;
 }
 
-.filter-search__tool--files:last-child {
+.filter-search__tool--files:last-child,
+.filter-search__tool--pattern-files:last-child {
   margin-bottom: 0;
 }
 
@@ -244,7 +328,8 @@ onMounted(() => {
   margin-bottom: 8px;
 }
 
-.filter-search__tool--files-input {
+.filter-search__tool--files-input,
+.filter-search__tool--pattern-files-input {
   margin-top: 4px;
 }
 
@@ -259,6 +344,41 @@ onMounted(() => {
 
 .filter-search__tool-repository--extension_file {
   margin-bottom: 4px;
+}
+
+.filter-search__tool--context {
+  margin-top: 8px;
+}
+
+.filter-search__tool--context-items {
+  margin-top: 4px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.filter-search__tool--context-item {
+  max-width: 32%;
+  width: 100%;
+}
+
+.filter-search__tool--context-item-input {
+  margin-bottom: 4px;
+}
+
+.filter-search__tool--context-item > span {
+  font-size: 14px;
+}
+
+.filter-search__tool--max_depth,
+.filter-search__tool--max_count {
+  margin-top: 8px;
+  display: flex;
+  flex-direction: column;
+}
+
+.filter-search__tool--max_depth-input,
+.filter-search__tool--max_count-input {
+  margin-top: 4px;
 }
 
 .filter-search__tool-repositories--loader {

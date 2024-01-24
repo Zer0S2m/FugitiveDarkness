@@ -3,10 +3,7 @@ package com.zer0s2m.fugitivedarkness.api.handlers;
 import com.zer0s2m.fugitivedarkness.common.Environment;
 import com.zer0s2m.fugitivedarkness.common.dto.ContainerGitRepoSearch;
 import com.zer0s2m.fugitivedarkness.models.GitRepoModel;
-import com.zer0s2m.fugitivedarkness.provider.ContainerGitRepoMeta;
-import com.zer0s2m.fugitivedarkness.provider.ContainerInfoSearchGitRepo;
-import com.zer0s2m.fugitivedarkness.provider.GitRepo;
-import com.zer0s2m.fugitivedarkness.provider.GitRepoFilterSearch;
+import com.zer0s2m.fugitivedarkness.provider.*;
 import com.zer0s2m.fugitivedarkness.repository.GitRepoRepository;
 import com.zer0s2m.fugitivedarkness.repository.impl.GitRepoRepositoryImpl;
 import io.netty.handler.codec.http.HttpResponseStatus;
@@ -29,6 +26,7 @@ import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import static io.vertx.json.schema.common.dsl.Schemas.*;
 
@@ -65,6 +63,25 @@ final public class ControllerApiGitRepoSearch implements Handler<RoutingContext>
                 !gitRepoSearch.filters().excludeExtensionFiles().isEmpty()) {
             gitRepoFilterSearch.setExcludeExtensionFile(gitRepoSearch.filters().excludeExtensionFiles());
         }
+        if (gitRepoSearch.filters().patternForIncludeFile() != null &&
+                !gitRepoSearch.filters().patternForIncludeFile().isEmpty()) {
+            gitRepoFilterSearch.setPatternForIncludeFile(
+                    Pattern.compile(gitRepoSearch.filters().patternForIncludeFile()));
+        }
+        if (gitRepoSearch.filters().patternForExcludeFile() != null &&
+                !gitRepoSearch.filters().patternForExcludeFile().isEmpty()) {
+            gitRepoFilterSearch.setPatternForExcludeFile(
+                    Pattern.compile(gitRepoSearch.filters().patternForExcludeFile()));
+        }
+
+        gitRepoFilterSearch.setMaxCount(gitRepoSearch.filters().maxCount());
+        gitRepoFilterSearch.setMaxDepth(gitRepoSearch.filters().maxDepth());
+        if (gitRepoSearch.filters().context() == -1 || gitRepoSearch.filters().context() == 0) {
+            gitRepoFilterSearch.setContextBefore(gitRepoSearch.filters().contextBefore());
+            gitRepoFilterSearch.setContextAfter(gitRepoSearch.filters().contextAfter());
+        } else {
+            gitRepoFilterSearch.setContext(gitRepoSearch.filters().context());
+        }
 
         JsonObject object = new JsonObject();
         object.put("success", true);
@@ -87,11 +104,8 @@ final public class ControllerApiGitRepoSearch implements Handler<RoutingContext>
 
                             gitRepoSearch.filters().git()
                                     .forEach(repo -> {
-                                        final Path source = Path.of(
-                                                Environment.ROOT_PATH_REPO,
-                                                repo.group(),
-                                                repo.project(),
-                                                ".git");
+                                        final Path source = HelperGitRepo
+                                                .getSourceGitRepository(repo.group(), repo.project());
 
                                         gitRepoFilterSearch
                                                 .addGitRepo(source)
@@ -105,6 +119,8 @@ final public class ControllerApiGitRepoSearch implements Handler<RoutingContext>
 
                             final List<ContainerInfoSearchGitRepo> resultSearch = serviceGit
                                     .searchByGrep(gitRepoFilterSearch);
+
+                            gitRepoRepository.closeClient();
 
                             logger.info("Search ends");
 
@@ -151,7 +167,14 @@ final public class ControllerApiGitRepoSearch implements Handler<RoutingContext>
                                                     .nullable())
                                             .optionalProperty("excludeExtensionFiles", arraySchema()
                                                     .items(stringSchema())
-                                                    .nullable()))
+                                                    .nullable())
+                                            .optionalProperty("patternForIncludeFile", stringSchema())
+                                            .optionalProperty("patternForExcludeFile", stringSchema())
+                                            .optionalProperty("maxCount", intSchema())
+                                            .optionalProperty("maxDepth", intSchema())
+                                            .optionalProperty("context", intSchema())
+                                            .optionalProperty("contextBefore", intSchema())
+                                            .optionalProperty("contextAfter", intSchema()))
                             )
                     )
                     .build();

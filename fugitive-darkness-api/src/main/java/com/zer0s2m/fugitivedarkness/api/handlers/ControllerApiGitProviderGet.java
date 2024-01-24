@@ -55,9 +55,14 @@ public class ControllerApiGitProviderGet implements Handler<RoutingContext> {
                                 .response()
                                 .end();
 
+                        gitProviderRepository.closeClient();
+
                         logger.info("End of receiving providers");
                     } else {
+                        gitProviderRepository.closeClient();
+
                         logger.error("Failure (SYSTEM): " + ar.cause());
+
                         event.response()
                                 .setStatusCode(HttpResponseStatus.INTERNAL_SERVER_ERROR.code())
                                 .end();

@@ -39,7 +39,7 @@ public interface GitRepo {
                 Path.of(Path.of(
                         Environment.ROOT_PATH_REPO,
                         infoRepo.group(),
-                        infoRepo.project()).toString(), ".git")
+                        infoRepo.project()).toString())
         );
     }
 

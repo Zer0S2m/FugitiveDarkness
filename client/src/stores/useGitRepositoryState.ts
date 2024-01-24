@@ -25,9 +25,16 @@ export const useGitRepositoryState = defineStore('gitRepository', () => {
     filters: {
       git: [] as IControlGitRepository[],
       includeExtensionFiles: [],
-      excludeExtensionFiles: []
+      excludeExtensionFiles: [],
+      patternForIncludeFile: '',
+      patternForExcludeFile: '',
+      maxCount: -1,
+      maxDepth: -1,
+      context: -1,
+      contextBefore: -1,
+      contextAfter: -1
     },
-    pattern: '' as string
+    pattern: ''
   });
   const filtersByExtensionFiles: Ref<Map<string, { extension: string; isActive: boolean }[]>> = ref(
     new Map()
@@ -202,9 +209,16 @@ export const useGitRepositoryState = defineStore('gitRepository', () => {
       filters: {
         git: [] as IControlGitRepository[],
         includeExtensionFiles: [],
-        excludeExtensionFiles: []
+        excludeExtensionFiles: [],
+        patternForIncludeFile: '',
+        patternForExcludeFile: '',
+        maxCount: -1,
+        maxDepth: -1,
+        context: -1,
+        contextBefore: -1,
+        contextAfter: -1
       },
-      pattern: '' as string
+      pattern: ''
     };
     filtersByExtensionFiles.value = new Map();
     filtersByRepository.value = new Map();
@@ -315,6 +329,8 @@ export const useGitRepositoryState = defineStore('gitRepository', () => {
     if (isLoadData.value) return;
 
     urlSearch.value['q'] = <string>query['q'];
+    setPatternFilterSearch(urlSearch.value['q']);
+
     urlSearch.value['repo'] = <string>query['repo'];
     if (query['includeFileExt']?.length) {
       urlSearch.value['includeFileExt'] = <string>query['includeFileExt'];
@@ -322,8 +338,6 @@ export const useGitRepositoryState = defineStore('gitRepository', () => {
     if (query['excludeFileExt']?.length) {
       urlSearch.value['excludeFileExt'] = <string>query['excludeFileExt'];
     }
-
-    setPatternFilterSearch(urlSearch.value['q']);
 
     urlSearch.value['repo'].split('+').forEach((gitRepo) => {
       const gitRepoGroupAndProject = gitRepo.split('_');
@@ -353,6 +367,34 @@ export const useGitRepositoryState = defineStore('gitRepository', () => {
     activeShowFile.value.language = language;
   };
 
+  const setPatternForIncludeFileForFilter = (pattern: string): void => {
+    filtersForSearch.value.filters.patternForIncludeFile = pattern;
+  };
+
+  const setPatternForExcludeFileForFilter = (pattern: string): void => {
+    filtersForSearch.value.filters.patternForExcludeFile = pattern;
+  };
+
+  const setContextForFilter = (context: any): void => {
+    filtersForSearch.value.filters.context = parseInt(String(context));
+  };
+
+  const setContextBeforeForFilter = (contextBefore: any): void => {
+    filtersForSearch.value.filters.contextBefore = parseInt(String(contextBefore));
+  };
+
+  const setContextAfterForFilter = (contextAfter: any): void => {
+    filtersForSearch.value.filters.contextAfter = parseInt(String(contextAfter));
+  };
+
+  const setMaxDepthForFilter = (maxDepth: any): void => {
+    filtersForSearch.value.filters.maxDepth = parseInt(String(maxDepth));
+  };
+
+  const setMaxCountForFilter = (maxCount: any): void => {
+    filtersForSearch.value.filters.maxCount = parseInt(String(maxCount));
+  };
+
   return {
     loadGitRepositories,
     deleteGitRepository,
@@ -378,6 +420,13 @@ export const useGitRepositoryState = defineStore('gitRepository', () => {
     updateGitRepositoryOperationFetch,
     parseUrlSearchAndLoadData,
     setActiveShowFile,
+    setPatternForIncludeFileForFilter,
+    setPatternForExcludeFileForFilter,
+    setContextForFilter,
+    setContextBeforeForFilter,
+    setContextAfterForFilter,
+    setMaxDepthForFilter,
+    setMaxCountForFilter,
 
     gitRepositories,
     resultSearchByGrepGitRepositories,

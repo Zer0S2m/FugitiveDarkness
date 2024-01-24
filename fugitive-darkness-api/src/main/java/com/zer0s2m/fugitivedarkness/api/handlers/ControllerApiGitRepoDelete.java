@@ -54,8 +54,14 @@ final public class ControllerApiGitRepoDelete implements Handler<RoutingContext>
                     }, false)
                     .onSuccess(handler -> {
                         final GitRepoRepository repositoryGit = new GitRepoRepositoryImpl(event.vertx());
-                        repositoryGit.deleteByGroupAndProject(
-                                containerGitRepoDelete.group(), containerGitRepoDelete.project());
+                        repositoryGit
+                                .deleteByGroupAndProject(
+                                        containerGitRepoDelete.group(), containerGitRepoDelete.project())
+                                .onFailure(fail -> {
+                                    logger.error(" Failure (DB): " + fail.fillInStackTrace());
+                                    repositoryGit.closeClient();
+                                })
+                                .onSuccess((ar) -> repositoryGit.closeClient());
                     });
             event.response()
                     .setStatusCode(HttpResponseStatus.NO_CONTENT.code())

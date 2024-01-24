@@ -31,6 +31,6 @@ public interface GitProviderRepository extends Repository<RowSet<Row>, GitProvid
      * @param type Provider type.
      * @param target Provider target.
      */
-    void deleteByTypeAndTarget(String type, String target);
+    Future<RowSet<Row>> deleteByTypeAndTarget(String type, String target);
 
 }

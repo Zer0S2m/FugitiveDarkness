@@ -28,6 +28,22 @@ class SearchEngineGitGrepImpl extends SearchEngineGitGrepAbstract implements Sea
             new GitRepoCommandGrepUtils.GitRepoCommandGrepUtilPreviewCode();
 
     /**
+     * Matcher counter in one file.
+     * <p>Required to set a specific parameter {@link SearchEngineGitGrep#getMaxCount}.</p>
+     */
+    private boolean isUseMatcherCounterInFile = false;
+
+    /**
+     * Whether to use maximum search depth.
+     * <p>Required to set a specific parameter {@link SearchEngineGitGrep#getMaxDepth()}.</p>
+     */
+    private boolean isUseMaxDepth = false;
+
+    private int contextBeforeReal = 1;
+
+    private int contextAfterReal = 1;
+
+    /**
      * @param pattern              A pattern for finding matches in files.
      * @param source               Source path to the git repository.
      * @param containerGitRepoMeta Additional Information.
@@ -47,12 +63,29 @@ class SearchEngineGitGrepImpl extends SearchEngineGitGrepAbstract implements Sea
      *     <li>Excluding files from the search that have the specified
      *     extensions {@link SearchEngineGitGrep#getExcludeExtensionFilesForSearchGrep}.</li>
      *     <li>Match pattern {@link SearchEngineGitGrep#getPattern}.</li>
+     *     <li>Include files by pattern {@link SearchEngineGitGrep#getPatternForIncludeFile} in the search.</li>
+     *     <li>Exclude files from the search by pattern {@link SearchEngineGitGrep#getPatternForExcludeFile}.</li>
+     *     <li>Maximum search depth {@link SearchEngineGitGrep#getMaxDepth()}.</li>
+     *     <li>Maximum number of matches in one file {@link SearchEngineGitGrep#getMaxCount()}.</li>
      * </ul>
      *
      * @return Search results.
      * @throws IOException IO exception.
      */
     public List<ContainerInfoSearchFileGitRepo> callGrep() throws IOException {
+        if (getMaxCount() != -1) {
+            isUseMatcherCounterInFile = true;
+        }
+        if (getMaxDepth() != -1) {
+            isUseMaxDepth = true;
+        }
+        if (getContextBefore() != -1) {
+            contextBeforeReal = getContextBefore();
+        }
+        if (getContextAfter() != -1) {
+            contextAfterReal = getContextAfter();
+        }
+
         try (final ObjectReader objectReader = getGitRepositoryGrep().newObjectReader()) {
             return grep(objectReader, getGitRepositoryGrep());
         }
@@ -81,27 +114,36 @@ class SearchEngineGitGrepImpl extends SearchEngineGitGrepAbstract implements Sea
                         final String extensionFile = FileSystemUtils
                                 .getExtensionFromRawStrFile(it.getEntryPathString());
 
-                        if (getWhetherSearchByExcludeFileExtension(extensionFile)) {
+                        if (isUseMaxDepth && !whetherSourceMatchesMaximumDepth(it.getEntryPathString())) {
                             continue;
                         }
 
-                        if (getWhetherSearchByIncludeFileExtension(extensionFile)) {
-                            List<ContainerInfoSearchFileMatcherGitRepo> matchers = getMatchedLines(
-                                    objectLoader.openStream(), it.getEntryPathString());
-                            matchers = collectPreviewCode(matchers, it.getEntryPathString());
+                        if ((getWhetherSearchByExcludeFileExtension(extensionFile)) ||
+                                (!getWhetherSearchByIncludeFileExtension(extensionFile))
+                        ) {
+                            continue;
+                        }
 
-                            if (!matchers.isEmpty()) {
-                                infoSearchFileGitRepos.add(new ContainerInfoSearchFileGitRepo(
-                                        it.getEntryPathString(),
-                                        extensionFile,
-                                        GitRepoUtils.getLinkForFile(
-                                                getContainerGitRepoMeta(),
-                                                it.getEntryPathString(),
-                                                getGitRepositoryGrep().getBranch()),
-                                        matchers));
+                        if ((getWhetherSearchByExcludeFileByPattern(it.getEntryPathString())) ||
+                                (!getWhetherSearchByIncludeFileByPattern(it.getEntryPathString()))) {
+                            continue;
+                        }
 
-                                addExtensionFilesGrep(extensionFile);
-                            }
+                        List<ContainerInfoSearchFileMatcherGitRepo> matchers = getMatchedLines(
+                                objectLoader.openStream(), it.getEntryPathString());
+                        matchers = collectPreviewCode(matchers, it.getEntryPathString());
+
+                        if (!matchers.isEmpty()) {
+                            infoSearchFileGitRepos.add(new ContainerInfoSearchFileGitRepo(
+                                    it.getEntryPathString(),
+                                    extensionFile,
+                                    GitRepoUtils.getLinkForFile(
+                                            getContainerGitRepoMeta(),
+                                            it.getEntryPathString(),
+                                            getGitRepositoryGrep().getBranch()),
+                                    matchers));
+
+                            addExtensionFilesGrep(extensionFile);
                         }
 
                         utilPreviewCode.clearPreviewCodes();
@@ -118,6 +160,7 @@ class SearchEngineGitGrepImpl extends SearchEngineGitGrepAbstract implements Sea
             final String file) throws IOException {
         final List<ContainerInfoSearchFileMatcherGitRepo> matchers = new ArrayList<>();
         final AtomicInteger lineNumber = new AtomicInteger(1);
+        final AtomicInteger matcherCounterInFile = new AtomicInteger(0);
 
         try (final InputStreamReader reader = new InputStreamReader(stream, StandardCharsets.UTF_8)) {
             try (final BufferedReader buf = new BufferedReader(reader)) {
@@ -125,6 +168,10 @@ class SearchEngineGitGrepImpl extends SearchEngineGitGrepAbstract implements Sea
 
                 while ((line = buf.readLine()) != null) {
                     if (getPattern().matcher(line).find()) {
+                        if (isUseMatcherCounterInFile && matcherCounterInFile.get() == getMaxCount()) {
+                            break;
+                        }
+
                         matchers.add(new ContainerInfoSearchFileMatcherGitRepo(
                                 line,
                                 GitRepoUtils.getLinkForMatcherLine(
@@ -136,6 +183,10 @@ class SearchEngineGitGrepImpl extends SearchEngineGitGrepAbstract implements Sea
                                 null,
                                 null
                         ));
+
+                        if (isUseMatcherCounterInFile) {
+                            matcherCounterInFile.set(matcherCounterInFile.get() + 1);
+                        }
                     } else {
                         utilPreviewCode.addPreviewCodes(lineNumber.get(), line);
                     }
@@ -154,7 +205,7 @@ class SearchEngineGitGrepImpl extends SearchEngineGitGrepAbstract implements Sea
      * <p>Uses the helper class {@link GitRepoCommandGrepUtils.GitRepoCommandGrepUtilPreviewCode}</p>
      *
      * @param matchers Raw search results.
-     * @param file The name of the file where the search for matches took place.
+     * @param file     The name of the file where the search for matches took place.
      * @return Collected search results.
      */
     private List<ContainerInfoSearchFileMatcherGitRepo> collectPreviewCode(
@@ -174,34 +225,25 @@ class SearchEngineGitGrepImpl extends SearchEngineGitGrepAbstract implements Sea
 
             if (currentLineNumber.get() != 1 && utilPreviewCode.getPreviewCodeLast(currentLineNumber.get()) != null) {
                 final Set<ContainerInfoSearchFileMatcherGitRepo> previewLastCode = new HashSet<>();
-                final String previewCodeLineLast = utilPreviewCode.getPreviewCodeLast(currentLineNumber.get());
 
                 try {
-                    previewLastCode.add(new ContainerInfoSearchFileMatcherGitRepo(
-                            previewCodeLineLast,
-                            GitRepoUtils.getLinkForMatcherLine(
-                                    getContainerGitRepoMeta(),
-                                    file,
-                                    getGitRepositoryGrep().getBranch(),
-                                    utilPreviewCode.getPreviewLineNumberLast(currentLineNumber.get())),
-                            utilPreviewCode.getPreviewLineNumberLast(currentLineNumber.get()),
-                            null,
-                            null
-                    ));
+                    for (int i = 0; i < contextBeforeReal; i++) {
+                        if ((currentLineNumber.get() - i) < 0) {
+                            break;
+                        }
 
-                    if (currentLineNumber.get() > 2 && previewCodeLineLast.trim().isEmpty()) {
-                        final String previewCodeLineLastByStepOne = utilPreviewCode.getPreviewCodeLast(
-                                currentLineNumber.get(), 1);
+                        final String previewCodeLineLast = utilPreviewCode.getPreviewCodeLast(
+                                currentLineNumber.get() - i);
 
-                        if (previewCodeLineLastByStepOne != null) {
+                        if (previewCodeLineLast != null) {
                             previewLastCode.add(new ContainerInfoSearchFileMatcherGitRepo(
-                                    previewCodeLineLastByStepOne,
+                                    previewCodeLineLast,
                                     GitRepoUtils.getLinkForMatcherLine(
                                             getContainerGitRepoMeta(),
                                             file,
                                             getGitRepositoryGrep().getBranch(),
-                                            utilPreviewCode.getPreviewLineNumberLast(currentLineNumber.get(), 1)),
-                                    utilPreviewCode.getPreviewLineNumberLast(currentLineNumber.get(), 1),
+                                            utilPreviewCode.getPreviewLineNumberLast(currentLineNumber.get() - i)),
+                                    utilPreviewCode.getPreviewLineNumberLast(currentLineNumber.get() - i),
                                     null,
                                     null
                             ));
@@ -216,34 +258,20 @@ class SearchEngineGitGrepImpl extends SearchEngineGitGrepAbstract implements Sea
 
             if (utilPreviewCode.getPreviewCodeNext(currentLineNumber.get()) != null) {
                 final Set<ContainerInfoSearchFileMatcherGitRepo> previewNextCode = new HashSet<>();
-                final String previewCodeLineNext = utilPreviewCode.getPreviewCodeNext(currentLineNumber.get());
-
                 try {
-                    previewNextCode.add(new ContainerInfoSearchFileMatcherGitRepo(
-                            previewCodeLineNext,
-                            GitRepoUtils.getLinkForMatcherLine(
-                                    getContainerGitRepoMeta(),
-                                    file,
-                                    getGitRepositoryGrep().getBranch(),
-                                    utilPreviewCode.getPreviewLineNumberNext(currentLineNumber.get())),
-                            utilPreviewCode.getPreviewLineNumberNext(currentLineNumber.get()),
-                            null,
-                            null
-                    ));
+                    for (int i = 0; i < contextAfterReal; i++) {
+                        final String previewCodeLineNext = utilPreviewCode.getPreviewCodeNext(
+                                currentLineNumber.get() + i);
 
-                    if (previewCodeLineNext.trim().isEmpty()) {
-                        final String previewCodeLineNextByStepOne = utilPreviewCode.getPreviewCodeNext(
-                                currentLineNumber.get(), 1);
-
-                        if (previewCodeLineNextByStepOne != null) {
+                        if (previewCodeLineNext != null) {
                             previewNextCode.add(new ContainerInfoSearchFileMatcherGitRepo(
-                                    previewCodeLineNextByStepOne,
+                                    previewCodeLineNext,
                                     GitRepoUtils.getLinkForMatcherLine(
                                             getContainerGitRepoMeta(),
                                             file,
                                             getGitRepositoryGrep().getBranch(),
-                                            utilPreviewCode.getPreviewLineNumberNext(currentLineNumber.get(), 1)),
-                                    utilPreviewCode.getPreviewLineNumberNext(currentLineNumber.get(), 1),
+                                            utilPreviewCode.getPreviewLineNumberNext(currentLineNumber.get() + i)),
+                                    utilPreviewCode.getPreviewLineNumberNext(currentLineNumber.get() + i),
                                     null,
                                     null
                             ));

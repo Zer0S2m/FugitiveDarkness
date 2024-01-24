@@ -67,6 +67,8 @@ public final class ControllerApiGitProviderInstall implements Handler<RoutingCon
                         logger.error("Failure (DB): " + resultSaved.cause());
                     }
 
+                    gitProviderRepository.closeClient();
+
                     logger.info("End of provider installation for git repositories");
                 });
 
@@ -138,6 +140,8 @@ public final class ControllerApiGitProviderInstall implements Handler<RoutingCon
                         } else {
                             event.next();
                         }
+
+                        gitProviderRepository.closeClient();
                     });
         }
 

@@ -107,8 +107,8 @@ public class GitRepoRepositoryImpl extends RepositoryImpl implements GitRepoRepo
      * @param project Must not be null.
      */
     @Override
-    public void deleteByGroupAndProject(String group, String project) {
-        sqlClient(vertx)
+    public Future<RowSet<Row>> deleteByGroupAndProject(String group, String project) {
+        return sqlClient(vertx)
                 .preparedQuery("""
                         DELETE
                         FROM git_repositories

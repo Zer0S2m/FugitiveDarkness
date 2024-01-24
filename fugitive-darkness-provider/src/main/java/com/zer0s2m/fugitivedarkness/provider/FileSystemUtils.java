@@ -31,4 +31,15 @@ public interface FileSystemUtils {
         return splitLastPart[splitLastPart.length - 1];
     }
 
+    /**
+     * Get file name from raw path.
+     *
+     * @param source Raw path.
+     * @return File name.
+     */
+    static String getFileName(String source) {
+        final String[] splitSource = source.split("/");
+        return splitSource[splitSource.length - 1];
+    }
+
 }

@@ -52,8 +52,11 @@ final public class ControllerApiGitRepoGet implements Handler<RoutingContext> {
                         event.response()
                                 .end();
 
+                        gitRepoRepository.closeClient();
+
                         logger.info("Finish getting");
                     } else {
+                        gitRepoRepository.closeClient();
                         logger.error("Failure (SYSTEM): " + ar.cause());
                         event.response()
                                 .setStatusCode(HttpResponseStatus.INTERNAL_SERVER_ERROR.code())

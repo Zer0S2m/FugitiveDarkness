@@ -158,6 +158,25 @@ public class GitRepoImpl implements GitRepo {
                     final ContainerGitRepoMeta gitRepo = filterSearch.getGitMeta(source);
                     try {
                         final SearchEngineGitGrep commandGrep = searchEngineGitGrep(filterSearch, source, gitRepo);
+
+                        if (filterSearch.getPatternForIncludeFile() != null) {
+                            commandGrep.setPatternForIncludeFile(filterSearch.getPatternForIncludeFile());
+                        }
+
+                        if (filterSearch.getPatternForExcludeFile() != null) {
+                            commandGrep.setPatternForExcludeFile(filterSearch.getPatternForExcludeFile());
+                        }
+
+                        commandGrep.setMaxCount(filterSearch.getMaxCount());
+                        commandGrep.setMaxDepth(filterSearch.getMaxDepth());
+
+                        if (filterSearch.getContext() == -1 || filterSearch.getContext() == 0) {
+                            commandGrep.setContextBefore(filterSearch.getContextBefore());
+                            commandGrep.setContextAfter(filterSearch.getContextAfter());
+                        } else {
+                            commandGrep.setContext(filterSearch.getContext());
+                        }
+
                         final List<ContainerInfoSearchFileGitRepo> searchResult = commandGrep.callGrep();
 
                         searchFileGitRepos.add(new ContainerInfoSearchGitRepo(
@@ -168,7 +187,7 @@ public class GitRepoImpl implements GitRepo {
                                 commandGrep.getExtensionFilesGrep(),
                                 searchResult
                         ));
-                    } catch (IOException e) {
+                    } catch (IOException | SearchEngineGitException e) {
                         throw new RuntimeException(e);
                     }
                 });

@@ -3,6 +3,7 @@ package com.zer0s2m.fugitivedarkness.repository.impl;
 import com.zer0s2m.fugitivedarkness.common.Environment;
 import com.zer0s2m.fugitivedarkness.repository.Repository;
 import com.zer0s2m.fugitivedarkness.repository.RepositoryOperationExists;
+import io.vertx.core.Future;
 import io.vertx.core.Vertx;
 import io.vertx.pgclient.PgBuilder;
 import io.vertx.pgclient.PgConnectOptions;
@@ -18,6 +19,8 @@ class RepositoryImpl implements RepositoryOperationExists {
     private final PgConnectOptions connectOptions = connectOptions();
 
     private final PoolOptions poolOptions = poolOptions();
+
+    private SqlClient client = null;
 
     /**
      * Get configuration for connecting to the database.
@@ -54,12 +57,23 @@ class RepositoryImpl implements RepositoryOperationExists {
      * @return Client pool.
      */
     protected SqlClient sqlClient(Vertx vertx) {
-        return PgBuilder
+        if (client != null) {
+            return client;
+        }
+        client = PgBuilder
                 .client()
                 .with(getPoolOptions())
                 .connectingTo(getConnectOptions())
                 .using(vertx)
                 .build();
+        return client;
+    }
+
+    public Future<Void> closeClient() {
+        if (client != null) {
+            return client.close();
+        }
+        return null;
     }
 
 }
