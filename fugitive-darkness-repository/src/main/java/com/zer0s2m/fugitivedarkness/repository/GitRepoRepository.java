@@ -25,6 +25,14 @@ public interface GitRepoRepository extends Repository<RowSet<Row>, GitRepoModel>
     Future<RowSet<Row>> existsByGroupAndProject(String group, String project);
 
     /**
+     * Check entry for existence by ID.
+     *
+     * @param id ID repository.
+     * @return Result.
+     */
+    Future<RowSet<Row>> existsById(long id);
+
+    /**
      * Update the "loaded" attribute by group and project.
      *
      * @param group   Must not be null.

@@ -33,7 +33,7 @@ import static io.vertx.json.schema.common.dsl.Schemas.*;
 /**
  * Request handler for retrieving git repositories from providers.
  */
-public class ControllerApiGitRepoProvider implements Handler<RoutingContext> {
+final public class ControllerApiGitRepoProvider implements Handler<RoutingContext> {
 
     static private final Logger logger = LoggerFactory.getLogger(ControllerApiGitRepoProvider.class);
 

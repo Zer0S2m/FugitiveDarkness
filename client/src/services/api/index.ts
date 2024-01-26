@@ -18,6 +18,12 @@ import type {
   IResponseInstallingGitProvider
 } from '@/types/gitProvider';
 import { GitProviderType } from '@/enums/gitProvider';
+import type {
+  ICreateMatcherNote,
+  IEditMatcherNote,
+  IResponseCreateMatcherNote,
+  IResponseMatchNotes
+} from '@/types/matcherNote';
 
 const apiClient: AxiosInstance = axios.create({
   baseURL: `${import.meta.env.VITE_FD_HOST_API}/api/v1`,
@@ -89,5 +95,27 @@ export default {
     return apiClient.delete('/git/provider/delete', {
       data
     });
+  },
+
+  async getAllMatcherNotes(): Promise<AxiosResponse<IResponseMatchNotes>> {
+    return apiClient.get('/git/matcher/note');
+  },
+  async createMatcherNote(
+    data: ICreateMatcherNote
+  ): Promise<AxiosResponse<IResponseCreateMatcherNote>> {
+    return apiClient.post('/git/matcher/note', {
+      ...data
+    });
+  },
+  async editMatcherNote(
+    id: number,
+    data: IEditMatcherNote
+  ): Promise<AxiosResponse<IResponseCreateMatcherNote>> {
+    return apiClient.put(`/git/matcher/note/${id}`, {
+      ...data
+    });
+  },
+  async deleteMatcherNote(id: number): Promise<void> {
+    await apiClient.delete(`/git/matcher/note/${id}`);
   }
 };

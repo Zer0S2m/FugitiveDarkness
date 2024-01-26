@@ -19,7 +19,7 @@ import java.util.List;
 /**
  * Request handler to get all providers for git repositories.
  */
-public class ControllerApiGitProviderGet implements Handler<RoutingContext> {
+final public class ControllerApiGitProviderGet implements Handler<RoutingContext> {
 
     static private final Logger logger = LoggerFactory.getLogger(ControllerApiGitProviderGet.class);
 

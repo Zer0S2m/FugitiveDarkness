@@ -19,7 +19,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * Request handler for updating the repository.
  */
-public class ControllerApiGitRepoFetch implements Handler<RoutingContext> {
+final public class ControllerApiGitRepoFetch implements Handler<RoutingContext> {
 
     static private final Logger logger = LoggerFactory.getLogger(ControllerApiGitRepoFetch.class);
 

@@ -2,6 +2,7 @@
 import { RouterView } from 'vue-router';
 import Header from '@/components/common/Header.vue';
 import { ModalsContainer } from 'vue-final-modal';
+import ModalAddMatcherNote from '@/components/matcherNote/modals/ModalAddMatcherNote.vue';
 </script>
 
 <template>
@@ -11,6 +12,7 @@ import { ModalsContainer } from 'vue-final-modal';
       <RouterView />
     </Suspense>
   </div>
+  <ModalAddMatcherNote />
   <ModalsContainer />
 </template>
 
