@@ -3,6 +3,7 @@ import SearchView from '@/views/SearchView.vue';
 import GitProvidersView from '@/views/GitProvidersView.vue';
 import GitShowFile from '@/views/GitShowFile.vue';
 import RepositoriesView from '@/views/GitRepositoriesView.vue';
+import MatcherNotesView from '@/views/MatcherNotesView.vue';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -26,6 +27,11 @@ const router = createRouter({
       path: '/file',
       name: 'git-show-file-from-git',
       component: () => GitShowFile
+    },
+    {
+      path: '/matcher-notes',
+      name: 'matcher-notes',
+      component: () => MatcherNotesView
     }
   ]
 });

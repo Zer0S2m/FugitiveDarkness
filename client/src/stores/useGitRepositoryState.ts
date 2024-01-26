@@ -395,6 +395,19 @@ export const useGitRepositoryState = defineStore('gitRepository', () => {
     filtersForSearch.value.filters.maxCount = parseInt(String(maxCount));
   };
 
+  const getRepositoryById = (id: number): IGitRepository | undefined => {
+    return gitRepositories.value.find((gitRepository) => gitRepository.id === id);
+  };
+
+  const getRepositoryByGroupAndProject = (
+    group: string,
+    project: string
+  ): IGitRepository | undefined => {
+    return gitRepositories.value.find((gitRepository) => {
+      return gitRepository.group_ === group && gitRepository.project === project;
+    });
+  };
+
   return {
     loadGitRepositories,
     deleteGitRepository,
@@ -427,6 +440,8 @@ export const useGitRepositoryState = defineStore('gitRepository', () => {
     setContextAfterForFilter,
     setMaxDepthForFilter,
     setMaxCountForFilter,
+    getRepositoryById,
+    getRepositoryByGroupAndProject,
 
     gitRepositories,
     resultSearchByGrepGitRepositories,
