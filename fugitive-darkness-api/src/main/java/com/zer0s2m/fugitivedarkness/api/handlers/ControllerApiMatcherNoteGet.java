@@ -42,9 +42,7 @@ final public class ControllerApiMatcherNoteGet implements Handler<RoutingContext
 
                     noteRepository.closeClient();
 
-                    event
-                            .response()
-                            .end();
+                    event.next();
                 })
                 .onFailure(error -> {
                     noteRepository.closeClient();

@@ -4,6 +4,7 @@
 
 ### Added
 
+- Add logging of incoming requests and responses.
 - Notes interaction system for search matches:
     - Retrieving all notes for matches.
     - Deleting a note for a match.

@@ -135,7 +135,7 @@ final public class ControllerApiGitRepoSearch implements Handler<RoutingContext>
                                     .putHeader(HttpHeaders.CONTENT_TYPE, "application/json")
                                     .setStatusCode(HttpResponseStatus.OK.code())
                                     .write(object.toString());
-                            event.response().end();
+                            event.next();
                         }));
     }
 

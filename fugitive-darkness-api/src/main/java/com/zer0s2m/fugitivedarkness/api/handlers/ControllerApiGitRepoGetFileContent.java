@@ -75,11 +75,9 @@ final public class ControllerApiGitRepoGetFileContent implements Handler<Routing
                                 .setStatusCode(HttpResponseStatus.OK.code())
                                 .write(result.toString());
 
-                        event
-                                .response()
-                                .end();
-
                         logger.info("Finish receiving file");
+
+                        event.next();
                     })
                     .onFailure((cause) -> {
                         logger.error("Failure (GIT): " + cause.getCause());

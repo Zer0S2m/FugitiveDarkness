@@ -38,8 +38,8 @@ final public class ControllerApiGitFilterDelete implements Handler<RoutingContex
 
                     event
                             .response()
-                            .setStatusCode(HttpResponseStatus.NO_CONTENT.code())
-                            .end();
+                            .setStatusCode(HttpResponseStatus.NO_CONTENT.code());
+                    event.next();
                 })
                 .onFailure(error -> {
                     filterRepository.closeClient();

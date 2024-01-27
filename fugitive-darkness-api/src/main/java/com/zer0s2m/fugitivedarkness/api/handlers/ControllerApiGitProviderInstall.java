@@ -78,9 +78,7 @@ public final class ControllerApiGitProviderInstall implements Handler<RoutingCon
                 .setStatusCode(HttpResponseStatus.CREATED.code())
                 .write(object.toString());
 
-        event
-                .response()
-                .end();
+        event.next();
     }
 
     /**

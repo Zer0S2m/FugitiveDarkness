@@ -92,9 +92,10 @@ final public class ControllerApiGitRepoFetch implements Handler<RoutingContext> 
                         logger.error("Failure (DB 2): " + error.fillInStackTrace());
                     }));
 
-            event.response()
-                    .setStatusCode(HttpResponseStatus.NO_CONTENT.code())
-                    .end();
+            event
+                    .response()
+                    .setStatusCode(HttpResponseStatus.NO_CONTENT.code());
+            event.next();
         }
     }
 

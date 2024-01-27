@@ -73,9 +73,7 @@ final public class ControllerApiGitFilterCreate implements Handler<RoutingContex
                             .setStatusCode(HttpResponseStatus.CREATED.code())
                             .write(object.toString());
 
-                    event
-                            .response()
-                            .end();
+                    event.next();
                 })
                 .onFailure(error -> {
                     filterRepository.closeClient();

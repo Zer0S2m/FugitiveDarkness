@@ -110,9 +110,7 @@ final public class ControllerApiGitRepoInstall implements Handler<RoutingContext
                 .setStatusCode(HttpResponseStatus.CREATED.code())
                 .write(object.toString());
 
-        event
-                .response()
-                .end();
+        event.next();
     }
 
     /**

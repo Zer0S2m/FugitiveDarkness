@@ -51,13 +51,11 @@ final public class ControllerApiGitProviderGet implements Handler<RoutingContext
                                 .setStatusCode(HttpResponseStatus.OK.code())
                                 .write(object.toString());
 
-                        event
-                                .response()
-                                .end();
-
                         gitProviderRepository.closeClient();
 
                         logger.info("End of receiving providers");
+
+                        event.next();
                     } else {
                         gitProviderRepository.closeClient();
 

@@ -33,8 +33,8 @@ final public class ControllerApiMatcherNoteDelete implements Handler<RoutingCont
 
                     event
                             .response()
-                            .setStatusCode(HttpResponseStatus.NO_CONTENT.code())
-                            .end();
+                            .setStatusCode(HttpResponseStatus.NO_CONTENT.code());
+                    event.next();
                 })
                 .onFailure(error -> {
                     noteRepository.closeClient();

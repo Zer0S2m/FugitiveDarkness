@@ -69,9 +69,7 @@ final public class ControllerApiMatcherNoteCreate implements Handler<RoutingCont
                             .setStatusCode(HttpResponseStatus.CREATED.code())
                             .write(object.toString());
 
-                    event
-                            .response()
-                            .end();
+                    event.next();
                 })
                 .onFailure(error -> {
                     matcherNoteRepository.closeClient();

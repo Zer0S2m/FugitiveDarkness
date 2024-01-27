@@ -91,13 +91,11 @@ final public class ControllerApiGitRepoProvider implements Handler<RoutingContex
                                             .setStatusCode(HttpResponseStatus.OK.code())
                                             .write(object.toString());
 
-                                    event
-                                            .response()
-                                            .end();
-
                                     gitProviderRepository.closeClient();
 
                                     logger.info("Finish receiving repositories from the supplier");
+
+                                    event.next();
                                 })
                                 .onFailure(handler -> {
                                     gitProviderRepository.closeClient();

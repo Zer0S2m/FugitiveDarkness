@@ -3,6 +3,7 @@ package com.zer0s2m.fugitivedarkness.api;
 import com.zer0s2m.fugitivedarkness.api.exception.NotFoundException;
 import com.zer0s2m.fugitivedarkness.api.exception.ObjectISExistsInSystemException;
 import com.zer0s2m.fugitivedarkness.api.handlers.*;
+import com.zer0s2m.fugitivedarkness.api.handlers.logger.HandlerLogger;
 import com.zer0s2m.fugitivedarkness.api.handlers.validation.MatcherNoteValidationExists;
 import com.zer0s2m.fugitivedarkness.common.Environment;
 import io.netty.handler.codec.http.HttpResponseStatus;
@@ -47,23 +48,23 @@ public class FugitiveDarknessApp extends AbstractVerticle {
                         logger.info("Starting a server on a port: 8080");
                         logger.info("""
                                 Setting routes:
-                                \tPOST   [/api/v1/operation/search]
-                                \tGET    [/api/v1/operation/get-git-repo-provider]
-                                \tPOST   [/api/v1/operation/get-file-from-git]
-                                \tGET    [/api/v1/git/repo]
-                                \tPOST   [/api/v1/git/repo/install]
-                                \tDELETE [/api/v1/git/repo/delete]
-                                \tPUT    [/api/v1/git/repo/fetch]
-                                \tGET    [/api/v1/git/matcher/note]
-                                \tPOST   [/api/v1/git/matcher/note]
-                                \tPUT    [/api/v1/git/matcher/note/:ID]
-                                \tDELETE [/api/v1/git/matcher/note/:ID]
-                                \tGET    [/api/v1/git/filter/search]
-                                \tPOST   [/api/v1/git/filter/search]
-                                \tDELETE [/api/v1/git/filter/search/:ID]
-                                \tGET    [/api/v1/git/provider]
-                                \tDELETE [/api/v1/git/provider/delete]
-                                \tPOST   [/api/v1/git/provider/install]""");
+                                \t\u001b[42mPOST\u001b[0m   [/api/v1/operation/search]
+                                \t\u001b[44mGET\u001b[0m    [/api/v1/operation/get-git-repo-provider]
+                                \t\u001b[42mPOST\u001b[0m   [/api/v1/operation/get-file-from-git]
+                                \t\u001b[44mGET\u001b[0m    [/api/v1/git/repo]
+                                \t\u001b[42mPOST\u001b[0m   [/api/v1/git/repo/install]
+                                \t\u001b[41mDELETE\u001b[0m [/api/v1/git/repo/delete]
+                                \t\u001b[43mPUT\u001b[0m    [/api/v1/git/repo/fetch]
+                                \t\u001b[44mGET\u001b[0m    [/api/v1/git/matcher/note]
+                                \t\u001b[42mPOST\u001b[0m   [/api/v1/git/matcher/note]
+                                \t\u001b[43mPUT\u001b[0m    [/api/v1/git/matcher/note/:ID]
+                                \t\u001b[41mDELETE\u001b[0m [/api/v1/git/matcher/note/:ID]
+                                \t\u001b[44mGET\u001b[0m    [/api/v1/git/filter/search]
+                                \t\u001b[42mPOST\u001b[0m   [/api/v1/git/filter/search]
+                                \t\u001b[41mDELETE\u001b[0m [/api/v1/git/filter/search/:ID]
+                                \t\u001b[44mGET\u001b[0m    [/api/v1/git/provider]
+                                \t\u001b[41mDELETE\u001b[0m [/api/v1/git/provider/delete]
+                                \t\u001b[42mPOST\u001b[0m   [/api/v1/git/provider/install]""");
                         logger.info("""
                                 Setting ENV:
                                 \tFD_ROOT_PATH - %s
@@ -92,10 +93,12 @@ public class FugitiveDarknessApp extends AbstractVerticle {
                                 HttpMethod.DELETE,
                                 HttpMethod.POST,
                                 HttpMethod.PUT,
-                                HttpMethod.OPTIONS)));
+                                HttpMethod.OPTIONS)))
+                .handler(new HandlerLogger.HandlerLoggerRequest());
         router
                 .get("/api/v1/git/repo")
-                .handler(new ControllerApiGitRepoGet());
+                .handler(new ControllerApiGitRepoGet())
+                .handler(new HandlerLogger.HandlerLoggerResponse());
         router
                 .post("/api/v1/git/repo/install")
                 .consumes("application/json")
@@ -104,7 +107,8 @@ public class FugitiveDarknessApp extends AbstractVerticle {
                         .setHandleFileUploads(false))
                 .handler(ControllerApiGitRepoInstall.GitRepoInstallValidation.validator(vertx))
                 .handler(new ControllerApiGitRepoInstall.GitRepoInstallCheckIsExists())
-                .handler(new ControllerApiGitRepoInstall());
+                .handler(new ControllerApiGitRepoInstall())
+                .handler(new HandlerLogger.HandlerLoggerResponse());
         router
                 .delete("/api/v1/git/repo/delete")
                 .consumes("application/json")
@@ -112,7 +116,8 @@ public class FugitiveDarknessApp extends AbstractVerticle {
                         .create()
                         .setHandleFileUploads(false))
                 .handler(ControllerApiValidation.GitRepoControlValidation.validator(vertx))
-                .handler(new ControllerApiGitRepoDelete());
+                .handler(new ControllerApiGitRepoDelete())
+                .handler(new HandlerLogger.HandlerLoggerResponse());
         router
                 .put("/api/v1/git/repo/fetch")
                 .consumes("application/json")
@@ -120,7 +125,8 @@ public class FugitiveDarknessApp extends AbstractVerticle {
                         .create()
                         .setHandleFileUploads(false))
                 .handler(ControllerApiValidation.GitRepoControlValidation.validator(vertx))
-                .handler(new ControllerApiGitRepoFetch());
+                .handler(new ControllerApiGitRepoFetch())
+                .handler(new HandlerLogger.HandlerLoggerResponse());
         router
                 .post("/api/v1/operation/search")
                 .consumes("application/json")
@@ -128,21 +134,25 @@ public class FugitiveDarknessApp extends AbstractVerticle {
                         .create()
                         .setHandleFileUploads(false))
                 .handler(ControllerApiGitRepoSearch.GitRepoSearchValidation.validator(vertx))
-                .handler(new ControllerApiGitRepoSearch());
+                .handler(new ControllerApiGitRepoSearch())
+                .handler(new HandlerLogger.HandlerLoggerResponse());
         router
                 .get("/api/v1/operation/get-git-repo-provider")
                 .handler(ControllerApiGitRepoProvider.GitRepoProviderValidation.validator(vertx))
-                .handler(new ControllerApiGitRepoProvider());
+                .handler(new ControllerApiGitRepoProvider())
+                .handler(new HandlerLogger.HandlerLoggerResponse());
         router
                 .get("/api/v1/git/provider")
-                .handler(new ControllerApiGitProviderGet());
+                .handler(new ControllerApiGitProviderGet())
+                .handler(new HandlerLogger.HandlerLoggerResponse());
         router
                 .post("/api/v1/operation/get-file-from-git")
                 .handler(BodyHandler
                         .create()
                         .setHandleFileUploads(false))
                 .handler(ControllerApiGitRepoGetFileContent.GitRepoGetFileValidation.validator(vertx))
-                .handler(new ControllerApiGitRepoGetFileContent());
+                .handler(new ControllerApiGitRepoGetFileContent())
+                .handler(new HandlerLogger.HandlerLoggerResponse());
         router
                 .delete("/api/v1/git/provider/delete")
                 .consumes("application/json")
@@ -151,7 +161,8 @@ public class FugitiveDarknessApp extends AbstractVerticle {
                         .setHandleFileUploads(false))
                 .handler(ControllerApiGitProviderDelete.GitProviderDeleteValidation.validator(vertx))
                 .handler(new ControllerApiGitProviderDelete.GitProviderDeleteValidationIsExistsInSystem())
-                .handler(new ControllerApiGitProviderDelete());
+                .handler(new ControllerApiGitProviderDelete())
+                .handler(new HandlerLogger.HandlerLoggerResponse());
         router
                 .post("/api/v1/git/provider/install")
                 .consumes("application/json")
@@ -162,10 +173,12 @@ public class FugitiveDarknessApp extends AbstractVerticle {
                 .handler(new ControllerApiGitProviderInstall.GitProviderInstallValidationIsOrgAndIsUser())
                 .handler(new ControllerApiGitProviderInstall.GitProviderInstallValidationIsExistsInSystem())
                 .handler(new ControllerApiGitProviderInstall.GitProviderInstallValidationIsExistsInExternalSystem())
-                .handler(new ControllerApiGitProviderInstall());
+                .handler(new ControllerApiGitProviderInstall())
+                .handler(new HandlerLogger.HandlerLoggerResponse());
         router
                 .get("/api/v1/git/matcher/note")
-                .handler(new ControllerApiMatcherNoteGet());
+                .handler(new ControllerApiMatcherNoteGet())
+                .handler(new HandlerLogger.HandlerLoggerResponse());
         router
                 .post("/api/v1/git/matcher/note")
                 .consumes("application/json")
@@ -174,7 +187,8 @@ public class FugitiveDarknessApp extends AbstractVerticle {
                         .setHandleFileUploads(false))
                 .handler(ControllerApiMatcherNoteCreate.MatcherNoteValidation.validator(vertx))
                 .handler(new ControllerApiMatcherNoteCreate.MatcherNoteValidationExistsGitRepo())
-                .handler(new ControllerApiMatcherNoteCreate());
+                .handler(new ControllerApiMatcherNoteCreate())
+                .handler(new HandlerLogger.HandlerLoggerResponse());
         router
                 .put("/api/v1/git/matcher/note/:ID")
                 .consumes("application/json")
@@ -184,15 +198,18 @@ public class FugitiveDarknessApp extends AbstractVerticle {
                 .handler(ControllerApiValidation.ValidationControlID.validator(vertx))
                 .handler(ControllerApiMatcherNoteEdit.MatcherNoteValidation.validator(vertx))
                 .handler(new MatcherNoteValidationExists())
-                .handler(new ControllerApiMatcherNoteEdit());
+                .handler(new ControllerApiMatcherNoteEdit())
+                .handler(new HandlerLogger.HandlerLoggerResponse());
         router
                 .delete("/api/v1/git/matcher/note/:ID")
                 .handler(ControllerApiValidation.ValidationControlID.validator(vertx))
                 .handler(new MatcherNoteValidationExists())
-                .handler(new ControllerApiMatcherNoteDelete());
+                .handler(new ControllerApiMatcherNoteDelete())
+                .handler(new HandlerLogger.HandlerLoggerResponse());
         router
                 .get("/api/v1/git/filter/search")
-                .handler(new ControllerApiGitFilterGet());
+                .handler(new ControllerApiGitFilterGet())
+                .handler(new HandlerLogger.HandlerLoggerResponse());
         router
                 .post("/api/v1/git/filter/search")
                 .consumes("application/json")
@@ -200,12 +217,14 @@ public class FugitiveDarknessApp extends AbstractVerticle {
                         .create()
                         .setHandleFileUploads(false))
                 .handler(ControllerApiGitFilterCreate.GitFilterCreateValidation.validator(vertx))
-                .handler(new ControllerApiGitFilterCreate());
+                .handler(new ControllerApiGitFilterCreate())
+                .handler(new HandlerLogger.HandlerLoggerResponse());
         router
                 .delete("/api/v1/git/filter/search/:ID")
                 .handler(ControllerApiValidation.ValidationControlID.validator(vertx))
                 .handler(new ControllerApiGitFilterDelete.GitFilterCheckIsExists())
-                .handler(new ControllerApiGitFilterDelete());
+                .handler(new ControllerApiGitFilterDelete())
+                .handler(new HandlerLogger.HandlerLoggerResponse());
     }
 
     /**
@@ -215,6 +234,11 @@ public class FugitiveDarknessApp extends AbstractVerticle {
      */
     private void installingHandlerErrorsAPI(final @NotNull Router router) {
         router.errorHandler(400, ctx -> {
+            HandlerLogger.logger.info("response [{}] [{}] {}",
+                    HandlerLogger.getMsgRequest(ctx.request().method().toString()),
+                    HandlerLogger.getMsgResponse(HttpResponseStatus.BAD_REQUEST.code()),
+                    ctx.request().path());
+
             if (ctx.failure() instanceof BadRequestException) {
                 Buffer errorMsg = Buffer.buffer("Bad request");
 
@@ -229,10 +253,11 @@ public class FugitiveDarknessApp extends AbstractVerticle {
                         .putHeader(HttpHeaders.CONTENT_LENGTH, String.valueOf(errorMsg.length()))
                         .setStatusCode(HttpResponseStatus.BAD_REQUEST.code())
                         .write(errorMsg);
+
                 ctx
                         .response()
                         .end();
-            }  else if (ctx.failure() instanceof ObjectISExistsInSystemException) {
+            } else if (ctx.failure() instanceof ObjectISExistsInSystemException) {
                 Buffer errorMsg = ((ObjectISExistsInSystemException) ctx.failure()).toJson().toBuffer();
                 ctx
                         .response()
@@ -245,6 +270,11 @@ public class FugitiveDarknessApp extends AbstractVerticle {
             }
         });
         router.errorHandler(404, ctx -> {
+            HandlerLogger.logger.info("response [{}] [{}] {}",
+                    HandlerLogger.getMsgRequest(ctx.request().method().toString()),
+                    HandlerLogger.getMsgResponse(HttpResponseStatus.NOT_FOUND.code()),
+                    ctx.request().path());
+
             if (ctx.failure() instanceof NotFoundException) {
                 Buffer errorMsg = ((NotFoundException) ctx.failure()).toJson().toBuffer();
                 ctx
@@ -252,6 +282,7 @@ public class FugitiveDarknessApp extends AbstractVerticle {
                         .putHeader(HttpHeaders.CONTENT_LENGTH, String.valueOf(errorMsg.length()))
                         .setStatusCode(HttpResponseStatus.NOT_FOUND.code())
                         .write(errorMsg);
+
                 ctx
                         .response()
                         .end();

@@ -46,8 +46,8 @@ final public class ControllerApiMatcherNoteEdit implements Handler<RoutingContex
 
                     event
                             .response()
-                            .setStatusCode(HttpResponseStatus.NO_CONTENT.code())
-                            .end();
+                            .setStatusCode(HttpResponseStatus.NO_CONTENT.code());
+                    event.next();
                 })
                 .onFailure(error -> {
                     noteRepository.closeClient();

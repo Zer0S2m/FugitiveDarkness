@@ -54,10 +54,11 @@ final public class ControllerApiGitProviderDelete implements Handler<RoutingCont
 
         event
                 .response()
-                .setStatusCode(HttpResponseStatus.NO_CONTENT.code())
-                .end();
+                .setStatusCode(HttpResponseStatus.NO_CONTENT.code());
 
         logger.info("Finish removing git provider");
+
+        event.next();
     }
 
     /**

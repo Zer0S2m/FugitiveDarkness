@@ -63,9 +63,10 @@ final public class ControllerApiGitRepoDelete implements Handler<RoutingContext>
                                 })
                                 .onSuccess((ar) -> repositoryGit.closeClient());
                     });
-            event.response()
-                    .setStatusCode(HttpResponseStatus.NO_CONTENT.code())
-                    .end();
+            event
+                    .response()
+                    .setStatusCode(HttpResponseStatus.NO_CONTENT.code());
+            event.next();
         }
     }
 
