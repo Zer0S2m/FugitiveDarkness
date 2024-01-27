@@ -2,8 +2,15 @@ package com.zer0s2m.fugitivedarkness.api.handlers;
 
 import io.vertx.core.Handler;
 import io.vertx.ext.web.RoutingContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-public class ControllerApiGitFilterCreate implements Handler<RoutingContext> {
+/**
+ * Request handler to save the search filter.
+ */
+final public class ControllerApiGitFilterCreate implements Handler<RoutingContext> {
+
+    static private final Logger logger = LoggerFactory.getLogger(ControllerApiGitFilterCreate.class);
 
     /**
      * Something has happened, so handle it.

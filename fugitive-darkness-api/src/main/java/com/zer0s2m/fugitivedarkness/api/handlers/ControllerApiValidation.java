@@ -40,7 +40,7 @@ final public class ControllerApiValidation {
     /**
      * TODO: Move to {@link SchemaRepository}.
      */
-    public static class MatcherNoteControlID {
+    public static class ValidationControlID {
 
         /**
          * Get validation handler for incoming body.

@@ -23,7 +23,7 @@ final public class MatcherNoteValidationExists implements Handler<RoutingContext
      * @param event the event to handle
      */
     @Override
-    public void handle (@NotNull RoutingContext event) {
+    public void handle(@NotNull RoutingContext event) {
         final MatcherNoteRepository noteRepository = new MatcherNoteRepositoryImpl(event.vertx());
         final long idMatcherNote = Long.parseLong(event.pathParam("ID"));
 

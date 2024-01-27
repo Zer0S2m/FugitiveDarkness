@@ -181,13 +181,13 @@ public class FugitiveDarknessApp extends AbstractVerticle {
                 .handler(BodyHandler
                         .create()
                         .setHandleFileUploads(false))
-                .handler(ControllerApiValidation.MatcherNoteControlID.validator(vertx))
+                .handler(ControllerApiValidation.ValidationControlID.validator(vertx))
                 .handler(ControllerApiMatcherNoteEdit.MatcherNoteValidation.validator(vertx))
                 .handler(new MatcherNoteValidationExists())
                 .handler(new ControllerApiMatcherNoteEdit());
         router
                 .delete("/api/v1/git/matcher/note/:ID")
-                .handler(ControllerApiValidation.MatcherNoteControlID.validator(vertx))
+                .handler(ControllerApiValidation.ValidationControlID.validator(vertx))
                 .handler(new MatcherNoteValidationExists())
                 .handler(new ControllerApiMatcherNoteDelete());
         router
@@ -202,6 +202,8 @@ public class FugitiveDarknessApp extends AbstractVerticle {
                 .handler(new ControllerApiGitFilterCreate());
         router
                 .delete("/api/v1/git/filter/search/:ID")
+                .handler(ControllerApiValidation.ValidationControlID.validator(vertx))
+                .handler(new ControllerApiGitFilterDelete.GitFilterCheckIsExists())
                 .handler(new ControllerApiGitFilterDelete());
     }
 
