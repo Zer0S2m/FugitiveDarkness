@@ -58,6 +58,9 @@ public class FugitiveDarknessApp extends AbstractVerticle {
                                 \tPOST   [/api/v1/git/matcher/note]
                                 \tPUT    [/api/v1/git/matcher/note/:ID]
                                 \tDELETE [/api/v1/git/matcher/note/:ID]
+                                \tGET    [/api/v1/git/filter/search]
+                                \tPOST   [/api/v1/git/filter/search]
+                                \tDELETE [/api/v1/git/filter/search/:ID]
                                 \tGET    [/api/v1/git/provider]
                                 \tDELETE [/api/v1/git/provider/delete]
                                 \tPOST   [/api/v1/git/provider/install]""");
@@ -178,15 +181,31 @@ public class FugitiveDarknessApp extends AbstractVerticle {
                 .handler(BodyHandler
                         .create()
                         .setHandleFileUploads(false))
-                .handler(ControllerApiValidation.MatcherNoteControlID.validator(vertx))
+                .handler(ControllerApiValidation.ValidationControlID.validator(vertx))
                 .handler(ControllerApiMatcherNoteEdit.MatcherNoteValidation.validator(vertx))
                 .handler(new MatcherNoteValidationExists())
                 .handler(new ControllerApiMatcherNoteEdit());
         router
                 .delete("/api/v1/git/matcher/note/:ID")
-                .handler(ControllerApiValidation.MatcherNoteControlID.validator(vertx))
+                .handler(ControllerApiValidation.ValidationControlID.validator(vertx))
                 .handler(new MatcherNoteValidationExists())
                 .handler(new ControllerApiMatcherNoteDelete());
+        router
+                .get("/api/v1/git/filter/search")
+                .handler(new ControllerApiGitFilterGet());
+        router
+                .post("/api/v1/git/filter/search")
+                .consumes("application/json")
+                .handler(BodyHandler
+                        .create()
+                        .setHandleFileUploads(false))
+                .handler(ControllerApiGitFilterCreate.GitFilterCreateValidation.validator(vertx))
+                .handler(new ControllerApiGitFilterCreate());
+        router
+                .delete("/api/v1/git/filter/search/:ID")
+                .handler(ControllerApiValidation.ValidationControlID.validator(vertx))
+                .handler(new ControllerApiGitFilterDelete.GitFilterCheckIsExists())
+                .handler(new ControllerApiGitFilterDelete());
     }
 
     /**

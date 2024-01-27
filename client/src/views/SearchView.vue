@@ -27,7 +27,10 @@
         </div>
       </div>
     </div>
-    <FilterSearchGitRepository class="tools-wrapper__filters" />
+    <div>
+      <SavedFiltersGit class="tools-wrapper__saved-filters" />
+      <FilterSearchGitRepository class="tools-wrapper__filters" />
+    </div>
   </div>
 </template>
 
@@ -41,6 +44,7 @@ import { HalfCircleSpinner } from 'epic-spinners';
 import router from '@/router';
 import { useRoute } from 'vue-router';
 import { onMounted } from 'vue';
+import SavedFiltersGit from '@/components/filters/SavedFiltersGit.vue';
 
 const useGitRepositoryStore = useGitRepositoryState();
 const vueRouteStore = useRoute();
@@ -132,7 +136,12 @@ onMounted(async () => {
   justify-content: center;
 }
 
+.tools-wrapper__saved-filters {
+  width: 360px;
+  margin-bottom: 12px;
+}
+
 .tools-wrapper__filters {
-  width: 420px;
+  width: 360px;
 }
 </style>

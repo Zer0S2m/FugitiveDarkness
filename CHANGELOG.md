@@ -4,7 +4,15 @@
 
 ### Added
 
-- Notes interaction system for search matches.
+- Notes interaction system for search matches:
+    - Retrieving all notes for matches.
+    - Deleting a note for a match.
+    - Create a note for matches.
+    - Editing a note for matches.
+- System of interaction with search filters:
+    - Removing a search filter.
+    - Saving a search filter.
+    - Getting a search filters.
 
 ## [0.0.2] 2024-01-24
 

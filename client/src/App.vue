@@ -3,6 +3,7 @@ import { RouterView } from 'vue-router';
 import Header from '@/components/common/Header.vue';
 import { ModalsContainer } from 'vue-final-modal';
 import ModalAddMatcherNote from '@/components/matcherNote/modals/ModalAddMatcherNote.vue';
+import ModalAddGitFilterSearch from '@/components/git/modals/ModalAddGitFilterSearch.vue';
 </script>
 
 <template>
@@ -13,6 +14,7 @@ import ModalAddMatcherNote from '@/components/matcherNote/modals/ModalAddMatcher
     </Suspense>
   </div>
   <ModalAddMatcherNote />
+  <ModalAddGitFilterSearch title="Saving a search filter" />
   <ModalsContainer />
 </template>
 
