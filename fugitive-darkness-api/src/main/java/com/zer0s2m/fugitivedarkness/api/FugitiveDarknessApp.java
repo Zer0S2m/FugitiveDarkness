@@ -199,6 +199,7 @@ public class FugitiveDarknessApp extends AbstractVerticle {
                 .handler(BodyHandler
                         .create()
                         .setHandleFileUploads(false))
+                .handler(ControllerApiGitFilterCreate.GitFilterCreateValidation.validator(vertx))
                 .handler(new ControllerApiGitFilterCreate());
         router
                 .delete("/api/v1/git/filter/search/:ID")

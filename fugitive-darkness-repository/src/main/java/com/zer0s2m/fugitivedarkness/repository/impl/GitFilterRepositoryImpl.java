@@ -10,6 +10,7 @@ import io.vertx.sqlclient.RowSet;
 import io.vertx.sqlclient.Tuple;
 
 import java.util.List;
+import java.util.stream.StreamSupport;
 
 public class GitFilterRepositoryImpl extends RepositoryImpl implements GitFilterRepository {
 
@@ -82,7 +83,13 @@ public class GitFilterRepositoryImpl extends RepositoryImpl implements GitFilter
      */
     @Override
     public Future<RowSet<Row>> save(GitFilterModel entity) {
-        return null;
+        return sqlClient(vertx)
+                .preparedQuery("""
+                            INSERT INTO "git_filters" (title, filter)
+                            VALUES ($1, $2)
+                            RETURNING *
+                        """)
+                .execute(Tuple.of(entity.getTitle(), entity.getFilter()));
     }
 
     /**
@@ -93,7 +100,9 @@ public class GitFilterRepositoryImpl extends RepositoryImpl implements GitFilter
      */
     @Override
     public List<GitFilterModel> mapTo(RowSet<Row> rows) {
-        return null;
+        return StreamSupport.stream(rows.spliterator(), false)
+                .map(row -> row.toJson().mapTo(GitFilterModel.class))
+                .toList();
     }
 
     /**

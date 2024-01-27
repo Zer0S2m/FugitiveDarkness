@@ -1,5 +1,6 @@
 package com.zer0s2m.fugitivedarkness.api.handlers;
 
+import com.zer0s2m.fugitivedarkness.api.scheme.SchemaFilterSearch;
 import com.zer0s2m.fugitivedarkness.common.dto.ContainerGitRepoSearch;
 import com.zer0s2m.fugitivedarkness.models.GitRepoModel;
 import com.zer0s2m.fugitivedarkness.provider.*;
@@ -153,29 +154,7 @@ final public class ControllerApiGitRepoSearch implements Handler<RoutingContext>
             return ValidationHandlerBuilder
                     .create(SchemaParser.createDraft7SchemaParser(
                             SchemaRouter.create(vertx, new SchemaRouterOptions())))
-                    .body(Bodies.json(objectSchema()
-                                    .requiredProperty("pattern", stringSchema())
-                                    .requiredProperty("filters", objectSchema()
-                                            .requiredProperty("git", arraySchema()
-                                                    .items(objectSchema()
-                                                            .requiredProperty("group", stringSchema())
-                                                            .requiredProperty("project", stringSchema()))
-                                            )
-                                            .optionalProperty("includeExtensionFiles", arraySchema()
-                                                    .items(stringSchema())
-                                                    .nullable())
-                                            .optionalProperty("excludeExtensionFiles", arraySchema()
-                                                    .items(stringSchema())
-                                                    .nullable())
-                                            .optionalProperty("patternForIncludeFile", stringSchema())
-                                            .optionalProperty("patternForExcludeFile", stringSchema())
-                                            .optionalProperty("maxCount", intSchema())
-                                            .optionalProperty("maxDepth", intSchema())
-                                            .optionalProperty("context", intSchema())
-                                            .optionalProperty("contextBefore", intSchema())
-                                            .optionalProperty("contextAfter", intSchema()))
-                            )
-                    )
+                    .body(Bodies.json(SchemaFilterSearch.SCHEMA_FILTER_SEARCH))
                     .build();
         }
 

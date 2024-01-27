@@ -11,6 +11,7 @@
     - Editing a note for matches.
 - System of interaction with search filters:
     - Removing a search filter.
+    - Saving a search filter.
 
 ## [0.0.2] 2024-01-24
 
