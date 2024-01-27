@@ -12,6 +12,7 @@
 - System of interaction with search filters:
     - Removing a search filter.
     - Saving a search filter.
+    - Getting a search filters.
 
 ## [0.0.2] 2024-01-24
 

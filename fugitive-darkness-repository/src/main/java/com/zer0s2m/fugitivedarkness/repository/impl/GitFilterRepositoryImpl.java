@@ -72,7 +72,15 @@ public class GitFilterRepositoryImpl extends RepositoryImpl implements GitFilter
      */
     @Override
     public Future<RowSet<Row>> findAll() {
-        return null;
+        return sqlClient(vertx)
+                .query("""
+                        SELECT "git_filters"."id",
+                               "git_filters"."created_at",
+                               "git_filters"."title",
+                               "git_filters"."filter"
+                        FROM "git_filters";
+                        """)
+                .execute();
     }
 
     /**

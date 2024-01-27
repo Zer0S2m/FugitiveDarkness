@@ -20,6 +20,7 @@ import io.vertx.json.schema.SchemaParser;
 import io.vertx.json.schema.SchemaRepository;
 import io.vertx.json.schema.SchemaRouter;
 import io.vertx.json.schema.SchemaRouterOptions;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,7 +39,7 @@ final public class ControllerApiGitFilterCreate implements Handler<RoutingContex
      * @param event the event to handle
      */
     @Override
-    public void handle(RoutingContext event) {
+    public void handle(@NotNull RoutingContext event) {
         logger.info("Start saving a search filter");
 
         final GitFilterRepository filterRepository = new GitFilterRepositoryImpl(event.vertx());
