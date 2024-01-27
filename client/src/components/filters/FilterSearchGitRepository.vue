@@ -1,7 +1,15 @@
 <template>
   <div class="filter-search">
     <div class="filter-search__wrapper">
-      <h5 class="filter-search__title">Filter</h5>
+      <div class="filter-search-title--wrapper">
+        <h5 class="filter-search__title">Filter</h5>
+        <button
+          @click="onClickSaveGitFilterSearch"
+          class="save"
+        >
+          Save
+        </button>
+      </div>
       <div class="filter-search__tool--grep">
         <h6 class="filter-search__tool-title">Command - grep</h6>
         <div class="filter-search__tool tool--grep scroll">
@@ -186,10 +194,14 @@ import { useGitRepositoryState } from '@/stores/useGitRepositoryState';
 import { HalfCircleSpinner } from 'epic-spinners';
 import type { IGitRepository } from '@/types/gitRepository';
 import TagInput from '@/components/common/TagInput.vue';
-import { onMounted, type Ref, ref } from 'vue';
+import { onMounted, type Ref, ref, watch } from 'vue';
 import router from '@/router';
 import BaseInput from '@/components/common/BaseInput.vue';
+import { useGitFilterSearchState } from '@/stores/useGitFilterSearchState';
+import { useVfm } from 'vue-final-modal';
 
+const useVfmStore = useVfm();
+const useGitFilterSearchStore = useGitFilterSearchState();
 const useGitRepositoryStore = useGitRepositoryState();
 useGitRepositoryStore.loadGitRepositories();
 
@@ -256,6 +268,25 @@ const removeExcludeFileExtension = (index: number): void => {
   useGitRepositoryStore.removeExcludeExtensionFileForFilter(excludeFilesExtension.value[index]);
 };
 
+const onClickSaveGitFilterSearch = (): void => {
+  useGitFilterSearchStore.activeFilterForCreate = useGitRepositoryStore.filtersForSearch;
+
+  useVfmStore.open('modalAddGitFilterSearch');
+};
+
+watch(
+  () => useGitRepositoryStore.filtersForSearch.filters.includeExtensionFiles,
+  (newValue: string[]) => {
+    includeFilesExtension.value = newValue;
+  }
+);
+watch(
+  () => useGitRepositoryStore.filtersForSearch.filters.excludeExtensionFiles,
+  (newValue: string[]) => {
+    excludeFilesExtension.value = newValue;
+  }
+);
+
 onMounted(() => {
   includeFilesExtension.value =
     useGitRepositoryStore.filtersForSearch.filters.includeExtensionFiles;
@@ -274,8 +305,21 @@ onMounted(() => {
   justify-content: space-between;
 }
 
-.filter-search__title {
+.filter-search-title--wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
   margin-bottom: 20px;
+}
+
+.filter-search-title--wrapper > .save {
+  padding: 4px 20px;
+  border: 1px solid var(--color-secondary);
+  border-radius: 4px;
+}
+
+.filter-search__title {
   font-size: 18px;
 }
 

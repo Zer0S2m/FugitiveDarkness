@@ -24,6 +24,11 @@ import type {
   IResponseCreateMatcherNote,
   IResponseMatchNotes
 } from '@/types/matcherNote';
+import type {
+  ICreateGitFilterSearch,
+  IResponseCreateFilterSearch,
+  IResponseGitFilterSearch
+} from '@/types/gitFilterSearch';
 
 const apiClient: AxiosInstance = axios.create({
   baseURL: `${import.meta.env.VITE_FD_HOST_API}/api/v1`,
@@ -117,5 +122,19 @@ export default {
   },
   async deleteMatcherNote(id: number): Promise<void> {
     await apiClient.delete(`/git/matcher/note/${id}`);
+  },
+
+  async getAllGitFilterSearch(): Promise<AxiosResponse<IResponseGitFilterSearch>> {
+    return apiClient.get('/git/filter/search');
+  },
+  async deleteGitFilterSearch(id: number): Promise<void> {
+    await apiClient.delete(`/git/filter/search/${id}`);
+  },
+  async createGitFilterSearch(
+    data: ICreateGitFilterSearch
+  ): Promise<AxiosResponse<IResponseCreateFilterSearch>> {
+    return apiClient.post('/git/filter/search', {
+      ...data
+    });
   }
 };
