@@ -204,7 +204,15 @@ export const useGitRepositoryState = defineStore('gitRepository', () => {
   };
 
   const resetResult = (): void => {
+    resetAllFilters();
+
     resultSearchByGrepGitRepositories.value = [];
+    filtersByExtensionFiles.value = new Map();
+    filtersByRepository.value = new Map();
+    urlSearch.value = {};
+  };
+
+  const resetAllFilters = (): void => {
     filtersForSearch.value = {
       filters: {
         git: [] as IControlGitRepository[],
@@ -220,9 +228,6 @@ export const useGitRepositoryState = defineStore('gitRepository', () => {
       },
       pattern: ''
     };
-    filtersByExtensionFiles.value = new Map();
-    filtersByRepository.value = new Map();
-    urlSearch.value = {};
   };
 
   const installingGitRepository = async (payload: IInstallGitRepository): Promise<void> => {
@@ -395,6 +400,45 @@ export const useGitRepositoryState = defineStore('gitRepository', () => {
     filtersForSearch.value.filters.maxCount = parseInt(String(maxCount));
   };
 
+  const getRepositoryById = (id: number): IGitRepository | undefined => {
+    return gitRepositories.value.find((gitRepository) => gitRepository.id === id);
+  };
+
+  const getRepositoryByGroupAndProject = (
+    group: string,
+    project: string
+  ): IGitRepository | undefined => {
+    return gitRepositories.value.find((gitRepository) => {
+      return gitRepository.group_ === group && gitRepository.project === project;
+    });
+  };
+
+  const setAllFiltersForSearch = (filter: IFilterSearchGitRepository): void => {
+    filter.filters.git.forEach((gitRepo: IControlGitRepository): void => {
+      setGitRepositoryFilterSearch(gitRepo);
+      setFilterByRepository(`${gitRepo.group}/${gitRepo.project}`, true);
+    });
+
+    filter.filters.includeExtensionFiles.forEach((includeExtensionFile: string): void => {
+      addIncludeExtensionFileForFilter(includeExtensionFile);
+    });
+    filter.filters.excludeExtensionFiles.forEach((excludeExtensionFile: string): void => {
+      addExcludeExtensionFileForFilter(excludeExtensionFile);
+    });
+
+    setPatternFilterSearch(filter.pattern);
+    setPatternForIncludeFileForFilter(filter.filters.patternForIncludeFile);
+    setPatternForExcludeFileForFilter(filter.filters.patternForExcludeFile);
+
+    setPatternForIncludeFileForFilter(filter.filters.patternForIncludeFile);
+    setPatternForExcludeFileForFilter(filter.filters.patternForExcludeFile);
+    setContextForFilter(filter.filters.context);
+    setContextBeforeForFilter(filter.filters.contextBefore);
+    setContextAfterForFilter(filter.filters.contextAfter);
+    setMaxDepthForFilter(filter.filters.maxDepth);
+    setMaxCountForFilter(filter.filters.maxCount);
+  };
+
   return {
     loadGitRepositories,
     deleteGitRepository,
@@ -427,6 +471,10 @@ export const useGitRepositoryState = defineStore('gitRepository', () => {
     setContextAfterForFilter,
     setMaxDepthForFilter,
     setMaxCountForFilter,
+    getRepositoryById,
+    getRepositoryByGroupAndProject,
+    setAllFiltersForSearch,
+    resetAllFilters,
 
     gitRepositories,
     resultSearchByGrepGitRepositories,

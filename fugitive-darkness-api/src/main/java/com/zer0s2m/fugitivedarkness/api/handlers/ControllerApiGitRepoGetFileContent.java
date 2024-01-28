@@ -26,7 +26,7 @@ import static io.vertx.json.schema.common.dsl.Schemas.*;
 /**
  * Request handler for getting a file from a git repository.
  */
-public class ControllerApiGitRepoGetFileContent implements Handler<RoutingContext> {
+final public class ControllerApiGitRepoGetFileContent implements Handler<RoutingContext> {
 
     static private final Logger logger = LoggerFactory.getLogger(ControllerApiGitRepoGetFileContent.class);
 
@@ -75,11 +75,9 @@ public class ControllerApiGitRepoGetFileContent implements Handler<RoutingContex
                                 .setStatusCode(HttpResponseStatus.OK.code())
                                 .write(result.toString());
 
-                        event
-                                .response()
-                                .end();
-
                         logger.info("Finish receiving file");
+
+                        event.next();
                     })
                     .onFailure((cause) -> {
                         logger.error("Failure (GIT): " + cause.getCause());

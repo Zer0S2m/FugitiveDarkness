@@ -49,12 +49,11 @@ final public class ControllerApiGitRepoGet implements Handler<RoutingContext> {
                                 .setStatusCode(HttpResponseStatus.OK.code())
                                 .write(object.toString());
 
-                        event.response()
-                                .end();
-
                         gitRepoRepository.closeClient();
 
                         logger.info("Finish getting");
+
+                        event.next();
                     } else {
                         gitRepoRepository.closeClient();
                         logger.error("Failure (SYSTEM): " + ar.cause());

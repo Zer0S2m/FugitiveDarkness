@@ -110,9 +110,7 @@ final public class ControllerApiGitRepoInstall implements Handler<RoutingContext
                 .setStatusCode(HttpResponseStatus.CREATED.code())
                 .write(object.toString());
 
-        event
-                .response()
-                .end();
+        event.next();
     }
 
     /**
@@ -160,6 +158,8 @@ final public class ControllerApiGitRepoInstall implements Handler<RoutingContext
             repositoryGit
                     .existsByGroupAndProject(infoRepo.group(), infoRepo.project())
                     .onSuccess((ar) -> {
+                        repositoryGit.closeClient();
+
                         if (repositoryGit.mapToExistsColumn(ar)) {
                             event.fail(
                                     HttpResponseStatus.BAD_REQUEST.code(),

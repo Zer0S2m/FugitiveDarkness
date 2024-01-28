@@ -37,6 +37,13 @@
             :class="!matchersLink.isSequel ? 'matcher-found__result--line-sequel' : ''"
             v-for="matchersLink in matchersLinks"
           >
+            <button
+              class="create-note-button"
+              @click="onClickCreateNote(matchersLink.lineNumber)"
+              v-if="activeLineNumberForCreateMatcherNote.includes(matchersLink.lineNumber)"
+            >
+              <IconNote />
+            </button>
             <a
               :href="matchersLink.link"
               target="_blank"
@@ -66,17 +73,25 @@
 <script setup lang="ts">
 import IconCopy from '@/assets/icon-copy.svg';
 import IconView from '@/assets/icon-view.svg';
+import IconNote from '@/assets/icon-note.svg';
 import type {
+  IGitRepository,
   IMatcherFoundByGrepGitRepository,
   ISearchFoundByGrepGitRepository
 } from '@/types/gitRepository';
 import { useGitRepositoryState } from '@/stores/useGitRepositoryState';
+import { useMatcherNoteState } from '@/stores/useMatcherNoteState';
 import Highlightjs from '@lib/highlightjs';
-import { computed } from 'vue';
+import { computed, onMounted, ref, type Ref } from 'vue';
 import { lineSlice } from '@/utils/stringFormat';
 import router from '@/router';
+import { useVfm } from 'vue-final-modal';
 
 const useGitRepositoryStore = useGitRepositoryState();
+const useMatcherNoteStore = useMatcherNoteState();
+const useVfmStore = useVfm();
+const activeLineNumberForCreateMatcherNote: Ref<number[]> = ref([]);
+const lineNumberToLineString: Map<number, string> = new Map<number, string>();
 
 const props = defineProps<{
   matcher: ISearchFoundByGrepGitRepository;
@@ -203,6 +218,35 @@ const onClickShowFile = async (): Promise<void> => {
     name: 'git-show-file-from-git'
   });
 };
+
+const onClickCreateNote = (lineNumber: number): void => {
+  const lineStr: string | undefined = lineNumberToLineString.get(lineNumber);
+  const repository: IGitRepository | undefined =
+    useGitRepositoryStore.getRepositoryByGroupAndProject(
+      props.groupRepository,
+      props.projectRepository
+    );
+
+  if (repository !== undefined && lineStr !== undefined) {
+    useMatcherNoteStore.setActiveDataIsCreate(true);
+    useMatcherNoteStore.setActiveDataIsEdit(false);
+    useMatcherNoteStore.setActiveDataForCreateOrEdit({
+      value: '',
+      file: props.matcher.filename,
+      line: lineStr,
+      lineNumber: lineNumber,
+      gitRepositoryId: repository.id
+    });
+    useVfmStore.open('modalAddMatcherNote');
+  }
+};
+
+onMounted(() => {
+  props.matcher.matchers.forEach((matcher) => {
+    activeLineNumberForCreateMatcherNote.value.push(matcher.lineNumber);
+    lineNumberToLineString.set(matcher.lineNumber, matcher.matcher);
+  });
+});
 </script>
 
 <style scoped>
@@ -223,6 +267,19 @@ const onClickShowFile = async (): Promise<void> => {
 
 .copy-path > svg:hover,
 .open-file > svg:hover {
+  fill: var(--color-secondary);
+}
+
+.create-note-button {
+  margin-right: 4px;
+
+  width: 12px;
+  height: 12px;
+}
+
+.create-note-button:hover > svg {
+  width: 12px;
+  height: 12px;
   fill: var(--color-secondary);
 }
 </style>

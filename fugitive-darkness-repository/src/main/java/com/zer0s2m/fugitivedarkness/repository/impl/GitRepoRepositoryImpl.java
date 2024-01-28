@@ -138,6 +138,23 @@ public class GitRepoRepositoryImpl extends RepositoryImpl implements GitRepoRepo
     }
 
     /**
+     * Check entry for existence by ID.
+     *
+     * @param id ID repository.
+     * @return Result.
+     */
+    @Override
+    public Future<RowSet<Row>> existsById(long id) {
+        return sqlClient(vertx)
+                .preparedQuery("""
+                        SELECT EXISTS(select id
+                                      from "git_repositories"
+                                      WHERE "git_repositories"."id" = $1)
+                        """)
+                .execute(Tuple.of(id));
+    }
+
+    /**
      * Update the "loaded" attribute by group and project.
      *
      * @param group   Must not be null.

@@ -19,7 +19,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * Request handler for updating the repository.
  */
-public class ControllerApiGitRepoFetch implements Handler<RoutingContext> {
+final public class ControllerApiGitRepoFetch implements Handler<RoutingContext> {
 
     static private final Logger logger = LoggerFactory.getLogger(ControllerApiGitRepoFetch.class);
 
@@ -92,9 +92,10 @@ public class ControllerApiGitRepoFetch implements Handler<RoutingContext> {
                         logger.error("Failure (DB 2): " + error.fillInStackTrace());
                     }));
 
-            event.response()
-                    .setStatusCode(HttpResponseStatus.NO_CONTENT.code())
-                    .end();
+            event
+                    .response()
+                    .setStatusCode(HttpResponseStatus.NO_CONTENT.code());
+            event.next();
         }
     }
 

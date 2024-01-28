@@ -19,7 +19,7 @@ import java.util.List;
 /**
  * Request handler to get all providers for git repositories.
  */
-public class ControllerApiGitProviderGet implements Handler<RoutingContext> {
+final public class ControllerApiGitProviderGet implements Handler<RoutingContext> {
 
     static private final Logger logger = LoggerFactory.getLogger(ControllerApiGitProviderGet.class);
 
@@ -51,13 +51,11 @@ public class ControllerApiGitProviderGet implements Handler<RoutingContext> {
                                 .setStatusCode(HttpResponseStatus.OK.code())
                                 .write(object.toString());
 
-                        event
-                                .response()
-                                .end();
-
                         gitProviderRepository.closeClient();
 
                         logger.info("End of receiving providers");
+
+                        event.next();
                     } else {
                         gitProviderRepository.closeClient();
 

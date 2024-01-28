@@ -3,24 +3,11 @@
     v-if="!isLoading"
     class="file-content"
   >
-    <div class="matcher-found__result">
-      <div class="matcher-found__result--wrapper">
-        <div class="matcher-found__result--lines">
-          <p v-for="content in fileContent">
-            {{ content.lineNumber }}
-          </p>
-        </div>
-        <div class="matcher-found__result--codes">
-          <div class="code--one matcher-found__result--code">
-            <Highlightjs
-              class="code"
-              :code="code"
-              :language="useGitRepositoryStore.activeShowFile.language"
-            />
-          </div>
-        </div>
-      </div>
-    </div>
+    <Code
+      :code="code"
+      :language="useGitRepositoryStore.activeShowFile.language"
+      :line-numbers="lineNumbers"
+    />
   </div>
   <div
     class="loader-block"
@@ -41,7 +28,7 @@ import { computed, onMounted, type Ref, ref } from 'vue';
 import type { IResponseFileFromGitRepositoryContent } from '@/types/gitRepository';
 import type { AxiosResponse } from 'axios';
 import type { IResponseFileFromGitRepository } from '@/types/gitRepository';
-import Highlightjs from '@lib/highlightjs';
+import Code from '@/components/common/Code.vue';
 import { HalfCircleSpinner } from 'epic-spinners';
 
 const useGitRepositoryStore = useGitRepositoryState();
@@ -74,6 +61,14 @@ const code = computed((): string => {
     codeStr += `${fileContentItem.line}\n`;
   });
   return codeStr;
+});
+
+const lineNumbers = computed((): number[] => {
+  const lineNumber: number[] = [];
+  fileContent.value.forEach((obj) => {
+    lineNumber.push(obj.lineNumber);
+  });
+  return lineNumber;
 });
 
 onMounted(async () => {

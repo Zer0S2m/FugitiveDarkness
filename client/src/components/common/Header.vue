@@ -36,6 +36,15 @@ import { RouterLink } from 'vue-router';
             >
           </div>
         </div>
+        <div class="nav-item nav-item-4">
+          <div class="nav-item__wrapper">
+            <RouterLink
+              class="nav-item__link"
+              :to="{ name: 'matcher-notes' }"
+              >Notes matcher</RouterLink
+            >
+          </div>
+        </div>
       </nav>
     </div>
   </header>
@@ -82,7 +91,8 @@ import { RouterLink } from 'vue-router';
 }
 
 .nav-item-1,
-.nav-item-2 {
+.nav-item-2,
+.nav-item-3 {
   border-right: 0;
 }
 
