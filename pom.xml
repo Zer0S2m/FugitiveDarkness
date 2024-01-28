@@ -6,7 +6,7 @@
 
   <groupId>com.zer0s2m.fugitive-darkness</groupId>
   <artifactId>fugitive-darkness</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
+  <version>0.0.3</version>
   <packaging>pom</packaging>
   <modules>
     <module>fugitive-darkness-api</module>

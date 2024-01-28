@@ -6,11 +6,11 @@
   <parent>
     <groupId>com.zer0s2m.fugitive-darkness</groupId>
     <artifactId>fugitive-darkness</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>0.0.3</version>
   </parent>
 
   <artifactId>fugitive-darkness-provider</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
+  <version>0.0.3</version>
   <name>fugitive-darkness-provider</name>
   <description>fugitive-darkness-provider</description>
 
