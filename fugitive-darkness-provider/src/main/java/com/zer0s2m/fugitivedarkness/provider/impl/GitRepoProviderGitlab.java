@@ -19,15 +19,15 @@ public class GitRepoProviderGitlab extends GitRepoProviderAbstract implements Gi
     /**
      * Path to get repositories for the specified organization.
      */
-    private final static String pathGetRepoForOrg = "/api/v4/groups/%s/projects";
+    private final static String PATH_GET_REPO_FOR_ORG = "/api/v4/groups/%s/projects";
 
     /**
      * Path to get repositories for the specified user.
      */
-    private final static String pathGetRepoForUser = "/api/v4/users/%s/projects";
+    private final static String PATH_GET_REPO_FOR_USER = "/api/v4/users/%s/projects";
 
     public GitRepoProviderGitlab() {
-        super(pathGetRepoForOrg, pathGetRepoForUser);
+        super(PATH_GET_REPO_FOR_ORG, PATH_GET_REPO_FOR_USER);
         this.host = "gitlab.com"; // Default
     }
 

@@ -1,5 +1,11 @@
 # Change Log
 
+## [Unreleased]
+
+### Added
+
+- Basic exceptions for git providers.
+
 ## [0.0.3] 2024-01-28
 
 ### Added
