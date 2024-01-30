@@ -5,6 +5,7 @@
 ### Added
 
 - Basic exceptions for git providers.
+- Clone repositories from a remote host.
 
 ## [0.0.3] 2024-01-28
 

@@ -1,5 +1,6 @@
 package com.zer0s2m.fugitivedarkness.api.handlers;
 
+import com.zer0s2m.fugitivedarkness.provider.GitRepoProviderType;
 import io.vertx.core.Vertx;
 import io.vertx.ext.web.validation.ValidationHandler;
 import io.vertx.ext.web.validation.builder.Bodies;
@@ -53,6 +54,31 @@ final public class ControllerApiValidation {
                     .create(SchemaParser.createDraft7SchemaParser(
                             SchemaRouter.create(vertx, new SchemaRouterOptions())))
                     .pathParameter(Parameters.param("ID", intSchema()))
+                    .build();
+        }
+
+    }
+
+    /**
+     * TODO: Move to {@link SchemaRepository}.
+     */
+    public static class GitProviderControlValidation {
+
+        /**
+         * Get validation handler for incoming body.
+         *
+         * @param vertx App.
+         * @return Incoming body handler.
+         */
+        public static ValidationHandler validator(Vertx vertx) {
+            return ValidationHandlerBuilder
+                    .create(SchemaParser.createDraft7SchemaParser(
+                            SchemaRouter.create(vertx, new SchemaRouterOptions())))
+                    .body(Bodies.json(objectSchema()
+                            .requiredProperty("type", enumSchema(
+                                    GitRepoProviderType.GITHUB.toString(),
+                                    GitRepoProviderType.GITLAB.toString()))
+                            .requiredProperty("target", stringSchema())))
                     .build();
         }
 

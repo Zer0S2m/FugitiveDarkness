@@ -2,6 +2,7 @@ package com.zer0s2m.fugitivedarkness.provider.impl;
 
 import com.zer0s2m.fugitivedarkness.common.Environment;
 import com.zer0s2m.fugitivedarkness.provider.*;
+import org.eclipse.jgit.api.CloneCommand;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.ObjectId;
@@ -29,28 +30,43 @@ public class GitRepoImpl implements GitRepo {
     /**
      * Clone a git repository from a remote host into a set path environment variable {@link Environment#ROOT_PATH_REPO}.
      *
-     * @param URI Remote git repository host.
+     * @param command Command to clone a repository.
+     * @param URI     Remote git repository host. Must not be {@literal null}.
      * @return Git repository information.
-     * @throws GitAPIException The exception is caused by the internal functionality of managing git repositories.
+     * @throws GitAPIException he exception is caused by the internal functionality of managing git repositories.
      */
     @Override
-    public ContainerInfoRepo gClone(String URI) throws GitAPIException {
+    public ContainerInfoRepo gCloneStart(
+            CloneCommand command, String URI) throws GitAPIException {
         final ContainerInfoRepo infoRepo = gGetInfo(URI);
 
         logger.info("Start cloning the repository: " + infoRepo.source());
 
-        Git.cloneRepository()
-                .setURI(URI)
-                .setDirectory(infoRepo.source().toFile())
-                .setCloneAllBranches(true)
-                .setCloneSubmodules(true)
-                .setNoCheckout(true)
+        command
                 .call()
                 .close();
 
         logger.info("Finish cloning the repository: " + infoRepo.source());
 
         return infoRepo;
+    }
+
+    /**
+     * Create a command to clone a repository from a remote host.
+     *
+     * @param URI Remote git repository host. Must not be {@literal null}.
+     * @return Command.
+     */
+    @Override
+    public CloneCommand gCloneCreate(String URI) {
+        final ContainerInfoRepo infoRepo = gGetInfo(URI);
+
+        return Git.cloneRepository()
+                .setURI(URI)
+                .setDirectory(infoRepo.source().toFile())
+                .setCloneAllBranches(true)
+                .setCloneSubmodules(true)
+                .setNoCheckout(true);
     }
 
     /**
