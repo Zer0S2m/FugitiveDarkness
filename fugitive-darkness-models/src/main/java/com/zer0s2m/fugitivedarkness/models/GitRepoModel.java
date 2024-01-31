@@ -73,4 +73,12 @@ public class GitRepoModel {
         return source;
     }
 
+    public String toString() {
+        return String.format(
+                "%s[id=%s,group=%s,project=%s,host=%s,createdAt=%s,isLoad=%s,source=%s]",
+                super.toString(),
+                id, group, project, host, createdAt, isLoad, source
+        );
+    }
+
 }

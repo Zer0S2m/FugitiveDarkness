@@ -40,13 +40,15 @@ public class GitRepoImpl implements GitRepo {
             CloneCommand command, String URI) throws GitAPIException {
         final ContainerInfoRepo infoRepo = gGetInfo(URI);
 
-        logger.info("Start cloning the repository: " + infoRepo.source());
+        logger.info("Start cloning the repository [{}:{}]: {}",
+                infoRepo.group(), infoRepo.project(), infoRepo.source());
 
         command
                 .call()
                 .close();
 
-        logger.info("Finish cloning the repository: " + infoRepo.source());
+        logger.info("Finish cloning the repository [{}:{}]: {}",
+                infoRepo.group(), infoRepo.project(), infoRepo.source());
 
         return infoRepo;
     }

@@ -4,6 +4,7 @@ import com.zer0s2m.fugitivedarkness.api.exception.NotFoundException;
 import com.zer0s2m.fugitivedarkness.api.exception.ObjectISExistsInSystemException;
 import com.zer0s2m.fugitivedarkness.api.handlers.*;
 import com.zer0s2m.fugitivedarkness.api.handlers.logger.HandlerLogger;
+import com.zer0s2m.fugitivedarkness.api.handlers.validation.GitProviderValidationExists;
 import com.zer0s2m.fugitivedarkness.api.handlers.validation.MatcherNoteValidationExists;
 import com.zer0s2m.fugitivedarkness.common.Environment;
 import io.netty.handler.codec.http.HttpResponseStatus;
@@ -148,6 +149,7 @@ public class FugitiveDarknessApp extends AbstractVerticle {
                         .create()
                         .setHandleFileUploads(false))
                 .handler(ControllerApiValidation.GitProviderControlValidation.validator(vertx))
+                .handler(new GitProviderValidationExists())
                 .handler(new ControllerApiGitRepoInstallRemote())
                 .handler(new HandlerLogger.HandlerLoggerResponse());
         router
@@ -169,7 +171,7 @@ public class FugitiveDarknessApp extends AbstractVerticle {
                         .create()
                         .setHandleFileUploads(false))
                 .handler(ControllerApiValidation.GitProviderControlValidation.validator(vertx))
-                .handler(new ControllerApiGitProviderDelete.GitProviderDeleteValidationIsExistsInSystem())
+                .handler(new GitProviderValidationExists())
                 .handler(new ControllerApiGitProviderDelete())
                 .handler(new HandlerLogger.HandlerLoggerResponse());
         router
