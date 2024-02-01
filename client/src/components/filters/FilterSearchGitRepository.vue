@@ -3,12 +3,20 @@
     <div class="filter-search__wrapper">
       <div class="filter-search-title--wrapper">
         <h5 class="filter-search__title">Filter</h5>
-        <button
-          @click="onClickSaveGitFilterSearch"
-          class="save"
-        >
-          Save
-        </button>
+        <div class="filter-search--tools">
+          <button
+            @click="resetResult"
+            class="reset"
+          >
+            Reset
+          </button>
+          <button
+            @click="onClickSaveGitFilterSearch"
+            class="save"
+          >
+            Save
+          </button>
+        </div>
       </div>
       <div class="filter-search__tool--grep">
         <h6 class="filter-search__tool-title">Command - grep</h6>
@@ -22,12 +30,12 @@
               >
                 <li
                   class="filter-search__tool-repository"
-                  v-for="gitRepository in useGitRepositoryStore.gitRepositories"
+                  v-for="gitRepository in collectedGitRepositoriesByGroup"
                 >
                   <Checkbox
                     v-if="gitRepository.is_load"
                     :meta="gitRepository"
-                    :title="gitRepository.project"
+                    :title="gitRepository.group_ + '/' + gitRepository.project"
                     :click-handler="handlerClickCheckboxGitRepository"
                     :is-activity="
                       useGitRepositoryStore.getIsActivityGitRepositoryInFilter({
@@ -175,16 +183,6 @@
         </div>
       </div>
     </div>
-    <div class="filter-search__reset">
-      <div class="filter-search__reset--wrapper">
-        <button
-          @click="resetResult"
-          class="filter-search__reset-btn"
-        >
-          Reset everything
-        </button>
-      </div>
-    </div>
   </div>
 </template>
 
@@ -194,7 +192,7 @@ import { useGitRepositoryState } from '@/stores/useGitRepositoryState';
 import { HalfCircleSpinner } from 'epic-spinners';
 import type { IGitRepository } from '@/types/gitRepository';
 import TagInput from '@/components/common/TagInput.vue';
-import { onMounted, type Ref, ref, watch } from 'vue';
+import { computed, onMounted, type Ref, ref, watch } from 'vue';
 import router from '@/router';
 import BaseInput from '@/components/common/BaseInput.vue';
 import { useGitFilterSearchState } from '@/stores/useGitFilterSearchState';
@@ -208,6 +206,27 @@ useGitRepositoryStore.loadGitRepositories();
 interface IGitRepositoryFileExtension extends IGitRepository {
   extensionFile: string;
 }
+
+const collectedGitRepositoriesByGroup = computed((): IGitRepository[] => {
+  const repositoriesByGroup: Map<string, IGitRepository[]> = new Map<string, IGitRepository[]>();
+
+  useGitRepositoryStore.gitRepositories.forEach((gitRepository: IGitRepository): void => {
+    const key: string = gitRepository.host + gitRepository.group_;
+    if (repositoriesByGroup.has(key)) {
+      repositoriesByGroup.get(key)?.push(gitRepository);
+    } else {
+      repositoriesByGroup.set(key, [gitRepository]);
+    }
+  });
+
+  const gitRepositories: IGitRepository[] = [];
+
+  [...repositoriesByGroup.values()].forEach((gitRepositoriesAr: IGitRepository[]): void => {
+    gitRepositories.push(...gitRepositoriesAr);
+  });
+
+  return gitRepositories;
+});
 
 const handlerClickCheckboxGitRepository = (meta: IGitRepository, isActivity: boolean) => {
   if (isActivity) {
@@ -313,10 +332,19 @@ onMounted(() => {
   margin-bottom: 20px;
 }
 
-.filter-search-title--wrapper > .save {
+.filter-search--tools > .save,
+.filter-search--tools > .reset {
   padding: 4px 20px;
-  border: 1px solid var(--color-secondary);
   border-radius: 4px;
+}
+
+.filter-search--tools > .save {
+  border: 1px solid var(--color-secondary);
+}
+
+.filter-search--tools > .reset {
+  border: 1px solid var(--color-danger);
+  margin-right: 4px;
 }
 
 .filter-search__title {
@@ -429,23 +457,5 @@ onMounted(() => {
   margin-top: 12px;
   display: flex;
   justify-content: center;
-}
-
-.filter-search__reset {
-  margin: 12px;
-}
-
-.filter-search__reset--wrapper {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.filter-search__reset-btn {
-  width: 100%;
-  padding: 8px 0;
-  background-color: var(--color-danger);
-  color: var(--vt-c-white);
-  border-radius: 4px;
 }
 </style>
