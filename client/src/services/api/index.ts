@@ -13,6 +13,7 @@ import { type IInstallGitRepository } from '@/types/gitRepository';
 import type {
   IDeleteGitProvider,
   IInstallGitProvider,
+  ILoadRepoGitProvider,
   IResponseGitProvider,
   IResponseGitRepositoryInProvider,
   IResponseInstallingGitProvider
@@ -99,6 +100,11 @@ export default {
   async deleteGitProvider(data: IDeleteGitProvider): Promise<any> {
     return apiClient.delete('/git/provider/delete', {
       data
+    });
+  },
+  async loadRepoFromRemoteHost(data: ILoadRepoGitProvider): Promise<void> {
+    await apiClient.post('/operation/load-git-repo-remote', {
+      ...data
     });
   },
 
