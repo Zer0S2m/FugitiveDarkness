@@ -439,6 +439,17 @@ export const useGitRepositoryState = defineStore('gitRepository', () => {
     setMaxCountForFilter(filter.filters.maxCount);
   };
 
+  const checkExistsRepoBy_Host_Group_Project = (
+    host: string,
+    group: string,
+    project: string
+  ): boolean => {
+    const gitRepo: IGitRepository | undefined = gitRepositories.value.find((gitRepo) => {
+      return gitRepo.host === host && gitRepo.group_ === group && gitRepo.project === project;
+    });
+    return gitRepo !== undefined;
+  };
+
   return {
     loadGitRepositories,
     deleteGitRepository,
@@ -475,6 +486,7 @@ export const useGitRepositoryState = defineStore('gitRepository', () => {
     getRepositoryByGroupAndProject,
     setAllFiltersForSearch,
     resetAllFilters,
+    checkExistsRepoBy_Host_Group_Project,
 
     gitRepositories,
     resultSearchByGrepGitRepositories,

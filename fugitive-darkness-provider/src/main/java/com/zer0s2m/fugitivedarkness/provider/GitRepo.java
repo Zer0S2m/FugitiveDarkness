@@ -2,6 +2,7 @@ package com.zer0s2m.fugitivedarkness.provider;
 
 import com.zer0s2m.fugitivedarkness.common.Environment;
 import com.zer0s2m.fugitivedarkness.provider.impl.GitRepoImpl;
+import org.eclipse.jgit.api.CloneCommand;
 import org.eclipse.jgit.api.errors.GitAPIException;
 
 import java.io.IOException;
@@ -16,11 +17,20 @@ public interface GitRepo {
     /**
      * Clone a git repository from a remote host into a set path environment variable {@link Environment#ROOT_PATH_REPO}.
      *
-     * @param URI Remote git repository host.
+     * @param command Command to clone a repository.
+     * @param URI     Remote git repository host. Must not be {@literal null}.
      * @return Git repository information.
-     * @throws GitAPIException The exception is caused by the internal functionality of managing git repositories.
+     * @throws GitAPIException he exception is caused by the internal functionality of managing git repositories.
      */
-    ContainerInfoRepo gClone(String URI) throws GitAPIException;
+    ContainerInfoRepo gCloneStart(CloneCommand command, String URI) throws GitAPIException;
+
+    /**
+     * Create a command to clone a repository from a remote host.
+     *
+     * @param URI Remote git repository host. Must not be {@literal null}.
+     * @return Command.
+     */
+    CloneCommand gCloneCreate(String URI);
 
     /**
      * Get git repository information from URI.
@@ -81,6 +91,15 @@ public interface GitRepo {
      * @return Search result in git repository.
      */
     List<ContainerInfoSearchGitRepo> searchByGrep(GitRepoFilterSearch filterSearch);
+
+    /**
+     * Search for matches in files in git repositories by pattern. Git grep command.
+     * <p>Uses a search engine {@link SearchEngineGitGrep}.</p>
+     *
+     * @param filterSearch Filter for searching git repositories.
+     * @return Search result in git repository.
+     */
+    List<ContainerInfoSearchGitRepo> searchByGrepVirtualThreads(GitRepoFilterSearch filterSearch);
 
     static GitRepo create() {
         return new GitRepoImpl();

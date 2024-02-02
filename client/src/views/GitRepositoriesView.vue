@@ -1,11 +1,19 @@
 <template>
   <div class="git__local">
     <h2 class="title-container">Local repositories</h2>
-    <GitRepositoryList
-      v-if="!useGitRepositoryStore.isLoading"
-      :items="useGitRepositoryStore.gitRepositories"
-      @open-modal-add-git-repository="openModalAddGitRepository"
-    />
+    <div>
+      <div
+        class="git-local--groups"
+        v-if="!useGitRepositoryStore.isLoading"
+        v-for="gitRepositories in collectedRepositoriesByGroup"
+      >
+        <h4 class="git-local-group--title">{{ gitRepositories[0] }}</h4>
+        <GitRepositoryList
+          :items="gitRepositories[1]"
+          @open-modal-add-git-repository="openModalAddGitRepository"
+        />
+      </div>
+    </div>
     <div
       class="loader-block"
       v-if="useGitRepositoryStore.isLoading"
@@ -84,11 +92,12 @@ import { useGitProviderState } from '@/stores/useGitProviderState';
 import { useGitRepositoryState } from '@/stores/useGitRepositoryState';
 import { useModal } from 'vue-final-modal';
 import ModalAddGitRepository from '@/components/git/modals/ModalAddGitRepository.vue';
-import { type IInstallGitRepository } from '@/types/gitRepository';
+import { type IGitRepository, type IInstallGitRepository } from '@/types/gitRepository';
 import { GitProviderType } from '@/enums/gitProvider';
 import IconGithub from '@/assets/github-mark.svg';
 import IconGitlab from '@/assets/gitlab-mark.svg';
 import GitRepositoryInProviderList from '@/components/git/GitRepositoryInProviderList.vue';
+import { computed } from 'vue';
 
 const useGitRepositoryStore = useGitRepositoryState();
 const useGitProviderStore = useGitProviderState();
@@ -109,6 +118,21 @@ const { open, close } = useModal({
 
 useGitRepositoryStore.loadGitRepositories();
 useGitProviderStore.loadGitProviders();
+
+const collectedRepositoriesByGroup = computed((): Map<string, IGitRepository[]> => {
+  const gitRepositories: Map<string, IGitRepository[]> = new Map<string, IGitRepository[]>();
+
+  useGitRepositoryStore.gitRepositories.forEach((gitRepository: IGitRepository): void => {
+    const key: string = `${gitRepository.group_} - ${gitRepository.host}`;
+    if (gitRepositories.has(key)) {
+      gitRepositories.get(key)?.push(gitRepository);
+    } else {
+      gitRepositories.set(key, [gitRepository]);
+    }
+  });
+
+  return gitRepositories;
+});
 
 const openModalAddGitRepository = () => {
   useGitRepositoryStore.clearStateFormAddGitRepositoryErrors();
@@ -145,5 +169,18 @@ const openModalAddGitRepository = () => {
 
 .git-from__providers-item--list {
   margin-top: 12px;
+}
+
+.git-local--groups {
+  margin-bottom: 16px;
+}
+.git-local--groups:last-child {
+  margin-bottom: 0;
+}
+
+.git-local-group--title {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 8px;
 }
 </style>

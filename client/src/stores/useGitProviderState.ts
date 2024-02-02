@@ -12,6 +12,7 @@ import type { IGitRepositoryInProvider } from '@/types/gitProvider';
 import { GitProviderType } from '@/enums/gitProvider';
 import type { AxiosResponse } from 'axios';
 import type { IResponseInstallError } from '@/types/api';
+import { type ILoadRepoGitProvider } from '@/types/gitProvider';
 
 export const useGitProviderState = defineStore('gitProvider', () => {
   const gitProviders: Ref<IGitProvider[]> = ref([]);
@@ -125,6 +126,10 @@ export const useGitProviderState = defineStore('gitProvider', () => {
     });
   };
 
+  const loadRepoFromRemoteHost = async (payload: ILoadRepoGitProvider): Promise<void> => {
+    await api.loadRepoFromRemoteHost(payload);
+  };
+
   return {
     loadGitProviders,
     loadGitRepositoryInProvider,
@@ -134,6 +139,7 @@ export const useGitProviderState = defineStore('gitProvider', () => {
     installingGitProvider,
     clearStateFormAddGitProviderErrors,
     deleteGitProvider,
+    loadRepoFromRemoteHost,
 
     gitProviders,
     isLoading,

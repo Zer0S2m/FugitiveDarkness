@@ -6,10 +6,10 @@
   <parent>
     <groupId>com.zer0s2m.fugitive-darkness</groupId>
     <artifactId>fugitive-darkness-plugin</artifactId>
-    <version>0.0.3</version>
+    <version>0.0.4</version>
   </parent>
 
-  <version>0.0.3</version>
+  <version>0.0.4</version>
   <artifactId>fugitive-darkness-plugin-vertx-git-provider</artifactId>
 
   <properties>
@@ -26,6 +26,10 @@
     <dependency>
       <groupId>com.zer0s2m.fugitive-darkness</groupId>
       <artifactId>fugitive-darkness-provider</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.zer0s2m.fugitive-darkness</groupId>
+      <artifactId>fugitive-darkness-repository</artifactId>
     </dependency>
   </dependencies>
 

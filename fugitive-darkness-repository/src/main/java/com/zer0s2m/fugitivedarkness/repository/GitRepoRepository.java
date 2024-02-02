@@ -5,6 +5,8 @@ import io.vertx.core.Future;
 import io.vertx.sqlclient.Row;
 import io.vertx.sqlclient.RowSet;
 
+import java.util.Collection;
+
 public interface GitRepoRepository extends Repository<RowSet<Row>, GitRepoModel> {
 
     /**
@@ -42,4 +44,20 @@ public interface GitRepoRepository extends Repository<RowSet<Row>, GitRepoModel>
      */
     Future<RowSet<Row>> updateIsLoadByGroupAndProject(String group, String project, boolean isLoad);
 
+    /**
+     * Save all entities to the database.
+     *
+     * @param entities Entities.
+     * @return Result.
+     */
+    Future<RowSet<Row>> saveAll(Collection<GitRepoModel> entities);
+
+    /**
+     * Find all entities by project group and remote host.
+     *
+     * @param group Project group.
+     * @param host Remote host.
+     * @return Result.
+     */
+    Future<RowSet<Row>> findAllByGroupAndHost(String group, String host);
 }

@@ -2,6 +2,7 @@ package com.zer0s2m.fugitivedarkness.plugin.vertx.git.provider.impl;
 
 import com.zer0s2m.fugitivedarkness.plugin.vertx.git.provider.GitRepoProviderConverter;
 import com.zer0s2m.fugitivedarkness.provider.ContainerInfoRepo;
+import com.zer0s2m.fugitivedarkness.provider.GitProviderNotFoundException;
 import com.zer0s2m.fugitivedarkness.provider.GitRepoProviderType;
 import io.vertx.core.json.JsonObject;
 
@@ -26,16 +27,18 @@ public class GitRepoProviderConverterImpl implements GitRepoProviderConverter {
      * @param providerType Provider type.
      * @param payload      Response from the repository provider.
      * @return Repository information.
+     * @throws GitProviderNotFoundException Git provider not found.
      */
     @Override
-    public ContainerInfoRepo convert(final GitRepoProviderType providerType, JsonObject payload) {
+    public ContainerInfoRepo convert(final GitRepoProviderType providerType, JsonObject payload)
+            throws GitProviderNotFoundException {
         if (providerType.equals(GitRepoProviderType.GITHUB)) {
             return GitRepoProviderGithubConverter.convert(payload);
         } else if (providerType.equals(GitRepoProviderType.GITLAB)) {
             return GitRepoProviderGitlabConverter.convert(payload);
         }
 
-        throw new RuntimeException("Converter does not support");
+        throw new GitProviderNotFoundException("Converter does not support");
     }
 
     /**
@@ -44,12 +47,15 @@ public class GitRepoProviderConverterImpl implements GitRepoProviderConverter {
      * @param host Host.
      */
     @Override
-    public void setHost(final GitRepoProviderType providerType, String host) {
+    public void setHost(final GitRepoProviderType providerType, String host)
+            throws GitProviderNotFoundException {
         if (providerType.equals(GitRepoProviderType.GITHUB)) {
             GitRepoProviderConverterImpl.hostGithub = host;
         } else if (providerType.equals(GitRepoProviderType.GITLAB)) {
             GitRepoProviderConverterImpl.hostGitlab = host;
         }
+
+        throw new GitProviderNotFoundException("Converter does not support");
     }
 
     /**

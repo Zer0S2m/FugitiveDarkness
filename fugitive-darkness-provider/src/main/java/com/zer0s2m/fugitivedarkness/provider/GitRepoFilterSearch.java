@@ -228,8 +228,37 @@ public interface GitRepoFilterSearch {
      */
     int getContextAfter();
 
+    /**
+     * Clear information about repositories.
+     * <p>Relevant when calling the cloning method {@link GitRepoFilterSearch#clone(GitRepoFilterSearch)}.</p>
+     */
+    void clearGitMeta();
+
+    /**
+     * Clear repository source paths.
+     * <p>Relevant when calling the cloning method {@link GitRepoFilterSearch#clone(GitRepoFilterSearch)}.</p>
+     */
+    void clearSources();
+
     static GitRepoFilterSearch create() {
         return new GitRepoFilterSearchImpl();
+    }
+
+    static GitRepoFilterSearch clone(final GitRepoFilterSearch real) {
+        final GitRepoFilterSearch newFilter = new GitRepoFilterSearchImpl()
+                .setContext(real.getContext())
+                .addGitRepo(real.getSources())
+                .setContextBefore(real.getContextBefore())
+                .setContextAfter(real.getContextAfter())
+                .setIncludeExtensionFile(real.getIncludeExtensionFile())
+                .setExcludeExtensionFile(real.getExcludeExtensionFile())
+                .setPatternForIncludeFile(real.getPatternForIncludeFile())
+                .setPatternForExcludeFile(real.getPatternForExcludeFile())
+                .setPattern(real.getPattern());
+
+        real.getSources().forEach((source) -> newFilter.addGitMeta(source, real.getGitMeta(source)));
+
+        return newFilter;
     }
 
 }

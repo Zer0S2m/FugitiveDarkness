@@ -40,3 +40,5 @@ export interface IResponseInstallingGitProvider {
 }
 
 export interface IDeleteGitProvider extends IBaseGitProvider {}
+
+export interface ILoadRepoGitProvider extends IBaseGitProvider {}

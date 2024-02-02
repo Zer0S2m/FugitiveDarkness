@@ -9,6 +9,8 @@ import io.vertx.sqlclient.Row;
 import io.vertx.sqlclient.RowSet;
 import io.vertx.sqlclient.Tuple;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.StreamSupport;
 
@@ -74,6 +76,57 @@ public class GitRepoRepositoryImpl extends RepositoryImpl implements GitRepoRepo
                                 git_repositories.is_load
                         """)
                 .execute(Tuple.of(entity.getGroup(), entity.getProject(), entity.getHost(), entity.getSource()));
+    }
+
+    /**
+     * Save all entities to the database.
+     *
+     * @param entities Entities.
+     * @return Result.
+     */
+    @Override
+    public Future<RowSet<Row>> saveAll(Collection<GitRepoModel> entities) {
+        List<Tuple> batch = new ArrayList<>();
+
+        entities.forEach(entity -> batch.add(
+                Tuple.of(entity.getGroup(), entity.getProject(), entity.getHost(), entity.getSource())));
+
+        return sqlClient(vertx)
+                .preparedQuery("""
+                            INSERT INTO git_repositories (group_, project, host, source)
+                            VALUES ($1, $2, $3, $4)
+                            RETURNING git_repositories.id,
+                                git_repositories.group_,
+                                git_repositories.project,
+                                git_repositories.created_at,
+                                git_repositories.source,
+                                git_repositories.is_load
+                        """)
+                .executeBatch(batch);
+    }
+
+    /**
+     * Find all entities by project group and remote host.
+     *
+     * @param group Project group.
+     * @param host Remote host.
+     * @return Result.
+     */
+    @Override
+    public Future<RowSet<Row>> findAllByGroupAndHost(String group, String host) {
+        return sqlClient(vertx)
+                .preparedQuery("""
+                        SELECT "git_repositories"."id",
+                                "git_repositories"."group_",
+                                "git_repositories"."project",
+                                "git_repositories"."host",
+                                "git_repositories"."created_at",
+                                "git_repositories"."source",
+                                "git_repositories"."is_load"
+                        FROM "git_repositories"
+                        WHERE "git_repositories"."group_" = $1 AND "git_repositories"."host" = $2
+                        """)
+                .execute(Tuple.of(group, host));
     }
 
     /**

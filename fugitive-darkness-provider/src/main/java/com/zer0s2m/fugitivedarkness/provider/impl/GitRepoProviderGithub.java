@@ -20,17 +20,17 @@ public class GitRepoProviderGithub extends GitRepoProviderAbstract implements Gi
     /**
      * Path to get repositories for the specified organization.
      */
-    private static final String pathGetRepoForOrg = "/orgs/%s/repos";
+    private static final String PATH_GET_REPO_FOR_ORG = "/orgs/%s/repos";
 
     /**
      * Path to get repositories for the specified user.
      */
-    private static final String pathGetRepoForUser = "/users/%s/repos";
+    private static final String PATH_GET_REPO_FOR_USER = "/users/%s/repos";
 
     private final Map<String, String> headers = new HashMap<>();
 
     public GitRepoProviderGithub() {
-        super(pathGetRepoForOrg, pathGetRepoForUser);
+        super(PATH_GET_REPO_FOR_ORG, PATH_GET_REPO_FOR_USER);
 
         headers.put("X-GitHub-Api-Version", "2022-11-28");
         headers.put("Accept", "application/vnd.github+json");
