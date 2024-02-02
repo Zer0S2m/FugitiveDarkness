@@ -18,6 +18,10 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -173,28 +177,11 @@ public class GitRepoImpl implements GitRepo {
         final List<ContainerInfoSearchGitRepo> searchFileGitRepos = new ArrayList<>();
         filterSearch.getSources()
                 .forEach(source -> {
+                    logger.info("Start the search [{}]", source);
+
                     final ContainerGitRepoMeta gitRepo = filterSearch.getGitMeta(source);
                     try {
                         final SearchEngineGitGrep commandGrep = searchEngineGitGrep(filterSearch, source, gitRepo);
-
-                        if (filterSearch.getPatternForIncludeFile() != null) {
-                            commandGrep.setPatternForIncludeFile(filterSearch.getPatternForIncludeFile());
-                        }
-
-                        if (filterSearch.getPatternForExcludeFile() != null) {
-                            commandGrep.setPatternForExcludeFile(filterSearch.getPatternForExcludeFile());
-                        }
-
-                        commandGrep.setMaxCount(filterSearch.getMaxCount());
-                        commandGrep.setMaxDepth(filterSearch.getMaxDepth());
-
-                        if (filterSearch.getContext() == -1 || filterSearch.getContext() == 0) {
-                            commandGrep.setContextBefore(filterSearch.getContextBefore());
-                            commandGrep.setContextAfter(filterSearch.getContextAfter());
-                        } else {
-                            commandGrep.setContext(filterSearch.getContext());
-                        }
-
                         final List<ContainerInfoSearchFileGitRepo> searchResult = commandGrep.callGrep();
 
                         searchFileGitRepos.add(new ContainerInfoSearchGitRepo(
@@ -205,10 +192,52 @@ public class GitRepoImpl implements GitRepo {
                                 commandGrep.getExtensionFilesGrep(),
                                 searchResult
                         ));
+
+                        logger.info("End of search    [{}]", source);
                     } catch (IOException | SearchEngineGitException e) {
                         throw new RuntimeException(e);
                     }
                 });
+        return searchFileGitRepos;
+    }
+
+    /**
+     * Search for matches in files in git repositories by pattern. Git grep command.
+     * <p>Uses a search engine {@link SearchEngineGitGrep}.</p>
+     *
+     * @param filterSearch Filter for searching git repositories.
+     * @return Search result in git repository.
+     */
+    @Override
+    public List<ContainerInfoSearchGitRepo> searchByGrepVirtualThreads(GitRepoFilterSearch filterSearch) {
+        final List<ContainerInfoSearchGitRepo> searchFileGitRepos = new ArrayList<>();
+
+        try (final ExecutorService executor = Executors.newVirtualThreadPerTaskExecutor()) {
+            final List<GitRepoSearchCallable> gitRepoSearchCallables = new ArrayList<>();
+            filterSearch.getSources().forEach((source) -> {
+                final GitRepoFilterSearch newFilterSearch = GitRepoFilterSearch.clone(filterSearch);
+                newFilterSearch.clearGitMeta();
+                newFilterSearch.clearSources();
+                newFilterSearch.addGitRepo(source);
+                newFilterSearch.addGitMeta(source, filterSearch.getGitMeta(source));
+
+                gitRepoSearchCallables.add(new GitRepoSearchCallable(newFilterSearch));
+            });
+
+            final List<Future<List<ContainerInfoSearchGitRepo>>> futures =
+                    executor.invokeAll(gitRepoSearchCallables);
+
+            futures.forEach((future) -> {
+                try {
+                    searchFileGitRepos.addAll(future.get());
+                } catch (InterruptedException | ExecutionException e) {
+                    throw new RuntimeException(e);
+                }
+            });
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+
         return searchFileGitRepos;
     }
 
@@ -219,12 +248,16 @@ public class GitRepoImpl implements GitRepo {
      * @param source       Source path of the git repository.
      * @param gitRepo      More information about the git repository.
      * @return Assembled search engine.
-     * @throws IOException If an IO error occurred.
+     * @throws IOException                         If an IO error occurred.
+     * @throws SearchEngineGitSetMaxCountException Exception for setting the maximum number of matches in one file.
+     * @throws SearchEngineGitSetMaxDepthException Exception for setting maximum search depth.
+     * @throws SearchEngineGitSetContextException  Exception for setting preview code after and before matches.
      */
     private static SearchEngineGitGrep searchEngineGitGrep(
             GitRepoFilterSearch filterSearch,
             Path source,
-            ContainerGitRepoMeta gitRepo) throws IOException {
+            ContainerGitRepoMeta gitRepo) throws IOException, SearchEngineGitSetMaxCountException,
+            SearchEngineGitSetMaxDepthException, SearchEngineGitSetContextException {
         final SearchEngineGitGrep commandGrep = new SearchEngineGitGrepImpl(
                 filterSearch.getPattern(),
                 source,
@@ -236,6 +269,25 @@ public class GitRepoImpl implements GitRepo {
         if (filterSearch.getExcludeExtensionFile() != null) {
             commandGrep.setExcludeExtensionFilesForSearchGrep(filterSearch.getExcludeExtensionFile());
         }
+
+        if (filterSearch.getPatternForIncludeFile() != null) {
+            commandGrep.setPatternForIncludeFile(filterSearch.getPatternForIncludeFile());
+        }
+
+        if (filterSearch.getPatternForExcludeFile() != null) {
+            commandGrep.setPatternForExcludeFile(filterSearch.getPatternForExcludeFile());
+        }
+
+        commandGrep.setMaxCount(filterSearch.getMaxCount());
+        commandGrep.setMaxDepth(filterSearch.getMaxDepth());
+
+        if (filterSearch.getContext() == -1 || filterSearch.getContext() == 0) {
+            commandGrep.setContextBefore(filterSearch.getContextBefore());
+            commandGrep.setContextAfter(filterSearch.getContextAfter());
+        } else {
+            commandGrep.setContext(filterSearch.getContext());
+        }
+
         return commandGrep;
     }
 

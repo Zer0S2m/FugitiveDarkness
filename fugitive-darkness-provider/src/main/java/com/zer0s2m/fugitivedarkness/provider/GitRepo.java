@@ -92,6 +92,15 @@ public interface GitRepo {
      */
     List<ContainerInfoSearchGitRepo> searchByGrep(GitRepoFilterSearch filterSearch);
 
+    /**
+     * Search for matches in files in git repositories by pattern. Git grep command.
+     * <p>Uses a search engine {@link SearchEngineGitGrep}.</p>
+     *
+     * @param filterSearch Filter for searching git repositories.
+     * @return Search result in git repository.
+     */
+    List<ContainerInfoSearchGitRepo> searchByGrepVirtualThreads(GitRepoFilterSearch filterSearch);
+
     static GitRepo create() {
         return new GitRepoImpl();
     }

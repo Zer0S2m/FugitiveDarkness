@@ -7,6 +7,7 @@
 - Basic exceptions for git providers.
 - Search engine:
     - Clone repositories from a remote host (From git providers).
+    - Use search splitting into virtual threads.
 
 ### Fixed
 

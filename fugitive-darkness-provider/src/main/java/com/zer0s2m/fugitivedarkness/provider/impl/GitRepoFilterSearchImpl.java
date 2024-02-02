@@ -363,4 +363,22 @@ public class GitRepoFilterSearchImpl implements GitRepoFilterSearch {
         return contextAfter;
     }
 
+    /**
+     * Clear information about repositories.
+     * <p>Relevant when calling the cloning method {@link GitRepoFilterSearch#clone(GitRepoFilterSearch)}.</p>
+     */
+    @Override
+    public void clearGitMeta() {
+        meta.clear();
+    }
+
+    /**
+     * Clear repository source paths.
+     * <p>Relevant when calling the cloning method {@link GitRepoFilterSearch#clone(GitRepoFilterSearch)}.</p>
+     */
+    @Override
+    public void clearSources() {
+        sources.clear();
+    }
+
 }

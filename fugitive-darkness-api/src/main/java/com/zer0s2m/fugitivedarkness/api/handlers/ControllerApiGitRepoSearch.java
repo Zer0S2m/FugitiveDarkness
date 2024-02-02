@@ -28,8 +28,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-import static io.vertx.json.schema.common.dsl.Schemas.*;
-
 /**
  * Processing a request to find matches in a git repository.
  */
@@ -118,7 +116,7 @@ final public class ControllerApiGitRepoSearch implements Handler<RoutingContext>
                                     });
 
                             final List<ContainerInfoSearchGitRepo> resultSearch = serviceGit
-                                    .searchByGrep(gitRepoFilterSearch);
+                                    .searchByGrepVirtualThreads(gitRepoFilterSearch);
 
                             gitRepoRepository.closeClient();
 

@@ -3,6 +3,9 @@ package com.zer0s2m.fugitivedarkness.provider;
 import com.zer0s2m.fugitivedarkness.provider.impl.GitRepoImpl;
 import org.eclipse.jgit.api.errors.GitAPIException;
 
+/**
+ * Assistant for assembling called functionality - copying repositories.
+ */
 public interface RepositoryInstallerRemote {
 
     /**
