@@ -12,6 +12,7 @@
 ### Fixed
 
 - Fix pack empty repository for search.
+- Fix search exception - MissingObjectException.
 
 ## [0.0.3] 2024-01-28
 

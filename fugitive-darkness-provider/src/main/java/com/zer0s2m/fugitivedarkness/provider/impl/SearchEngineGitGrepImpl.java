@@ -1,12 +1,15 @@
 package com.zer0s2m.fugitivedarkness.provider.impl;
 
 import com.zer0s2m.fugitivedarkness.provider.*;
+import org.eclipse.jgit.errors.MissingObjectException;
 import org.eclipse.jgit.lib.*;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.revwalk.RevWalk;
 import org.eclipse.jgit.treewalk.AbstractTreeIterator;
 import org.eclipse.jgit.treewalk.CanonicalTreeParser;
 import org.eclipse.jgit.treewalk.TreeWalk;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -20,6 +23,8 @@ import java.util.regex.Pattern;
  * <a href="https://git-scm.com/docs/git-grep">grep</a> command in git.
  */
 class SearchEngineGitGrepImpl extends SearchEngineGitGrepAbstract implements SearchEngineGitGrep {
+
+    Logger logger = LoggerFactory.getLogger(SearchEngineGitGrepImpl.class);
 
     /**
      * Helper for finding past lines of code.
@@ -112,7 +117,14 @@ class SearchEngineGitGrepImpl extends SearchEngineGitGrepAbstract implements Sea
                 while (treeWalk.next()) {
                     AbstractTreeIterator it = treeWalk.getTree(treeIndex, AbstractTreeIterator.class);
                     ObjectId objectId = it.getEntryObjectId();
-                    ObjectLoader objectLoader = objectReader.open(objectId);
+                    ObjectLoader objectLoader;
+
+                    try {
+                        objectLoader = objectReader.open(objectId);
+                    } catch (MissingObjectException exception) {
+                        logger.error(exception.getMessage());
+                        continue;
+                    }
 
                     if (!isBinary(objectLoader.openStream())) {
                         final String extensionFile = FileSystemUtils
@@ -154,6 +166,8 @@ class SearchEngineGitGrepImpl extends SearchEngineGitGrepAbstract implements Sea
                     }
                 }
             }
+        } catch (Exception exception) {
+            logger.error(exception.getMessage());
         }
 
         return infoSearchFileGitRepos;
