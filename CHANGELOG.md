@@ -8,6 +8,10 @@
 - Search engine:
     - Clone repositories from a remote host (From git providers).
 
+### Fixed
+
+- Fix pack empty repository for search.
+
 ## [0.0.3] 2024-01-28
 
 ### Added
