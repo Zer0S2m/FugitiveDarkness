@@ -6,6 +6,10 @@
 
 - Removed the group parameter when adding a repository.
 
+### Fixed:
+
+- No add button if no repositories exist.
+
 ## [0.0.4] 2024-02-02
 
 ### Added
