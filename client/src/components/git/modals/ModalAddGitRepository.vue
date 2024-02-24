@@ -20,10 +20,6 @@
           name="remote"
           label="Remote"
         />
-        <TextElement
-          name="group"
-          label="Group"
-        />
       </Vueform>
       <div class="modal-button__block">
         <button
@@ -47,8 +43,7 @@ defineProps<{
 }>();
 
 const dataForm: IInstallGitRepository = {
-  remote: '',
-  group: ''
+  remote: ''
 };
 
 const emit = defineEmits<{

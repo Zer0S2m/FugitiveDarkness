@@ -1,5 +1,11 @@
 # Change Log
 
+## [Unreleased]
+
+### Removed
+
+- Removed the group parameter when adding a repository.
+
 ## [0.0.4] 2024-02-02
 
 ### Added

@@ -131,8 +131,7 @@ final public class ControllerApiGitRepoInstall implements Handler<RoutingContext
                     .create(SchemaParser.createDraft7SchemaParser(
                             SchemaRouter.create(vertx, new SchemaRouterOptions())))
                     .body(Bodies.json(objectSchema()
-                            .requiredProperty("remote", stringSchema())
-                            .requiredProperty("group", stringSchema())))
+                            .requiredProperty("remote", stringSchema())))
                     .build();
         }
 

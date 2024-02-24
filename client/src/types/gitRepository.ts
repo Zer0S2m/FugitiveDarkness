@@ -9,7 +9,6 @@ export interface IGitRepository {
 
 export interface IInstallGitRepository {
   remote: string;
-  group: string;
 }
 
 export interface IResponseGitRepository {
