@@ -20,6 +20,12 @@
           name="remote"
           label="Remote"
         />
+        <CheckboxElement
+          name="isLocal"
+          label="Is local"
+        >
+          Whether the repository is local to the file system
+        </CheckboxElement>
       </Vueform>
       <div class="modal-button__block">
         <button
@@ -43,7 +49,8 @@ defineProps<{
 }>();
 
 const dataForm: IInstallGitRepository = {
-  remote: ''
+  remote: '',
+  isLocal: false
 };
 
 const emit = defineEmits<{

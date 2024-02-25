@@ -2,7 +2,10 @@
   <div class="git__add">
     <div class="git__add--wrapper">
       <button @click="emit('onClick')">
-        <IconAdd />
+        <IconAdd
+          :width="20"
+          :height="20"
+        />
       </button>
     </div>
   </div>
@@ -19,7 +22,6 @@ const emit = defineEmits<{
 <style scoped>
 .git__add {
   border: 1px solid var(--color-border);
-  width: 100%;
   border-radius: 4px;
 }
 
@@ -41,6 +43,6 @@ const emit = defineEmits<{
 .git__add--wrapper > button {
   width: 100%;
   height: 100%;
-  padding: 16px 0;
+  padding: 4px 16px;
 }
 </style>

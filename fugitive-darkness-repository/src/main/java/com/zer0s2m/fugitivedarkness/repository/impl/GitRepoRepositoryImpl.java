@@ -50,7 +50,8 @@ public class GitRepoRepositoryImpl extends RepositoryImpl implements GitRepoRepo
                                git_repositories.host,
                                git_repositories.created_at,
                                git_repositories.source,
-                               git_repositories.is_load
+                               git_repositories.is_load,
+                               git_repositories.is_local
                         FROM git_repositories;
                         """)
                 .execute();
@@ -66,16 +67,23 @@ public class GitRepoRepositoryImpl extends RepositoryImpl implements GitRepoRepo
     public Future<RowSet<Row>> save(GitRepoModel entity) {
         return sqlClient(vertx)
                 .preparedQuery("""
-                            INSERT INTO git_repositories (group_, project, host, source)
-                            VALUES ($1, $2, $3, $4)
+                            INSERT INTO git_repositories (group_, project, host, source, is_load, is_local)
+                            VALUES ($1, $2, $3, $4, $5, $6)
                             RETURNING git_repositories.id,
                                 git_repositories.group_,
                                 git_repositories.project,
                                 git_repositories.created_at,
                                 git_repositories.source,
-                                git_repositories.is_load
+                                git_repositories.is_load,
+                                git_repositories.is_local
                         """)
-                .execute(Tuple.of(entity.getGroup(), entity.getProject(), entity.getHost(), entity.getSource()));
+                .execute(Tuple.of(
+                        entity.getGroup(),
+                        entity.getProject(),
+                        entity.getHost(),
+                        entity.getSource(),
+                        entity.getIsLoad(),
+                        entity.getIsLocal()));
     }
 
     /**
@@ -100,7 +108,8 @@ public class GitRepoRepositoryImpl extends RepositoryImpl implements GitRepoRepo
                                 git_repositories.project,
                                 git_repositories.created_at,
                                 git_repositories.source,
-                                git_repositories.is_load
+                                git_repositories.is_load,
+                                git_repositories.is_local
                         """)
                 .executeBatch(batch);
     }
@@ -109,7 +118,7 @@ public class GitRepoRepositoryImpl extends RepositoryImpl implements GitRepoRepo
      * Find all entities by project group and remote host.
      *
      * @param group Project group.
-     * @param host Remote host.
+     * @param host  Remote host.
      * @return Result.
      */
     @Override
@@ -122,11 +131,37 @@ public class GitRepoRepositoryImpl extends RepositoryImpl implements GitRepoRepo
                                 "git_repositories"."host",
                                 "git_repositories"."created_at",
                                 "git_repositories"."source",
-                                "git_repositories"."is_load"
+                                "git_repositories"."is_load",
+                                "git_repositories"."is_local"
                         FROM "git_repositories"
                         WHERE "git_repositories"."group_" = $1 AND "git_repositories"."host" = $2
                         """)
                 .execute(Tuple.of(group, host));
+    }
+
+    /**
+     * Find an entity by group name and project.
+     *
+     * @param group Project group.
+     * @param project Name of the project.
+     * @return Result.
+     */
+    @Override
+    public Future<RowSet<Row>> findByGroupAndProject(String group, String project) {
+        return sqlClient(vertx)
+                .preparedQuery("""
+                        SELECT "git_repositories"."id",
+                                "git_repositories"."group_",
+                                "git_repositories"."project",
+                                "git_repositories"."host",
+                                "git_repositories"."created_at",
+                                "git_repositories"."source",
+                                "git_repositories"."is_load",
+                                "git_repositories"."is_local"
+                        FROM "git_repositories"
+                        WHERE "git_repositories"."group_" = $1 AND "git_repositories"."project" = $2
+                        """)
+                .execute(Tuple.of(group, project));
     }
 
     /**

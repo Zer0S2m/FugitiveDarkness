@@ -1,6 +1,12 @@
 <template>
   <div class="git__local">
-    <h2 class="title-container">Local repositories</h2>
+    <div class="git-title--container">
+      <h2 class="title-container">Local repositories</h2>
+      <AddGitItemButton
+        @onClick="openModalAddGitRepository"
+        class="git-item__add"
+      />
+    </div>
     <div>
       <div
         class="git-local--groups"
@@ -98,6 +104,7 @@ import IconGithub from '@/assets/github-mark.svg';
 import IconGitlab from '@/assets/gitlab-mark.svg';
 import GitRepositoryInProviderList from '@/components/git/GitRepositoryInProviderList.vue';
 import { computed } from 'vue';
+import AddGitItemButton from '@/components/common/AddGitItemButton.vue';
 
 const useGitRepositoryStore = useGitRepositoryState();
 const useGitProviderStore = useGitProviderState();
@@ -143,6 +150,20 @@ const openModalAddGitRepository = () => {
 <style scoped>
 .git__local {
   margin-bottom: 28px;
+}
+
+.git-title--container {
+  display: flex;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.git-title--container > h2 {
+  margin-right: 20px;
+}
+
+.git-title--container .title-container {
+  margin-bottom: 0;
 }
 
 .git-from__providers {

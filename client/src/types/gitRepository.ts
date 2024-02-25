@@ -5,10 +5,12 @@ export interface IGitRepository {
   host: string;
   create_at: string;
   is_load: boolean;
+  is_local: boolean;
 }
 
 export interface IInstallGitRepository {
   remote: string;
+  isLocal: boolean;
 }
 
 export interface IResponseGitRepository {
@@ -19,6 +21,7 @@ export interface IResponseGitRepository {
 export interface IResponseInstallingGitRepository {
   success: boolean;
   isLoadGitRepository: boolean;
+  isLocalGitRepository: boolean;
   gitRepository: {
     host: string;
     group: string;
