@@ -67,3 +67,23 @@ npm run dev
 | **`FD_POSTGRES_PASSWORD`** | Password for connecting to the specified database      | `my_db_password`                              |
 | **`FD_POSTGRES_USER`**     | Database user                                          | `my_db_user`                                  |
 | **`FD_POSTGRES_DB`**       | Database name                                          | `my_db`                                       |
+
+### Build
+
+Build client:
+
+```shell
+cd ./client && npm run build
+```
+
+Build server:
+
+```shell
+mvn clean package
+```
+
+Run server:
+
+```shell
+java -jar ./fugitive-darkness-api/target/fugitive-darkness-api-0.0.5-fat.jar
+```

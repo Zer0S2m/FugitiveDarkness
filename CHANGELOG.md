@@ -1,5 +1,23 @@
 # Change Log
 
+## [0.0.5] 2024-02-25
+
+### Added
+
+- Application build and launch system.
+- Added a system of local repositories in the file system:
+    - Addition.
+    - Search.
+    - Delete (rows in the database).
+
+### Removed
+
+- Removed the group parameter when adding a repository.
+
+### Fixed:
+
+- No add button if no repositories exist.
+
 ## [0.0.4] 2024-02-02
 
 ### Added

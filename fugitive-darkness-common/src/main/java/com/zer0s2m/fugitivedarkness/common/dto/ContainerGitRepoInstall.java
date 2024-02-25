@@ -4,7 +4,7 @@ public record ContainerGitRepoInstall(
 
         String remote,
 
-        String group
+        boolean isLocal
 
 ) {
 }

@@ -24,7 +24,10 @@
           v-if="item.is_load"
           @click="updateGitRepository"
         >
-          <IconUpdate class="git-item__update-icon" />
+          <IconUpdate
+            v-if="!item.is_local"
+            class="git-item__update-icon"
+          />
         </button>
       </div>
     </div>

@@ -6,7 +6,7 @@
 
   <groupId>com.zer0s2m.fugitive-darkness</groupId>
   <artifactId>fugitive-darkness</artifactId>
-  <version>0.0.4</version>
+  <version>0.0.5</version>
   <packaging>pom</packaging>
   <modules>
     <module>fugitive-darkness-api</module>
@@ -30,9 +30,7 @@
     <maven.compiler.source>21</maven.compiler.source>
     <maven.compiler.target>21</maven.compiler.target>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <main.class>com.zer0s2m.fugitivedarkness.api.FugitiveDarknessApp</main.class>
-    <main.verticle>com.zer0s2m.fugitivedarkness.api.FugitiveDarknessApp</main.verticle>
-    <launcher.class>io.vertx.core.Launcher</launcher.class>
+    <main.class>com.zer0s2m.fugitivedarkness.api.Main</main.class>
 
     <jgit.version>6.7.0.202309050840-r</jgit.version>
     <vertx-stack-depchain.version>4.5.0</vertx-stack-depchain.version>
@@ -52,12 +50,12 @@
     <postgresql.version>42.6.0</postgresql.version>
     <scram-common.version>2.1</scram-common.version>
     <scram-client.version>2.1</scram-client.version>
-    <fugitive-darkness-common.version>0.0.4</fugitive-darkness-common.version>
-    <fugitive-darkness-provider.version>0.0.4</fugitive-darkness-provider.version>
-    <fugitive-darkness-models.version>0.0.4</fugitive-darkness-models.version>
-    <fugitive-darkness-repository.version>0.0.4</fugitive-darkness-repository.version>
-    <fugitive-darkness-plugin.version>0.0.4</fugitive-darkness-plugin.version>
-    <fugitive-darkness-plugin-vertx-git-provider.version>0.0.4</fugitive-darkness-plugin-vertx-git-provider.version>
+    <fugitive-darkness-common.version>0.0.5</fugitive-darkness-common.version>
+    <fugitive-darkness-provider.version>0.0.5</fugitive-darkness-provider.version>
+    <fugitive-darkness-models.version>0.0.5</fugitive-darkness-models.version>
+    <fugitive-darkness-repository.version>0.0.5</fugitive-darkness-repository.version>
+    <fugitive-darkness-plugin.version>0.0.5</fugitive-darkness-plugin.version>
+    <fugitive-darkness-plugin-vertx-git-provider.version>0.0.5</fugitive-darkness-plugin-vertx-git-provider.version>
   </properties>
 
   <dependencyManagement>
