@@ -7,11 +7,11 @@
   <parent>
     <groupId>com.zer0s2m.fugitive-darkness</groupId>
     <artifactId>fugitive-darkness</artifactId>
-    <version>0.0.4</version>
+    <version>0.0.5</version>
   </parent>
 
   <artifactId>fugitive-darkness-api</artifactId>
-  <version>0.0.4</version>
+  <version>0.0.5</version>
   <name>fugitive-darkness-api</name>
   <description>fugitive-darkness-api</description>
 
