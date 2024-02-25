@@ -4,6 +4,7 @@
 
 ### Added
 
+- Application build and launch system.
 - Added a system of local repositories in the file system:
     - Addition.
     - Search.

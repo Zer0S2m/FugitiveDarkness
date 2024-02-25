@@ -30,9 +30,7 @@
     <maven.compiler.source>21</maven.compiler.source>
     <maven.compiler.target>21</maven.compiler.target>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <main.class>com.zer0s2m.fugitivedarkness.api.FugitiveDarknessApp</main.class>
-    <main.verticle>com.zer0s2m.fugitivedarkness.api.FugitiveDarknessApp</main.verticle>
-    <launcher.class>io.vertx.core.Launcher</launcher.class>
+    <main.class>com.zer0s2m.fugitivedarkness.api.Main</main.class>
 
     <jgit.version>6.7.0.202309050840-r</jgit.version>
     <vertx-stack-depchain.version>4.5.0</vertx-stack-depchain.version>
