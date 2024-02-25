@@ -256,6 +256,7 @@ export const useGitRepositoryState = defineStore('gitRepository', () => {
         host: resultInstalledData.gitRepository.host,
         id: 0,
         is_load: resultInstalledData.isLoadGitRepository,
+        is_local: resultInstalledData.isLocalGitRepository,
         project: resultInstalledData.gitRepository.project
       }
     ];

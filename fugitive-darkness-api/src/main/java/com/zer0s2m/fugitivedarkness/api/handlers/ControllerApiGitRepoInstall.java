@@ -54,7 +54,8 @@ final public class ControllerApiGitRepoInstall implements Handler<RoutingContext
 
         JsonObject object = new JsonObject();
         object.put("success", true);
-        object.put("isLoadGitRepository", false);
+        object.put("isLoadGitRepository", containerGitRepoInstall.isLocal());
+        object.put("isLocalGitRepository", containerGitRepoInstall.isLocal());
         object.put("gitRepository", infoRepo);
 
         repositoryGit.save(new GitRepoModel(
