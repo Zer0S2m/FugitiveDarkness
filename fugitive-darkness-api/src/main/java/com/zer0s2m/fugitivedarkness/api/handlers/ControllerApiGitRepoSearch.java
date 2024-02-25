@@ -26,6 +26,7 @@ import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.regex.Pattern;
 
 /**
@@ -95,15 +96,30 @@ final public class ControllerApiGitRepoSearch implements Handler<RoutingContext>
                             final List<GitRepoModel> gitRepositories = gitRepoRepository
                                     .mapTo(ar.result());
                             final Map<String, String> hostGitRepoByGroupAndProject = new HashMap<>();
-                            gitRepositories.forEach(gitRepository -> hostGitRepoByGroupAndProject.put(
-                                    gitRepository.getGroup() + "__" + gitRepository.getProject(),
-                                    gitRepository.getHost()
-                            ));
+                            final Map<String, Path> sourceLocalProjects = new HashMap<>();
+                            gitRepositories.forEach(gitRepository -> {
+                                if (!Objects.equals(gitRepository.getGroup(), "LOCAL")) {
+                                    hostGitRepoByGroupAndProject.put(
+                                            gitRepository.getGroup() + "__" + gitRepository.getProject(),
+                                            gitRepository.getHost()
+                                    );
+                                } else {
+                                    sourceLocalProjects.put(
+                                            "LOCAL__" + gitRepository.getGroup(), Path.of(gitRepository.getSource()));
+                                }
+                            });
 
                             gitRepoSearch.filters().git()
                                     .forEach(repo -> {
-                                        final Path source = HelperGitRepo
-                                                .getSourceGitRepository(repo.group(), repo.project());
+                                        System.out.println(repo);
+
+                                        Path source;
+                                        if (!Objects.equals(repo.group(), "LOCAL")) {
+                                            source = HelperGitRepo
+                                                    .getSourceGitRepository(repo.group(), repo.project());
+                                        } else {
+                                            source = sourceLocalProjects.get("LOCAL__" + repo.group());
+                                        }
 
                                         gitRepoFilterSearch
                                                 .addGitRepo(source)

@@ -2,6 +2,13 @@
 
 ## [Unreleased]
 
+### Added
+
+- Added a system of local repositories in the file system:
+    - Addition.
+    - Search.
+    - Delete (rows in the database).
+
 ### Removed
 
 - Removed the group parameter when adding a repository.

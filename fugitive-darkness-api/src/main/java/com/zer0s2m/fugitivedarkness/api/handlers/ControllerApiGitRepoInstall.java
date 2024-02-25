@@ -26,8 +26,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.TimeUnit;
 
-import static io.vertx.json.schema.common.dsl.Schemas.objectSchema;
-import static io.vertx.json.schema.common.dsl.Schemas.stringSchema;
+import static io.vertx.json.schema.common.dsl.Schemas.*;
 
 /**
  * Request handler for installing a git repository on the system.
@@ -50,7 +49,8 @@ final public class ControllerApiGitRepoInstall implements Handler<RoutingContext
                 .body()
                 .asJsonObject()
                 .mapTo(ContainerGitRepoInstall.class);
-        final ContainerInfoRepo infoRepo = serviceGit.gGetInfo(containerGitRepoInstall.remote());
+        final ContainerInfoRepo infoRepo = serviceGit.gGetInfo(
+                containerGitRepoInstall.remote(), containerGitRepoInstall.isLocal());
 
         JsonObject object = new JsonObject();
         object.put("success", true);
@@ -62,11 +62,17 @@ final public class ControllerApiGitRepoInstall implements Handler<RoutingContext
                         infoRepo.project(),
                         infoRepo.host(),
                         infoRepo.source(),
-                        false
+                        containerGitRepoInstall.isLocal(),
+                        containerGitRepoInstall.isLocal()
                 ))
                 .onComplete(resultSaved -> {
                     if (!resultSaved.succeeded()) {
                         logger.error("Failure (DB 1): " + resultSaved.cause());
+                        return;
+                    }
+
+                    // If the repository is on the file system, then there is no need to clone it.
+                    if (containerGitRepoInstall.isLocal()) {
                         return;
                     }
 
@@ -131,6 +137,7 @@ final public class ControllerApiGitRepoInstall implements Handler<RoutingContext
                     .create(SchemaParser.createDraft7SchemaParser(
                             SchemaRouter.create(vertx, new SchemaRouterOptions())))
                     .body(Bodies.json(objectSchema()
+                            .requiredProperty("isLocal", booleanSchema())
                             .requiredProperty("remote", stringSchema())))
                     .build();
         }
@@ -154,7 +161,8 @@ final public class ControllerApiGitRepoInstall implements Handler<RoutingContext
                     .body()
                     .asJsonObject()
                     .mapTo(ContainerGitRepoInstall.class);
-            final ContainerInfoRepo infoRepo = serviceGit.gGetInfo(containerGitRepoInstall.remote());
+            final ContainerInfoRepo infoRepo = serviceGit.gGetInfo(
+                    containerGitRepoInstall.remote(), containerGitRepoInstall.isLocal());
 
             repositoryGit
                     .existsByGroupAndProject(infoRepo.group(), infoRepo.project())

@@ -7,6 +7,7 @@ import org.eclipse.jgit.api.errors.GitAPIException;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -51,6 +52,28 @@ public interface GitRepo {
                         infoRepo.group(),
                         infoRepo.project()).toString())
         );
+    }
+
+    /**
+     * Get git repository information from URI.
+     *
+     * @param URI Remote git repository host.
+     * @param isLocal Whether the repository is local to the file system .
+     * @return Git repository information.
+     */
+    default ContainerInfoRepo gGetInfo(String URI, boolean isLocal) {
+        if (!isLocal) {
+            return gGetInfo(URI);
+        } else {
+            List<String> URUSplit = Arrays.asList(URI.split("/"));
+            return new ContainerInfoRepo(
+                    "LOCAL",
+                    "LOCAL",
+                    URUSplit.get(URUSplit.size() - 1),
+                    "LOCAL",
+                    Path.of(URI)
+            );
+        }
     }
 
     /**
