@@ -70,6 +70,7 @@ final public class ControllerApiGitRepoGetFileContent implements Handler<Routing
                         result.put("content", ar);
 
                         event.response()
+                                .setChunked(true)
                                 .putHeader(HttpHeaders.CONTENT_LENGTH, String.valueOf(result.toString().length()))
                                 .putHeader(HttpHeaders.CONTENT_TYPE, "application/json")
                                 .setStatusCode(HttpResponseStatus.OK.code())
