@@ -2,7 +2,7 @@ package com.zer0s2m.fugitivedarkness.api.handlers;
 
 import com.zer0s2m.fugitivedarkness.api.exception.NotFoundException;
 import com.zer0s2m.fugitivedarkness.common.dto.ContainerGitRepoGetFile;
-import com.zer0s2m.fugitivedarkness.provider.GitRepo;
+import com.zer0s2m.fugitivedarkness.provider.GitRepoManager;
 import com.zer0s2m.fugitivedarkness.provider.HelperGitRepo;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.vertx.core.Handler;
@@ -30,7 +30,7 @@ final public class ControllerApiGitRepoGetFileContent implements Handler<Routing
 
     static private final Logger logger = LoggerFactory.getLogger(ControllerApiGitRepoGetFileContent.class);
 
-    private final GitRepo gitRepo = GitRepo.create();
+    private final GitRepoManager gitRepo = GitRepoManager.create();
 
     /**
      * Getting a file from a git repository.

@@ -1,7 +1,7 @@
 package com.zer0s2m.fugitivedarkness.provider;
 
 import com.zer0s2m.fugitivedarkness.common.Environment;
-import com.zer0s2m.fugitivedarkness.provider.impl.GitRepoImpl;
+import com.zer0s2m.fugitivedarkness.provider.impl.GitRepoManagerImpl;
 import org.eclipse.jgit.api.CloneCommand;
 import org.eclipse.jgit.api.errors.GitAPIException;
 
@@ -13,7 +13,7 @@ import java.util.List;
 /**
  * Interface for implementing a service that handles git repositories.
  */
-public interface GitRepo {
+public interface GitRepoManager {
 
     /**
      * Clone a git repository from a remote host into a set path environment variable {@link Environment#ROOT_PATH_REPO}.
@@ -124,8 +124,8 @@ public interface GitRepo {
      */
     List<ContainerInfoSearchGitRepo> searchByGrepVirtualThreads(GitRepoFilterSearch filterSearch);
 
-    static GitRepo create() {
-        return new GitRepoImpl();
+    static GitRepoManager create() {
+        return new GitRepoManagerImpl();
     }
 
 }

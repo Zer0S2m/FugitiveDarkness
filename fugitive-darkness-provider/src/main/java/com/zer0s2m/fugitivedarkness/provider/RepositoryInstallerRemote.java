@@ -1,6 +1,6 @@
 package com.zer0s2m.fugitivedarkness.provider;
 
-import com.zer0s2m.fugitivedarkness.provider.impl.GitRepoImpl;
+import com.zer0s2m.fugitivedarkness.provider.impl.GitRepoManagerImpl;
 import org.eclipse.jgit.api.errors.GitAPIException;
 
 /**
@@ -16,7 +16,7 @@ public interface RepositoryInstallerRemote {
      */
     static Runnable taskInstallRepoRemote(final String URI) {
         return () -> {
-            final GitRepo gitRepoService = new GitRepoImpl();
+            final GitRepoManager gitRepoService = new GitRepoManagerImpl();
             try {
                 gitRepoService.gCloneStart(
                         gitRepoService.gCloneCreate(URI),

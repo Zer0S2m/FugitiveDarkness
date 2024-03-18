@@ -2,7 +2,7 @@ package com.zer0s2m.fugitivedarkness.api.handlers;
 
 import com.zer0s2m.fugitivedarkness.api.exception.NotFoundException;
 import com.zer0s2m.fugitivedarkness.common.dto.ContainerGitRepoControl;
-import com.zer0s2m.fugitivedarkness.provider.GitRepo;
+import com.zer0s2m.fugitivedarkness.provider.GitRepoManager;
 import com.zer0s2m.fugitivedarkness.provider.HelperGitRepo;
 import com.zer0s2m.fugitivedarkness.repository.GitRepoRepository;
 import com.zer0s2m.fugitivedarkness.repository.impl.GitRepoRepositoryImpl;
@@ -23,7 +23,7 @@ final public class ControllerApiGitRepoFetch implements Handler<RoutingContext> 
 
     static private final Logger logger = LoggerFactory.getLogger(ControllerApiGitRepoFetch.class);
 
-    private final GitRepo gitRepo = GitRepo.create();
+    private final GitRepoManager gitRepo = GitRepoManager.create();
 
     /**
      * Updates repository from remote.

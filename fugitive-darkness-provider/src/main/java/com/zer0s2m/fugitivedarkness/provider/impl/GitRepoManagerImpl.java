@@ -27,9 +27,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  * Service for interacting with git repositories
  */
-public class GitRepoImpl implements GitRepo {
+public class GitRepoManagerImpl implements GitRepoManager {
 
-    Logger logger = LoggerFactory.getLogger(GitRepo.class);
+    Logger logger = LoggerFactory.getLogger(GitRepoManager.class);
 
     /**
      * Clone a git repository from a remote host into a set path environment variable {@link Environment#ROOT_PATH_REPO}.

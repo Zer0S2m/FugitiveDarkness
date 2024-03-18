@@ -34,7 +34,7 @@ import java.util.regex.Pattern;
  */
 final public class ControllerApiGitRepoSearch implements Handler<RoutingContext> {
 
-    private final GitRepo serviceGit = GitRepo.create();
+    private final GitRepoManager serviceGit = GitRepoManager.create();
 
     static private final Logger logger = LoggerFactory.getLogger(ControllerApiGitRepoSearch.class);
 
