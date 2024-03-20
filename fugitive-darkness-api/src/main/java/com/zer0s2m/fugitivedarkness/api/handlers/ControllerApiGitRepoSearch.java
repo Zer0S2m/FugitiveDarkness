@@ -3,7 +3,7 @@ package com.zer0s2m.fugitivedarkness.api.handlers;
 import com.zer0s2m.fugitivedarkness.api.scheme.SchemaFilterSearch;
 import com.zer0s2m.fugitivedarkness.common.dto.ContainerGitRepoSearch;
 import com.zer0s2m.fugitivedarkness.models.GitRepoModel;
-import com.zer0s2m.fugitivedarkness.provider.*;
+import com.zer0s2m.fugitivedarkness.provider.git.*;
 import com.zer0s2m.fugitivedarkness.repository.GitRepoRepository;
 import com.zer0s2m.fugitivedarkness.repository.impl.GitRepoRepositoryImpl;
 import io.netty.handler.codec.http.HttpResponseStatus;

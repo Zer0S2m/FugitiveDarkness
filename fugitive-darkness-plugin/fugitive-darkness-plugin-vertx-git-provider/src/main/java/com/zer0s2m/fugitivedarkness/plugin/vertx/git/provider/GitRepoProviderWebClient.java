@@ -1,8 +1,8 @@
 package com.zer0s2m.fugitivedarkness.plugin.vertx.git.provider;
 
 import com.zer0s2m.fugitivedarkness.plugin.vertx.git.provider.impl.GitRepoProviderWebClientImpl;
-import com.zer0s2m.fugitivedarkness.provider.GitRepoProviderInfo;
-import com.zer0s2m.fugitivedarkness.provider.GitRepoProviderType;
+import com.zer0s2m.fugitivedarkness.provider.git.GitRepoProviderInfo;
+import com.zer0s2m.fugitivedarkness.provider.git.GitRepoProviderType;
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonArray;

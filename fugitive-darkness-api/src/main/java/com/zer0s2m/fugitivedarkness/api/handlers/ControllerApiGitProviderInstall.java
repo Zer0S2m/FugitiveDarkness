@@ -5,9 +5,9 @@ import com.zer0s2m.fugitivedarkness.api.exception.ObjectISExistsInSystemExceptio
 import com.zer0s2m.fugitivedarkness.common.dto.ContainerInfoGitProviderInstall;
 import com.zer0s2m.fugitivedarkness.models.GitProviderModel;
 import com.zer0s2m.fugitivedarkness.plugin.vertx.git.provider.GitRepoProviderWebClient;
-import com.zer0s2m.fugitivedarkness.provider.GitRepoProvider;
-import com.zer0s2m.fugitivedarkness.provider.GitRepoProviderInfo;
-import com.zer0s2m.fugitivedarkness.provider.GitRepoProviderType;
+import com.zer0s2m.fugitivedarkness.provider.git.GitRepoProvider;
+import com.zer0s2m.fugitivedarkness.provider.git.GitRepoProviderInfo;
+import com.zer0s2m.fugitivedarkness.provider.git.GitRepoProviderType;
 import com.zer0s2m.fugitivedarkness.repository.GitProviderRepository;
 import com.zer0s2m.fugitivedarkness.repository.impl.GitProviderRepositoryImpl;
 import io.netty.handler.codec.http.HttpResponseStatus;

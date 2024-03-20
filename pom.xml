@@ -51,7 +51,8 @@
     <scram-common.version>2.1</scram-common.version>
     <scram-client.version>2.1</scram-client.version>
     <fugitive-darkness-common.version>0.0.5</fugitive-darkness-common.version>
-    <fugitive-darkness-provider.version>0.0.5</fugitive-darkness-provider.version>
+    <fugitive-darkness-provider-git.version>0.0.5</fugitive-darkness-provider-git.version>
+    <fugitive-darkness-provider-docx.version>0.0.5</fugitive-darkness-provider-docx.version>
     <fugitive-darkness-models.version>0.0.5</fugitive-darkness-models.version>
     <fugitive-darkness-repository.version>0.0.5</fugitive-darkness-repository.version>
     <fugitive-darkness-plugin.version>0.0.5</fugitive-darkness-plugin.version>
@@ -150,8 +151,13 @@
       </dependency>
       <dependency>
         <groupId>com.zer0s2m.fugitive-darkness</groupId>
-        <artifactId>fugitive-darkness-provider</artifactId>
-        <version>${fugitive-darkness-provider.version}</version>
+        <artifactId>fugitive-darkness-provider-git</artifactId>
+        <version>${fugitive-darkness-provider-git.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.zer0s2m.fugitive-darkness</groupId>
+        <artifactId>fugitive-darkness-provider-docx</artifactId>
+        <version>${fugitive-darkness-provider-docx.version}</version>
       </dependency>
       <dependency>
         <groupId>com.zer0s2m.fugitive-darkness</groupId>

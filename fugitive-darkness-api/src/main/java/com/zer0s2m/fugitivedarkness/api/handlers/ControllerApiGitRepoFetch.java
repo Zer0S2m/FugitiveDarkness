@@ -2,8 +2,8 @@ package com.zer0s2m.fugitivedarkness.api.handlers;
 
 import com.zer0s2m.fugitivedarkness.api.exception.NotFoundException;
 import com.zer0s2m.fugitivedarkness.common.dto.ContainerGitRepoControl;
-import com.zer0s2m.fugitivedarkness.provider.GitRepoManager;
-import com.zer0s2m.fugitivedarkness.provider.HelperGitRepo;
+import com.zer0s2m.fugitivedarkness.provider.git.GitRepoManager;
+import com.zer0s2m.fugitivedarkness.provider.git.HelperGitRepo;
 import com.zer0s2m.fugitivedarkness.repository.GitRepoRepository;
 import com.zer0s2m.fugitivedarkness.repository.impl.GitRepoRepositoryImpl;
 import io.netty.handler.codec.http.HttpResponseStatus;

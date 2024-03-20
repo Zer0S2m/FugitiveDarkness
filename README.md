@@ -1,6 +1,9 @@
 # Fugitive Darkness
 
-Searching and indexing git repositories.
+Search engine from different sources:
+
+- Indexing git sources and searching.
+- DOCX Documents.
 
 ### Development - Server
 

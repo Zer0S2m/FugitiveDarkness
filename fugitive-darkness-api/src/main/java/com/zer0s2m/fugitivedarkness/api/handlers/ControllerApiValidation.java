@@ -1,6 +1,6 @@
 package com.zer0s2m.fugitivedarkness.api.handlers;
 
-import com.zer0s2m.fugitivedarkness.provider.GitRepoProviderType;
+import com.zer0s2m.fugitivedarkness.provider.git.GitRepoProviderType;
 import io.vertx.core.Vertx;
 import io.vertx.ext.web.validation.ValidationHandler;
 import io.vertx.ext.web.validation.builder.Bodies;
