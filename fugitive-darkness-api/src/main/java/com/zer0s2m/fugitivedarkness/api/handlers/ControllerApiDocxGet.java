@@ -17,7 +17,7 @@ import java.util.List;
 /**
  * Request handler for getting all docx files.
  */
-public class ControllerApiDocxGet implements Handler<RoutingContext> {
+final public class ControllerApiDocxGet implements Handler<RoutingContext> {
 
     static private final Logger logger = LoggerFactory.getLogger(ControllerApiDocxGet.class);
 

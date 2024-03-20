@@ -90,4 +90,39 @@ public class DocxFileRepositoryImpl extends RepositoryImpl implements DocxFileRe
         return super.mapToExistsColumn(rows);
     }
 
+    /**
+     * Check entry for existence by ID.
+     *
+     * @param id ID repository.
+     * @return Result.
+     */
+    @Override
+    public Future<RowSet<Row>> existsById(long id) {
+        return sqlClient(vertx)
+                .preparedQuery("""
+                        SELECT EXISTS(select id
+                                      from "docx_files"
+                                      WHERE "docx_files"."id" = $1)
+                        """)
+                .execute(Tuple.of(id));
+    }
+
+    /**
+     * Delete an entity from the database by id.
+     *
+     * @param id ID git filter
+     * @return Result.
+     */
+    @Override
+    public Future<RowSet<Row>> deleteById(long id) {
+        return sqlClient(vertx)
+                .preparedQuery("""
+                        DELETE
+                        FROM "docx_files"
+                        WHERE "docx_files".id = $1
+                        RETURNING "docx_files".*
+                        """)
+                .execute(Tuple.of(id));
+    }
+
 }
