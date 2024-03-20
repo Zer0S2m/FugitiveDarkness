@@ -66,7 +66,9 @@ public class FugitiveDarknessApp extends AbstractVerticle {
                                 \t\u001b[41mDELETE\u001b[0m [/api/v1/git/filter/search/:ID]
                                 \t\u001b[44mGET\u001b[0m    [/api/v1/git/provider]
                                 \t\u001b[41mDELETE\u001b[0m [/api/v1/git/provider/delete]
-                                \t\u001b[42mPOST\u001b[0m   [/api/v1/git/provider/install]""");
+                                \t\u001b[42mPOST\u001b[0m   [/api/v1/git/provider/install]
+                                \t\u001b[42mPOST\u001b[0m   [/api/v1/docx/upload]
+                                \t\u001b[44mGET\u001b[0m    [/api/v1/docx/download]""");
                         logger.info("""
                                 Setting ENV:
                                 \tFD_ROOT_PATH - %s
@@ -235,6 +237,18 @@ public class FugitiveDarknessApp extends AbstractVerticle {
                 .handler(ControllerApiValidation.ValidationControlID.validator(vertx))
                 .handler(new ControllerApiGitFilterDelete.GitFilterCheckIsExists())
                 .handler(new ControllerApiGitFilterDelete())
+                .handler(new HandlerLogger.HandlerLoggerResponse());
+        router
+                .post("/api/v1/docx/upload")
+                .handler(BodyHandler
+                        .create()
+                        .setBodyLimit(-1)
+                        .setHandleFileUploads(true))
+                .handler(new ControllerApiDocxUpload())
+                .handler(new HandlerLogger.HandlerLoggerResponse());
+        router
+                .get("/api/v1/docx/download")
+                .handler(new ControllerApiDocxDownload())
                 .handler(new HandlerLogger.HandlerLoggerResponse());
     }
 

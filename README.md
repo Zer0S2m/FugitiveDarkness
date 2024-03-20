@@ -64,6 +64,7 @@ npm run dev
 | Env param                  | Value                                                  | Example                                       |
 |----------------------------|--------------------------------------------------------|-----------------------------------------------|
 | **`FD_ROOT_PATH_REPO`**    | Root folder for storing locally installed repositories | `/path/FD/repo`                               |
+| **`FD_ROOT_PATH_DOCX`**    | Root folder for storing locally installed docx files   | `/path/FD/docx`                               |
 | **`FD_ALLOW_ORIGIN`**      | Set the list of allowed origins.                       | `http://localhost:5173,http://localhost:5174` |
 | **`FD_POSTGRES_PORT`**     | Indicates the port where the server is listening       | `localhost`                                   |
 | **`FD_POSTGRES_HOST`**     | Is where the server host is located                    | `5432`                                        |

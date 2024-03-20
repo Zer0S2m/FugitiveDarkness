@@ -25,7 +25,7 @@ import java.util.concurrent.atomic.AtomicReference;
 /**
  * Request handler for cloning git repositories from a remote host.
  */
-public class ControllerApiGitRepoInstallRemote implements Handler<RoutingContext> {
+final public class ControllerApiGitRepoInstallRemote implements Handler<RoutingContext> {
 
     static private final Logger logger = LoggerFactory.getLogger(ControllerApiGitRepoInstallRemote.class);
 

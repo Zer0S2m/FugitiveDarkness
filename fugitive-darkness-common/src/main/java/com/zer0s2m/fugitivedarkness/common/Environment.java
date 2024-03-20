@@ -13,6 +13,11 @@ final public class Environment {
      */
     public static final String ROOT_PATH_REPO = getRootPathRepo();
 
+    /**
+     * Root path to the docx files.
+     */
+    public static final String ROOT_PATH_DOCX = getRootPathDocx();
+
     public static final int FD_POSTGRES_PORT = getFdPostgresPort();
 
     public static final String FD_POSTGRES_HOST = getFdPostgresHost();
@@ -27,6 +32,10 @@ final public class Environment {
 
     private static String getRootPathRepo() {
         return System.getenv("FD_ROOT_PATH_REPO");
+    }
+
+    private static String getRootPathDocx() {
+        return System.getenv("FD_ROOT_PATH_DOCX");
     }
 
     private static int getFdPostgresPort() {

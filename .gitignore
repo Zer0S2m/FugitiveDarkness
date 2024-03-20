@@ -40,3 +40,6 @@ build/
 
 ### ENV ###
 .env
+
+### VERTX ###
+file-uploads/
