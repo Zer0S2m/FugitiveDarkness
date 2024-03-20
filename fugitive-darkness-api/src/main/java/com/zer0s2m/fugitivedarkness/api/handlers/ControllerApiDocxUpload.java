@@ -2,7 +2,6 @@ package com.zer0s2m.fugitivedarkness.api.handlers;
 
 import com.zer0s2m.fugitivedarkness.common.Environment;
 import com.zer0s2m.fugitivedarkness.models.DocxFileModel;
-import com.zer0s2m.fugitivedarkness.models.MatcherNoteModel;
 import com.zer0s2m.fugitivedarkness.repository.DocxFileRepository;
 import com.zer0s2m.fugitivedarkness.repository.impl.DocxFileRepositoryImpl;
 import io.netty.handler.codec.http.HttpResponseStatus;
@@ -19,6 +18,9 @@ import java.nio.file.FileSystems;
 import java.nio.file.Path;
 import java.util.List;
 
+/**
+ * Request handler for uploading a docx file.
+ */
 final public class ControllerApiDocxUpload implements Handler<RoutingContext> {
 
     static private final Logger logger = LoggerFactory.getLogger(ControllerApiDocxUpload.class);

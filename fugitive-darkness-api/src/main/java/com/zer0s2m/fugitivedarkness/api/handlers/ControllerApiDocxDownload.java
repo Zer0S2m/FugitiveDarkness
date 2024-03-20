@@ -4,6 +4,9 @@ import io.vertx.core.Handler;
 import io.vertx.ext.web.RoutingContext;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * Request handler for downloading a docx file.
+ */
 final public class ControllerApiDocxDownload implements Handler<RoutingContext> {
 
     /**

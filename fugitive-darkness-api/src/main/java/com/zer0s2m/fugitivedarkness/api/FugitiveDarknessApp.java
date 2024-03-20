@@ -67,6 +67,7 @@ public class FugitiveDarknessApp extends AbstractVerticle {
                                 \t\u001b[44mGET\u001b[0m    [/api/v1/git/provider]
                                 \t\u001b[41mDELETE\u001b[0m [/api/v1/git/provider/delete]
                                 \t\u001b[42mPOST\u001b[0m   [/api/v1/git/provider/install]
+                                \t\u001b[44mGET\u001b[0m    [/api/v1/docx]
                                 \t\u001b[42mPOST\u001b[0m   [/api/v1/docx/upload]
                                 \t\u001b[44mGET\u001b[0m    [/api/v1/docx/download]""");
                         logger.info("""
@@ -237,6 +238,10 @@ public class FugitiveDarknessApp extends AbstractVerticle {
                 .handler(ControllerApiValidation.ValidationControlID.validator(vertx))
                 .handler(new ControllerApiGitFilterDelete.GitFilterCheckIsExists())
                 .handler(new ControllerApiGitFilterDelete())
+                .handler(new HandlerLogger.HandlerLoggerResponse());
+        router
+                .get("/api/v1/docx")
+                .handler(new ControllerApiDocxGet())
                 .handler(new HandlerLogger.HandlerLoggerResponse());
         router
                 .post("/api/v1/docx/upload")

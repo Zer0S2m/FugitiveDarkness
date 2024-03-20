@@ -37,7 +37,16 @@ public class DocxFileRepositoryImpl extends RepositoryImpl implements DocxFileRe
      */
     @Override
     public Future<RowSet<Row>> findAll() {
-        return null;
+        return sqlClient(vertx)
+                .query("""
+                        SELECT "docx_files"."id",
+                               "docx_files"."created_at",
+                               "docx_files"."path",
+                               "docx_files"."title",
+                               "docx_files"."origin_title"
+                        FROM "docx_files";
+                        """)
+                .execute();
     }
 
     /**
