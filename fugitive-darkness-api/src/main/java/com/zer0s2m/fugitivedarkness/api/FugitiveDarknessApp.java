@@ -4,6 +4,7 @@ import com.zer0s2m.fugitivedarkness.api.exception.NotFoundException;
 import com.zer0s2m.fugitivedarkness.api.exception.ObjectISExistsInSystemException;
 import com.zer0s2m.fugitivedarkness.api.handlers.*;
 import com.zer0s2m.fugitivedarkness.api.handlers.logger.HandlerLogger;
+import com.zer0s2m.fugitivedarkness.api.handlers.validation.DocxFileValidationExists;
 import com.zer0s2m.fugitivedarkness.api.handlers.validation.GitProviderValidationExists;
 import com.zer0s2m.fugitivedarkness.api.handlers.validation.MatcherNoteValidationExists;
 import com.zer0s2m.fugitivedarkness.common.Environment;
@@ -17,6 +18,8 @@ import io.vertx.core.http.HttpServer;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.handler.BodyHandler;
 import io.vertx.ext.web.handler.CorsHandler;
+import io.vertx.ext.web.handler.FileSystemAccess;
+import io.vertx.ext.web.handler.StaticHandler;
 import io.vertx.ext.web.validation.BadRequestException;
 import io.vertx.ext.web.validation.BodyProcessorException;
 import io.vertx.ext.web.validation.ParameterProcessorException;
@@ -49,10 +52,12 @@ public class FugitiveDarknessApp extends AbstractVerticle {
                         logger.info("Starting a server on a port: 8080");
                         logger.info("""
                                 Setting routes:
-                                \t\u001b[42mPOST\u001b[0m   [/api/v1/operation/search]
-                                \t\u001b[44mGET\u001b[0m    [/api/v1/operation/get-git-repo-provider]
-                                \t\u001b[42mPOST\u001b[0m   [/api/v1/operation/get-file-from-git]
-                                \t\u001b[42mPOST\u001b[0m   [/api/v1/operation/load-git-repo-remote]
+                                \t\u001b[44mSTATIC\u001b[0m [/static/docx/*]
+                                \t\u001b[42mPOST\u001b[0m   [/api/v1/operation/git-search]
+                                \t\u001b[44mGET\u001b[0m    [/api/v1/operation/git-get-repo-provider]
+                                \t\u001b[42mPOST\u001b[0m   [/api/v1/operation/git-get-file]
+                                \t\u001b[42mPOST\u001b[0m   [/api/v1/operation/git-load-repo-remote]
+                                \t\u001b[42mPOST\u001b[0m   [/api/v1/operation/docx-search/:ID]
                                 \t\u001b[44mGET\u001b[0m    [/api/v1/git/repo]
                                 \t\u001b[42mPOST\u001b[0m   [/api/v1/git/repo/install]
                                 \t\u001b[41mDELETE\u001b[0m [/api/v1/git/repo/delete]
@@ -66,12 +71,17 @@ public class FugitiveDarknessApp extends AbstractVerticle {
                                 \t\u001b[41mDELETE\u001b[0m [/api/v1/git/filter/search/:ID]
                                 \t\u001b[44mGET\u001b[0m    [/api/v1/git/provider]
                                 \t\u001b[41mDELETE\u001b[0m [/api/v1/git/provider/delete]
-                                \t\u001b[42mPOST\u001b[0m   [/api/v1/git/provider/install]""");
+                                \t\u001b[42mPOST\u001b[0m   [/api/v1/git/provider/install]
+                                \t\u001b[44mGET\u001b[0m    [/api/v1/docx]
+                                \t\u001b[41mDELETE\u001b[0m [/api/v1/docx/:ID]
+                                \t\u001b[42mPOST\u001b[0m   [/api/v1/docx/upload]""");
                         logger.info("""
                                 Setting ENV:
-                                \tFD_ROOT_PATH - %s
-                                \tFD_ALLOW_ORIGIN - %s""".formatted(
+                                \tFD_ROOT_PATH       - %s
+                                \tFD_ROOT_PATH_DOCX  - %s
+                                \tFD_ALLOW_ORIGIN    - %s""".formatted(
                                 Environment.ROOT_PATH_REPO,
+                                Environment.ROOT_PATH_DOCX,
                                 Environment.FD_ALLOW_ORIGIN
                         ));
                     } else {
@@ -97,6 +107,57 @@ public class FugitiveDarknessApp extends AbstractVerticle {
                                 HttpMethod.PUT,
                                 HttpMethod.OPTIONS)))
                 .handler(new HandlerLogger.HandlerLoggerRequest());
+
+        // STATIC
+        router
+                .route("/static/docx/*")
+                .handler(StaticHandler.create(FileSystemAccess.ROOT, Environment.ROOT_PATH_DOCX));
+
+        // Operations
+        router
+                .post("/api/v1/operation/git-search")
+                .consumes("application/json")
+                .handler(BodyHandler
+                        .create()
+                        .setHandleFileUploads(false))
+                .handler(ControllerApiGitRepoSearch.GitRepoSearchValidation.validator(vertx))
+                .handler(new ControllerApiGitRepoSearch())
+                .handler(new HandlerLogger.HandlerLoggerResponse());
+        router
+                .get("/api/v1/operation/git-get-repo-provider")
+                .handler(ControllerApiGitRepoProvider.GitRepoProviderValidation.validator(vertx))
+                .handler(new ControllerApiGitRepoProvider())
+                .handler(new HandlerLogger.HandlerLoggerResponse());
+        router
+                .post("/api/v1/operation/git-load-repo-remote")
+                .handler(BodyHandler
+                        .create()
+                        .setHandleFileUploads(false))
+                .handler(ControllerApiValidation.GitProviderControlValidation.validator(vertx))
+                .handler(new GitProviderValidationExists())
+                .handler(new ControllerApiGitRepoInstallRemote())
+                .handler(new HandlerLogger.HandlerLoggerResponse());
+        router
+                .post("/api/v1/operation/git-get-file")
+                .handler(BodyHandler
+                        .create()
+                        .setHandleFileUploads(false))
+                .handler(ControllerApiGitRepoGetFileContent.GitRepoGetFileValidation.validator(vertx))
+                .handler(new ControllerApiGitRepoGetFileContent())
+                .handler(new HandlerLogger.HandlerLoggerResponse());
+        router
+                .post("/api/v1/operation/docx-search/:ID")
+                .consumes("application/json")
+                .handler(BodyHandler
+                        .create()
+                        .setHandleFileUploads(false))
+                .handler(ControllerApiValidation.ValidationControlID.validator(vertx))
+                .handler(new DocxFileValidationExists())
+                .handler(ControllerApiDocxSearch.DocxSearchValidation.validator(vertx))
+                .handler(new ControllerApiDocxSearch())
+                .handler(new HandlerLogger.HandlerLoggerResponse());
+
+        // GIT
         router
                 .get("/api/v1/git/repo")
                 .handler(new ControllerApiGitRepoGet())
@@ -130,39 +191,8 @@ public class FugitiveDarknessApp extends AbstractVerticle {
                 .handler(new ControllerApiGitRepoFetch())
                 .handler(new HandlerLogger.HandlerLoggerResponse());
         router
-                .post("/api/v1/operation/search")
-                .consumes("application/json")
-                .handler(BodyHandler
-                        .create()
-                        .setHandleFileUploads(false))
-                .handler(ControllerApiGitRepoSearch.GitRepoSearchValidation.validator(vertx))
-                .handler(new ControllerApiGitRepoSearch())
-                .handler(new HandlerLogger.HandlerLoggerResponse());
-        router
-                .get("/api/v1/operation/get-git-repo-provider")
-                .handler(ControllerApiGitRepoProvider.GitRepoProviderValidation.validator(vertx))
-                .handler(new ControllerApiGitRepoProvider())
-                .handler(new HandlerLogger.HandlerLoggerResponse());
-        router
-                .post("/api/v1/operation/load-git-repo-remote")
-                .handler(BodyHandler
-                        .create()
-                        .setHandleFileUploads(false))
-                .handler(ControllerApiValidation.GitProviderControlValidation.validator(vertx))
-                .handler(new GitProviderValidationExists())
-                .handler(new ControllerApiGitRepoInstallRemote())
-                .handler(new HandlerLogger.HandlerLoggerResponse());
-        router
                 .get("/api/v1/git/provider")
                 .handler(new ControllerApiGitProviderGet())
-                .handler(new HandlerLogger.HandlerLoggerResponse());
-        router
-                .post("/api/v1/operation/get-file-from-git")
-                .handler(BodyHandler
-                        .create()
-                        .setHandleFileUploads(false))
-                .handler(ControllerApiGitRepoGetFileContent.GitRepoGetFileValidation.validator(vertx))
-                .handler(new ControllerApiGitRepoGetFileContent())
                 .handler(new HandlerLogger.HandlerLoggerResponse());
         router
                 .delete("/api/v1/git/provider/delete")
@@ -235,6 +265,26 @@ public class FugitiveDarknessApp extends AbstractVerticle {
                 .handler(ControllerApiValidation.ValidationControlID.validator(vertx))
                 .handler(new ControllerApiGitFilterDelete.GitFilterCheckIsExists())
                 .handler(new ControllerApiGitFilterDelete())
+                .handler(new HandlerLogger.HandlerLoggerResponse());
+
+        // DOCX
+        router
+                .get("/api/v1/docx")
+                .handler(new ControllerApiDocxGet())
+                .handler(new HandlerLogger.HandlerLoggerResponse());
+        router
+                .delete("/api/v1/docx/:ID")
+                .handler(ControllerApiValidation.ValidationControlID.validator(vertx))
+                .handler(new DocxFileValidationExists())
+                .handler(new ControllerApiDocxDelete())
+                .handler(new HandlerLogger.HandlerLoggerResponse());
+        router
+                .post("/api/v1/docx/upload")
+                .handler(BodyHandler
+                        .create()
+                        .setBodyLimit(-1)
+                        .setHandleFileUploads(true))
+                .handler(new ControllerApiDocxUpload())
                 .handler(new HandlerLogger.HandlerLoggerResponse());
     }
 

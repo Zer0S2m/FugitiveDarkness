@@ -1,7 +1,7 @@
 package com.zer0s2m.fugitivedarkness.plugin.vertx.git.provider;
 
-import com.zer0s2m.fugitivedarkness.provider.ContainerInfoRepo;
-import com.zer0s2m.fugitivedarkness.provider.RepositoryInstallerRemote;
+import com.zer0s2m.fugitivedarkness.provider.git.ContainerInfoRepo;
+import com.zer0s2m.fugitivedarkness.provider.git.RepositoryInstallerRemote;
 import com.zer0s2m.fugitivedarkness.repository.GitRepoRepository;
 import com.zer0s2m.fugitivedarkness.repository.impl.GitRepoRepositoryImpl;
 import io.vertx.core.Vertx;

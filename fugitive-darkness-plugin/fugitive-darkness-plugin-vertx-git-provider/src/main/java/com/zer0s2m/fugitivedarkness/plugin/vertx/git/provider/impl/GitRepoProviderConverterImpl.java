@@ -1,9 +1,9 @@
 package com.zer0s2m.fugitivedarkness.plugin.vertx.git.provider.impl;
 
 import com.zer0s2m.fugitivedarkness.plugin.vertx.git.provider.GitRepoProviderConverter;
-import com.zer0s2m.fugitivedarkness.provider.ContainerInfoRepo;
-import com.zer0s2m.fugitivedarkness.provider.GitProviderNotFoundException;
-import com.zer0s2m.fugitivedarkness.provider.GitRepoProviderType;
+import com.zer0s2m.fugitivedarkness.provider.git.ContainerInfoRepo;
+import com.zer0s2m.fugitivedarkness.provider.git.GitProviderNotFoundException;
+import com.zer0s2m.fugitivedarkness.provider.git.GitRepoProviderType;
 import io.vertx.core.json.JsonObject;
 
 /**

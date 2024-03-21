@@ -12,7 +12,7 @@ import org.jetbrains.annotations.NotNull;
 /**
  *  Validation before deleting a git provider - checks for the existence of an entry in the database.
  */
-public class GitProviderValidationExists implements Handler<RoutingContext> {
+final public class GitProviderValidationExists implements Handler<RoutingContext> {
 
     /**
      * Validation for the existence of a record in the database.

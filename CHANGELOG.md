@@ -1,5 +1,15 @@
 # Change Log
 
+## [Unreleased]
+
+### Added
+
+- A new search engine for searching through docx files.
+
+### Fixed:
+
+- Fix an error when retrieving the entire file - an unterminated string.
+
 ## [0.0.5] 2024-02-25
 
 ### Added

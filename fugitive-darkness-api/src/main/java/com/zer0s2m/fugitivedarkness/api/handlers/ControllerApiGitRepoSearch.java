@@ -3,7 +3,7 @@ package com.zer0s2m.fugitivedarkness.api.handlers;
 import com.zer0s2m.fugitivedarkness.api.scheme.SchemaFilterSearch;
 import com.zer0s2m.fugitivedarkness.common.dto.ContainerGitRepoSearch;
 import com.zer0s2m.fugitivedarkness.models.GitRepoModel;
-import com.zer0s2m.fugitivedarkness.provider.*;
+import com.zer0s2m.fugitivedarkness.provider.git.*;
 import com.zer0s2m.fugitivedarkness.repository.GitRepoRepository;
 import com.zer0s2m.fugitivedarkness.repository.impl.GitRepoRepositoryImpl;
 import io.netty.handler.codec.http.HttpResponseStatus;
@@ -34,7 +34,7 @@ import java.util.regex.Pattern;
  */
 final public class ControllerApiGitRepoSearch implements Handler<RoutingContext> {
 
-    private final GitRepo serviceGit = GitRepo.create();
+    private final GitRepoManager serviceGit = GitRepoManager.create();
 
     static private final Logger logger = LoggerFactory.getLogger(ControllerApiGitRepoSearch.class);
 
@@ -111,8 +111,6 @@ final public class ControllerApiGitRepoSearch implements Handler<RoutingContext>
 
                             gitRepoSearch.filters().git()
                                     .forEach(repo -> {
-                                        System.out.println(repo);
-
                                         Path source;
                                         if (!Objects.equals(repo.group(), "LOCAL")) {
                                             source = HelperGitRepo

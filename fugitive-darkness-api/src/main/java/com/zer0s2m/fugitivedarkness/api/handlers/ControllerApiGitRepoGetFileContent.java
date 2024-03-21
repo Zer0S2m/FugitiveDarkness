@@ -2,8 +2,8 @@ package com.zer0s2m.fugitivedarkness.api.handlers;
 
 import com.zer0s2m.fugitivedarkness.api.exception.NotFoundException;
 import com.zer0s2m.fugitivedarkness.common.dto.ContainerGitRepoGetFile;
-import com.zer0s2m.fugitivedarkness.provider.GitRepo;
-import com.zer0s2m.fugitivedarkness.provider.HelperGitRepo;
+import com.zer0s2m.fugitivedarkness.provider.git.GitRepoManager;
+import com.zer0s2m.fugitivedarkness.provider.git.HelperGitRepo;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
@@ -30,7 +30,7 @@ final public class ControllerApiGitRepoGetFileContent implements Handler<Routing
 
     static private final Logger logger = LoggerFactory.getLogger(ControllerApiGitRepoGetFileContent.class);
 
-    private final GitRepo gitRepo = GitRepo.create();
+    private final GitRepoManager gitRepo = GitRepoManager.create();
 
     /**
      * Getting a file from a git repository.
@@ -70,6 +70,7 @@ final public class ControllerApiGitRepoGetFileContent implements Handler<Routing
                         result.put("content", ar);
 
                         event.response()
+                                .setChunked(true)
                                 .putHeader(HttpHeaders.CONTENT_LENGTH, String.valueOf(result.toString().length()))
                                 .putHeader(HttpHeaders.CONTENT_TYPE, "application/json")
                                 .setStatusCode(HttpResponseStatus.OK.code())
