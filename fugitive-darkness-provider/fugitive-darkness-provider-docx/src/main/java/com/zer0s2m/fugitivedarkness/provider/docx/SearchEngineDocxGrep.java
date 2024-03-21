@@ -1,7 +1,7 @@
 package com.zer0s2m.fugitivedarkness.provider.docx;
 
+import java.io.IOException;
 import java.nio.file.Path;
-import java.util.Collection;
 import java.util.regex.Pattern;
 
 public interface SearchEngineDocxGrep extends AutoCloseable {
@@ -14,7 +14,7 @@ public interface SearchEngineDocxGrep extends AutoCloseable {
      *
      * @return The search result.
      */
-    Collection<ContainerInfoSearchDocxFile> callGrep();
+    ContainerInfoSearchDocxFile callGrep() throws IOException;
 
     /**
      * Set a template to search for matches in the document.

@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Added
+
+- A new search engine for searching through docx files.
+
 ### Fixed:
 
 - Fix an error when retrieving the entire file - an unterminated string.

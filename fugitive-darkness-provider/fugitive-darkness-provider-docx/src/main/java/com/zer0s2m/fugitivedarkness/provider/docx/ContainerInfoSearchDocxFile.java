@@ -6,6 +6,8 @@ public record ContainerInfoSearchDocxFile(
 
         String file,
 
+        String pattern,
+
         List<ContainerInfoFileContent> found
 
 ) {

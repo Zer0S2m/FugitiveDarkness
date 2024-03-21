@@ -28,7 +28,7 @@ final public class ControllerApiDocxGet implements Handler<RoutingContext> {
      */
     @Override
     public void handle(@NotNull RoutingContext event) {
-        logger.error("Start getting a docx files");
+        logger.info("Start getting a docx files");
 
         final DocxFileRepository docxFileRepository = new DocxFileRepositoryImpl(event.vertx());
 

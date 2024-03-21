@@ -37,16 +37,14 @@ public class DocxFileRepositoryImpl extends RepositoryImpl implements DocxFileRe
      */
     @Override
     public Future<RowSet<Row>> findAll() {
-        return sqlClient(vertx)
-                .query("""
-                        SELECT "docx_files"."id",
-                               "docx_files"."created_at",
-                               "docx_files"."path",
-                               "docx_files"."title",
-                               "docx_files"."origin_title"
-                        FROM "docx_files";
-                        """)
-                .execute();
+        return sqlClient(vertx).query("""
+                SELECT "docx_files"."id",
+                       "docx_files"."created_at",
+                       "docx_files"."path",
+                       "docx_files"."title",
+                       "docx_files"."origin_title"
+                FROM "docx_files";
+                """).execute();
     }
 
     /**
@@ -57,13 +55,11 @@ public class DocxFileRepositoryImpl extends RepositoryImpl implements DocxFileRe
      */
     @Override
     public Future<RowSet<Row>> save(DocxFileModel entity) {
-        return sqlClient(vertx)
-                .preparedQuery("""
-                            INSERT INTO "docx_files" (path, title, origin_title)
-                            VALUES ($1, $2, $3)
-                            RETURNING *
-                        """)
-                .execute(Tuple.of(entity.getPath(), entity.getTitle(), entity.getOriginTitle()));
+        return sqlClient(vertx).preparedQuery("""
+                    INSERT INTO "docx_files" (path, title, origin_title)
+                    VALUES ($1, $2, $3)
+                    RETURNING *
+                """).execute(Tuple.of(entity.getPath(), entity.getTitle(), entity.getOriginTitle()));
     }
 
     /**
@@ -74,9 +70,7 @@ public class DocxFileRepositoryImpl extends RepositoryImpl implements DocxFileRe
      */
     @Override
     public List<DocxFileModel> mapTo(RowSet<Row> rows) {
-        return StreamSupport.stream(rows.spliterator(), false)
-                .map(row -> row.toJson().mapTo(DocxFileModel.class))
-                .toList();
+        return StreamSupport.stream(rows.spliterator(), false).map(row -> row.toJson().mapTo(DocxFileModel.class)).toList();
     }
 
     /**
@@ -93,35 +87,47 @@ public class DocxFileRepositoryImpl extends RepositoryImpl implements DocxFileRe
     /**
      * Check entry for existence by ID.
      *
-     * @param id ID repository.
+     * @param id ID docx file.
      * @return Result.
      */
     @Override
     public Future<RowSet<Row>> existsById(long id) {
-        return sqlClient(vertx)
-                .preparedQuery("""
-                        SELECT EXISTS(select id
-                                      from "docx_files"
-                                      WHERE "docx_files"."id" = $1)
-                        """)
-                .execute(Tuple.of(id));
+        return sqlClient(vertx).preparedQuery("""
+                SELECT EXISTS(select id
+                              from "docx_files"
+                              WHERE "docx_files"."id" = $1)
+                """).execute(Tuple.of(id));
     }
 
     /**
      * Delete an entity from the database by id.
      *
-     * @param id ID git filter
+     * @param id ID docs file.
      * @return Result.
      */
     @Override
     public Future<RowSet<Row>> deleteById(long id) {
-        return sqlClient(vertx)
-                .preparedQuery("""
-                        DELETE
-                        FROM "docx_files"
-                        WHERE "docx_files".id = $1
-                        RETURNING "docx_files".*
-                        """)
+        return sqlClient(vertx).preparedQuery("""
+                DELETE
+                FROM "docx_files"
+                WHERE "docx_files".id = $1
+                RETURNING "docx_files".*
+                """).execute(Tuple.of(id));
+    }
+
+    /**
+     * Find an entity by a unique identifier ID.
+     *
+     * @param id ID docs file.
+     * @return Result.
+     */
+    @Override
+    public Future<RowSet<Row>> findById(long id) {
+        return sqlClient(vertx).preparedQuery("""
+                SELECT "docx_files".*
+                FROM "docx_files"
+                WHERE "docx_files"."id" = $1
+                                        """)
                 .execute(Tuple.of(id));
     }
 

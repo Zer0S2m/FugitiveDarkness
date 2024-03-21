@@ -10,7 +10,7 @@ public interface DocxFileRepository extends Repository<RowSet<Row>, DocxFileMode
     /**
      * Check entry for existence by ID.
      *
-     * @param id ID repository.
+     * @param id ID docx file.
      * @return Result.
      */
     Future<RowSet<Row>> existsById(long id);
@@ -18,9 +18,17 @@ public interface DocxFileRepository extends Repository<RowSet<Row>, DocxFileMode
     /**
      * Delete an entity from the database by id.
      *
-     * @param id ID git filter
+     * @param id ID docs file.
      * @return Result.
      */
     Future<RowSet<Row>> deleteById(long id);
+
+    /**
+     * Find an entity by a unique identifier ID.
+     *
+     * @param id ID docs file.
+     * @return Result.
+     */
+    Future<RowSet<Row>> findById(long id);
 
 }
