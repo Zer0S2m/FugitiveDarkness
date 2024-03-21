@@ -18,6 +18,8 @@ import io.vertx.core.http.HttpServer;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.handler.BodyHandler;
 import io.vertx.ext.web.handler.CorsHandler;
+import io.vertx.ext.web.handler.FileSystemAccess;
+import io.vertx.ext.web.handler.StaticHandler;
 import io.vertx.ext.web.validation.BadRequestException;
 import io.vertx.ext.web.validation.BodyProcessorException;
 import io.vertx.ext.web.validation.ParameterProcessorException;
@@ -50,6 +52,7 @@ public class FugitiveDarknessApp extends AbstractVerticle {
                         logger.info("Starting a server on a port: 8080");
                         logger.info("""
                                 Setting routes:
+                                \t\u001b[44mSTATIC\u001b[0m [/static/docx/*]
                                 \t\u001b[42mPOST\u001b[0m   [/api/v1/operation/git-search]
                                 \t\u001b[44mGET\u001b[0m    [/api/v1/operation/git-get-repo-provider]
                                 \t\u001b[42mPOST\u001b[0m   [/api/v1/operation/git-get-file]
@@ -71,13 +74,14 @@ public class FugitiveDarknessApp extends AbstractVerticle {
                                 \t\u001b[42mPOST\u001b[0m   [/api/v1/git/provider/install]
                                 \t\u001b[44mGET\u001b[0m    [/api/v1/docx]
                                 \t\u001b[41mDELETE\u001b[0m [/api/v1/docx/:ID]
-                                \t\u001b[42mPOST\u001b[0m   [/api/v1/docx/upload]
-                                \t\u001b[44mGET\u001b[0m    [/api/v1/docx/download]""");
+                                \t\u001b[42mPOST\u001b[0m   [/api/v1/docx/upload]""");
                         logger.info("""
                                 Setting ENV:
-                                \tFD_ROOT_PATH - %s
-                                \tFD_ALLOW_ORIGIN - %s""".formatted(
+                                \tFD_ROOT_PATH       - %s
+                                \tFD_ROOT_PATH_DOCX  - %s
+                                \tFD_ALLOW_ORIGIN    - %s""".formatted(
                                 Environment.ROOT_PATH_REPO,
+                                Environment.ROOT_PATH_DOCX,
                                 Environment.FD_ALLOW_ORIGIN
                         ));
                     } else {
@@ -103,6 +107,11 @@ public class FugitiveDarknessApp extends AbstractVerticle {
                                 HttpMethod.PUT,
                                 HttpMethod.OPTIONS)))
                 .handler(new HandlerLogger.HandlerLoggerRequest());
+
+        // STATIC
+        router
+                .route("/static/docx/*")
+                .handler(StaticHandler.create(FileSystemAccess.ROOT, Environment.ROOT_PATH_DOCX));
 
         // Operations
         router
@@ -276,10 +285,6 @@ public class FugitiveDarknessApp extends AbstractVerticle {
                         .setBodyLimit(-1)
                         .setHandleFileUploads(true))
                 .handler(new ControllerApiDocxUpload())
-                .handler(new HandlerLogger.HandlerLoggerResponse());
-        router
-                .get("/api/v1/docx/download")
-                .handler(new ControllerApiDocxDownload())
                 .handler(new HandlerLogger.HandlerLoggerResponse());
     }
 
