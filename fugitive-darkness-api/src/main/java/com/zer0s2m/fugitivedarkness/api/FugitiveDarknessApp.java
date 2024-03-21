@@ -28,6 +28,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class FugitiveDarknessApp extends AbstractVerticle {
 
@@ -38,6 +39,11 @@ public class FugitiveDarknessApp extends AbstractVerticle {
      */
     @Override
     public void start(Promise<Void> startPromise) {
+        if (!checkEnvParams()) {
+            startPromise.fail("Environment variables are not set");
+            throw new RuntimeException("Environment variables are not set");
+        }
+
         HttpServer server = vertx.createHttpServer();
         Router router = Router.router(vertx);
 
@@ -77,11 +83,19 @@ public class FugitiveDarknessApp extends AbstractVerticle {
                                 \t\u001b[42mPOST\u001b[0m   [/api/v1/docx/upload]""");
                         logger.info("""
                                 Setting ENV:
-                                \tFD_ROOT_PATH       - %s
-                                \tFD_ROOT_PATH_DOCX  - %s
-                                \tFD_ALLOW_ORIGIN    - %s""".formatted(
+                                \t\u001B[45mFD_ROOT_PATH\u001b[0m      - %s
+                                \t\u001B[45mFD_ROOT_PATH_DOCX\u001b[0m - %s
+                                \t\u001B[45mFD_POSTGRES_PORT\u001b[0m  - %s
+                                \t\u001B[45mFD_POSTGRES_HOST\u001b[0m  - %s
+                                \t\u001B[45mFD_POSTGRES_USER\u001b[0m  - %s
+                                \t\u001B[45mFD_POSTGRES_DB\u001b[0m    - %s
+                                \t\u001B[45mFD_ALLOW_ORIGIN\u001b[0m   - %s""".formatted(
                                 Environment.ROOT_PATH_REPO,
                                 Environment.ROOT_PATH_DOCX,
+                                Environment.FD_POSTGRES_PORT,
+                                Environment.FD_POSTGRES_HOST,
+                                Environment.FD_POSTGRES_USER,
+                                Environment.FD_POSTGRES_DB,
                                 Environment.FD_ALLOW_ORIGIN
                         ));
                     } else {
@@ -349,6 +363,48 @@ public class FugitiveDarknessApp extends AbstractVerticle {
                         .end();
             }
         });
+    }
+
+    private boolean checkEnvParams() {
+        final AtomicBoolean isValid = new AtomicBoolean(true);
+
+        if (!System.getenv().containsKey("FD_ROOT_PATH_REPO")) {
+            isValid.set(false);
+            logger.error(
+                    "\u001b[41mThe environment variable is not set\u001b[0m - \u001B[45mFD_ROOT_PATH_REPO\u001b[0m");
+        }
+        if (!System.getenv().containsKey("FD_ROOT_PATH_DOCX")) {
+            isValid.set(false);
+            logger.error(
+                    "\u001b[41mThe environment variable is not set\u001b[0m - \u001B[45mFD_ROOT_PATH_DOCX\u001b[0m");
+        }
+        if (!System.getenv().containsKey("FD_POSTGRES_PORT")) {
+            isValid.set(false);
+            logger.error(
+                    "\u001b[41mThe environment variable is not set\u001b[0m - \u001B[45mFD_POSTGRES_PORT\u001b[0m");
+        }
+        if (!System.getenv().containsKey("FD_POSTGRES_HOST")) {
+            isValid.set(false);
+            logger.error(
+                    "\u001b[41mThe environment variable is not set\u001b[0m - \u001B[45mFD_POSTGRES_HOST\u001b[0m");
+        }
+        if (!System.getenv().containsKey("FD_POSTGRES_USER")) {
+            isValid.set(false);
+            logger.error(
+                    "\u001b[41mThe environment variable is not set\u001b[0m - \u001B[45mFD_POSTGRES_USER\u001b[0m");
+        }
+        if (!System.getenv().containsKey("FD_POSTGRES_DB")) {
+            isValid.set(false);
+            logger.error(
+                    "\u001b[41mThe environment variable is not set\u001b[0m - \u001B[45mFD_POSTGRES_DB\u001b[0m");
+        }
+        if (!System.getenv().containsKey("FD_POSTGRES_PASSWORD")) {
+            isValid.set(false);
+            logger.error(
+                    "\u001b[41mThe environment variable is not set\u001b[0m - \u001B[45mFD_POSTGRES_PASSWORD\u001b[0m");
+        }
+
+        return isValid.get();
     }
 
 }

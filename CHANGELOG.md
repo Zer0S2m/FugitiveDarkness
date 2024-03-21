@@ -5,6 +5,7 @@
 ### Added
 
 - A new search engine for searching through docx files.
+- Showing an error when setting environment variables.
 
 ### Fixed:
 
