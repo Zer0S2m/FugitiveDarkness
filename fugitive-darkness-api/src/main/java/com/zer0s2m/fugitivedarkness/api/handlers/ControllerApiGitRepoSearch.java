@@ -109,9 +109,6 @@ final public class ControllerApiGitRepoSearch implements Handler<RoutingContext>
                                 }
                             });
 
-                            System.out.println(hostGitRepoByGroupAndProject);
-                            System.out.println(sourceLocalProjects);
-
                             gitRepoSearch.filters().git()
                                     .forEach(repo -> {
                                         Path source;

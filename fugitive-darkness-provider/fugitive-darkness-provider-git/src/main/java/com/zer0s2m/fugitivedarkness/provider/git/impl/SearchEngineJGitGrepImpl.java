@@ -20,6 +20,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
@@ -189,11 +190,30 @@ class SearchEngineJGitGrepImpl extends SearchEngineGitGrepAbstract implements Se
                 String line;
 
                 while ((line = buf.readLine()) != null) {
-                    if (getPattern().matcher(line).find()) {
+                    lineNumber.set(lineNumber.get() + 1);
+
+                    Matcher matcher = getPattern().matcher(line);
+
+                    Set<ContainerInfoSearchFileMatcherGroupGitRepo> searchFileMatcherGroupGitRepos = new HashSet<>();
+
+                    while (matcher.find()) {
                         if (isUseMatcherCounterInFile && matcherCounterInFile.get() == getMaxCount()) {
                             break;
                         }
 
+                        final ContainerInfoSearchFileMatcherGroupGitRepo fileMatcherGroupGitRepo =
+                                new ContainerInfoSearchFileMatcherGroupGitRepo(
+                                        matcher.group(),
+                                        matcher.start(),
+                                        matcher.end());
+                        searchFileMatcherGroupGitRepos.add(fileMatcherGroupGitRepo);
+
+                        if (isUseMatcherCounterInFile) {
+                            matcherCounterInFile.set(matcherCounterInFile.get() + 1);
+                        }
+                    }
+
+                    if (!searchFileMatcherGroupGitRepos.isEmpty()) {
                         matchers.add(new ContainerInfoSearchFileMatcherGitRepo(
                                 line,
                                 GitRepoUtils.getLinkForMatcherLine(
@@ -202,18 +222,13 @@ class SearchEngineJGitGrepImpl extends SearchEngineGitGrepAbstract implements Se
                                         getGitRepositoryGrep().getBranch(),
                                         lineNumber.get()),
                                 lineNumber.get(),
+                                searchFileMatcherGroupGitRepos,
                                 null,
                                 null
                         ));
-
-                        if (isUseMatcherCounterInFile) {
-                            matcherCounterInFile.set(matcherCounterInFile.get() + 1);
-                        }
                     } else {
                         utilPreviewCode.addPreviewCodes(lineNumber.get(), line);
                     }
-
-                    lineNumber.set(lineNumber.get() + 1);
                 }
             }
         }
@@ -241,6 +256,7 @@ class SearchEngineJGitGrepImpl extends SearchEngineGitGrepAbstract implements Se
                     matcher.matcher(),
                     matcher.link(),
                     matcher.lineNumber(),
+                    matcher.groups(),
                     matcher.previewLast(),
                     matcher.previewNext());
             currentLineNumber.set(matcher.lineNumber());
@@ -266,6 +282,7 @@ class SearchEngineJGitGrepImpl extends SearchEngineGitGrepAbstract implements Se
                                             getGitRepositoryGrep().getBranch(),
                                             utilPreviewCode.getPreviewLineNumberLast(currentLineNumber.get() - i)),
                                     utilPreviewCode.getPreviewLineNumberLast(currentLineNumber.get() - i),
+                                    null,
                                     null,
                                     null
                             ));
@@ -294,6 +311,7 @@ class SearchEngineJGitGrepImpl extends SearchEngineGitGrepAbstract implements Se
                                             getGitRepositoryGrep().getBranch(),
                                             utilPreviewCode.getPreviewLineNumberNext(currentLineNumber.get() + i)),
                                     utilPreviewCode.getPreviewLineNumberNext(currentLineNumber.get() + i),
+                                    null,
                                     null,
                                     null
                             ));
