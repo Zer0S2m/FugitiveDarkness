@@ -171,7 +171,7 @@ public class GitRepoManagerImpl implements GitRepoManager {
 
     /**
      * Search for matches in files in git repositories by pattern. Git grep command.
-     * <p>Uses a search engine {@link SearchEngineGitGrep}.</p>
+     * <p>Uses a search engine {@link SearchEngineGrep}.</p>
      *
      * @param filterSearch Filter for searching git repositories.
      * @return Search result in git repository.
@@ -185,7 +185,7 @@ public class GitRepoManagerImpl implements GitRepoManager {
 
                     final ContainerGitRepoMeta gitRepo = filterSearch.getGitMeta(source);
                     try {
-                        final SearchEngineGitGrep commandGrep = searchEngineGitGrep(filterSearch, source, gitRepo);
+                        final SearchEngineGrep commandGrep = searchEngineGitGrep(filterSearch, source, gitRepo);
                         final List<ContainerInfoSearchFileGitRepo> searchResult = commandGrep.callGrep();
 
                         searchFileGitRepos.add(new ContainerInfoSearchGitRepo(
@@ -207,7 +207,7 @@ public class GitRepoManagerImpl implements GitRepoManager {
 
     /**
      * Search for matches in files in git repositories by pattern. Git grep command.
-     * <p>Uses a search engine {@link SearchEngineGitGrep}.</p>
+     * <p>Uses a search engine {@link SearchEngineGrep}.</p>
      *
      * @param filterSearch Filter for searching git repositories.
      * @return Search result in git repository.
@@ -246,7 +246,7 @@ public class GitRepoManagerImpl implements GitRepoManager {
     }
 
     /**
-     * Build a search engine based on {@link SearchEngineGitGrep}.
+     * Build a search engine based on {@link SearchEngineGrep}.
      *
      * @param filterSearch Installed search filters.
      * @param source       Source path of the git repository.
@@ -257,12 +257,12 @@ public class GitRepoManagerImpl implements GitRepoManager {
      * @throws SearchEngineGitSetMaxDepthException Exception for setting maximum search depth.
      * @throws SearchEngineGitSetContextException  Exception for setting preview code after and before matches.
      */
-    private static SearchEngineGitGrep searchEngineGitGrep(
+    private static SearchEngineGrep searchEngineGitGrep(
             GitRepoFilterSearch filterSearch,
             Path source,
             ContainerGitRepoMeta gitRepo) throws IOException, SearchEngineGitSetMaxCountException,
             SearchEngineGitSetMaxDepthException, SearchEngineGitSetContextException {
-        final SearchEngineGitGrep commandGrep = new SearchEngineGitGrepImpl(
+        final SearchEngineGrep commandGrep = new SearchEngineGitGrepImpl(
                 filterSearch.getPattern(),
                 source,
                 gitRepo

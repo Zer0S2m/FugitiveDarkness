@@ -26,7 +26,7 @@ import java.util.regex.Pattern;
  * Service for providing search in git repositories. Similar to the
  * <a href="https://git-scm.com/docs/git-grep">grep</a> command in git.
  */
-class SearchEngineGitGrepImpl extends SearchEngineGitGrepAbstract implements SearchEngineGitGrep {
+class SearchEngineGitGrepImpl extends SearchEngineGitGrepAbstract implements SearchEngineGrep {
 
     Logger logger = LoggerFactory.getLogger(SearchEngineGitGrepImpl.class);
 
@@ -38,13 +38,13 @@ class SearchEngineGitGrepImpl extends SearchEngineGitGrepAbstract implements Sea
 
     /**
      * Matcher counter in one file.
-     * <p>Required to set a specific parameter {@link SearchEngineGitGrep#getMaxCount}.</p>
+     * <p>Required to set a specific parameter {@link SearchEngineGrep#getMaxCount}.</p>
      */
     private boolean isUseMatcherCounterInFile = false;
 
     /**
      * Whether to use maximum search depth.
-     * <p>Required to set a specific parameter {@link SearchEngineGitGrep#getMaxDepth()}.</p>
+     * <p>Required to set a specific parameter {@link SearchEngineGrep#getMaxDepth()}.</p>
      */
     private boolean isUseMaxDepth = false;
 
@@ -68,14 +68,14 @@ class SearchEngineGitGrepImpl extends SearchEngineGitGrepAbstract implements Sea
      * <p>The search is based on the following criteria:</p>
      * <ul>
      *     <li>Including files in the search that have the specified
-     *     extensions {@link SearchEngineGitGrep#getIncludeExtensionFilesForSearchGrep}.</li>
+     *     extensions {@link SearchEngineGrep#getIncludeExtensionFilesForSearchGrep}.</li>
      *     <li>Excluding files from the search that have the specified
-     *     extensions {@link SearchEngineGitGrep#getExcludeExtensionFilesForSearchGrep}.</li>
-     *     <li>Match pattern {@link SearchEngineGitGrep#getPattern}.</li>
-     *     <li>Include files by pattern {@link SearchEngineGitGrep#getPatternForIncludeFile} in the search.</li>
-     *     <li>Exclude files from the search by pattern {@link SearchEngineGitGrep#getPatternForExcludeFile}.</li>
-     *     <li>Maximum search depth {@link SearchEngineGitGrep#getMaxDepth()}.</li>
-     *     <li>Maximum number of matches in one file {@link SearchEngineGitGrep#getMaxCount()}.</li>
+     *     extensions {@link SearchEngineGrep#getExcludeExtensionFilesForSearchGrep}.</li>
+     *     <li>Match pattern {@link SearchEngineGrep#getPattern}.</li>
+     *     <li>Include files by pattern {@link SearchEngineGrep#getPatternForIncludeFile} in the search.</li>
+     *     <li>Exclude files from the search by pattern {@link SearchEngineGrep#getPatternForExcludeFile}.</li>
+     *     <li>Maximum search depth {@link SearchEngineGrep#getMaxDepth()}.</li>
+     *     <li>Maximum number of matches in one file {@link SearchEngineGrep#getMaxCount()}.</li>
      * </ul>
      *
      * @return Search results.

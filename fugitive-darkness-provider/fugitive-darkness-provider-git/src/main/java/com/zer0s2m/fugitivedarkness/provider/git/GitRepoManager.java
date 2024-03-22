@@ -108,7 +108,7 @@ public interface GitRepoManager {
 
     /**
      * Search for matches in files in git repositories by pattern. Git grep command.
-     * <p>Uses a search engine {@link SearchEngineGitGrep}.</p>
+     * <p>Uses a search engine {@link SearchEngineGrep}.</p>
      *
      * @param filterSearch Filter for searching git repositories.
      * @return Search result in git repository.
@@ -117,7 +117,7 @@ public interface GitRepoManager {
 
     /**
      * Search for matches in files in git repositories by pattern. Git grep command.
-     * <p>Uses a search engine {@link SearchEngineGitGrep}.</p>
+     * <p>Uses a search engine {@link SearchEngineGrep}.</p>
      *
      * @param filterSearch Filter for searching git repositories.
      * @return Search result in git repository.
