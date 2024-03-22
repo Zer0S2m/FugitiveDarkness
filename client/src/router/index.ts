@@ -9,8 +9,8 @@ const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
-      path: '/search',
-      name: 'search',
+      path: '/git-search',
+      name: 'git-search',
       component: () => SearchView
     },
     {
@@ -24,7 +24,7 @@ const router = createRouter({
       component: () => GitProvidersView
     },
     {
-      path: '/file',
+      path: '/git-file',
       name: 'git-show-file-from-git',
       component: () => GitShowFile
     },

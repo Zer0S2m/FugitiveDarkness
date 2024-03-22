@@ -63,7 +63,7 @@ export default {
   async searchByGrep(
     data: IFilterSearchGitRepository
   ): Promise<AxiosResponse<IResponseSearchByGrepGitRepository>> {
-    return apiClient.post('/operation/search', {
+    return apiClient.post('/operation/git-search', {
       filters: data.filters,
       pattern: data.pattern
     });
@@ -71,7 +71,7 @@ export default {
   async getFileContent(
     data: IGetFileFromGitRepository
   ): Promise<AxiosResponse<IResponseFileFromGitRepository>> {
-    return apiClient.post('/operation/get-file-from-git', {
+    return apiClient.post('/operation/git-get-file', {
       ...data
     });
   },
@@ -83,7 +83,7 @@ export default {
     provider: GitProviderType,
     target: string
   ): Promise<AxiosResponse<IResponseGitRepositoryInProvider>> {
-    return apiClient.get<IResponseGitRepositoryInProvider>('/operation/get-git-repo-provider', {
+    return apiClient.get<IResponseGitRepositoryInProvider>('/operation/git-get-repo-provider', {
       params: {
         provider,
         target
@@ -103,7 +103,7 @@ export default {
     });
   },
   async loadRepoFromRemoteHost(data: ILoadRepoGitProvider): Promise<void> {
-    await apiClient.post('/operation/load-git-repo-remote', {
+    await apiClient.post('/operation/git-load-repo-remote', {
       ...data
     });
   },

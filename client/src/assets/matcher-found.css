@@ -51,6 +51,7 @@
   margin-right: 30px;
   padding: 10px 12px 10px 0;
   max-width: 68px;
+  min-width: 68px;
   width: 100%;
   background-color: var(--color-border);
 }

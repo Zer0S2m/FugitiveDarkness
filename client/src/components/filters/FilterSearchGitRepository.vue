@@ -251,7 +251,7 @@ const resetResult = (): void => {
   excludeFilesExtension.value = [];
 
   router.push({
-    name: 'search',
+    name: 'git-search',
     query: {}
   });
 };

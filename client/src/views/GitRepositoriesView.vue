@@ -52,7 +52,13 @@
         v-for="gitProvider in useGitProviderStore.gitProviders"
       >
         <div class="git-from__providers-item__container">
-          <h3 class="git-from__providers-item--title">{{ gitProvider.target }}</h3>
+          <h3 class="git-from__providers-item--title">
+            <a
+              :href="getLinkForTargetProvider(gitProvider)"
+              target="_blank"
+              >{{ gitProvider.target }}</a
+            >
+          </h3>
           <IconGitlab v-if="gitProvider.type === GitProviderType.GITLAB" />
           <IconGithub v-if="gitProvider.type === GitProviderType.GITHUB" />
         </div>
@@ -105,6 +111,7 @@ import IconGitlab from '@/assets/gitlab-mark.svg';
 import GitRepositoryInProviderList from '@/components/git/GitRepositoryInProviderList.vue';
 import { computed } from 'vue';
 import AddGitItemButton from '@/components/common/AddGitItemButton.vue';
+import { getLinkForTargetProvider } from '@/utils/gitProviders';
 
 const useGitRepositoryStore = useGitRepositoryState();
 const useGitProviderStore = useGitProviderState();
@@ -172,8 +179,13 @@ const openModalAddGitRepository = () => {
 
 .git-from__providers-item--title {
   font-size: 16px;
-  font-weight: 500;
   margin-right: 8px;
+}
+
+.git-from__providers-item--title > a {
+  font-weight: 500;
+  text-decoration: none;
+  color: var(--vt-c-black);
 }
 
 .git-from__providers-item {

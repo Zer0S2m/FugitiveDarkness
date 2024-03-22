@@ -3,7 +3,7 @@ export interface IGitRepository {
   group_: string;
   project: string;
   host: string;
-  create_at: string;
+  created_at: string;
   is_load: boolean;
   is_local: boolean;
 }
