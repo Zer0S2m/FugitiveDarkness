@@ -20,7 +20,6 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
@@ -180,57 +179,23 @@ class SearchEngineJGitGrepImpl extends SearchEngineGitGrepAbstract implements Se
 
     private List<ContainerInfoSearchFileMatcherGitRepo> getMatchedLines(
             InputStream stream,
-            final String file) throws IOException {
-        final List<ContainerInfoSearchFileMatcherGitRepo> matchers = new ArrayList<>();
-        final AtomicInteger lineNumber = new AtomicInteger(1);
-        final AtomicInteger matcherCounterInFile = new AtomicInteger(0);
+            final String file) {
+        final List<ContainerInfoSearchFileMatcherGitRepo> matchers;
 
         try (final InputStreamReader reader = new InputStreamReader(stream, StandardCharsets.UTF_8)) {
-            try (final BufferedReader buf = new BufferedReader(reader)) {
-                String line;
+            final SearchInFileMatchFilterCallableAbstract<List<ContainerInfoSearchFileMatcherGitRepo>> searchInFileMatchCallable =
+                    new SearchInFileMatchCallable(reader);
 
-                while ((line = buf.readLine()) != null) {
-                    lineNumber.set(lineNumber.get() + 1);
+            searchInFileMatchCallable.setContainerGitRepoMeta(getContainerGitRepoMeta());
+            searchInFileMatchCallable.setFile(file);
+            searchInFileMatchCallable.setCurrentBranch(getGitRepositoryGrep().getBranch());
+            searchInFileMatchCallable.setIsUseMatcherCounterInFile(isUseMatcherCounterInFile);
+            searchInFileMatchCallable.setMaxCount(getMaxCount());
+            searchInFileMatchCallable.setPattern(getPattern());
 
-                    Matcher matcher = getPattern().matcher(line);
-
-                    Set<ContainerInfoSearchFileMatcherGroupGitRepo> searchFileMatcherGroupGitRepos = new HashSet<>();
-
-                    while (matcher.find()) {
-                        if (isUseMatcherCounterInFile && matcherCounterInFile.get() == getMaxCount()) {
-                            break;
-                        }
-
-                        final ContainerInfoSearchFileMatcherGroupGitRepo fileMatcherGroupGitRepo =
-                                new ContainerInfoSearchFileMatcherGroupGitRepo(
-                                        matcher.group(),
-                                        matcher.start(),
-                                        matcher.end());
-                        searchFileMatcherGroupGitRepos.add(fileMatcherGroupGitRepo);
-
-                        if (isUseMatcherCounterInFile) {
-                            matcherCounterInFile.set(matcherCounterInFile.get() + 1);
-                        }
-                    }
-
-                    if (!searchFileMatcherGroupGitRepos.isEmpty()) {
-                        matchers.add(new ContainerInfoSearchFileMatcherGitRepo(
-                                line,
-                                GitRepoUtils.getLinkForMatcherLine(
-                                        getContainerGitRepoMeta(),
-                                        file,
-                                        getGitRepositoryGrep().getBranch(),
-                                        lineNumber.get()),
-                                lineNumber.get(),
-                                searchFileMatcherGroupGitRepos,
-                                null,
-                                null
-                        ));
-                    } else {
-                        utilPreviewCode.addPreviewCodes(lineNumber.get(), line);
-                    }
-                }
-            }
+            matchers = new ArrayList<>(searchInFileMatchCallable.call());
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
 
         return matchers;

@@ -132,6 +132,15 @@ public interface GitRepoManager {
      * @param filterSearch Filter for searching git repositories.
      * @return Search result in git repository.
      */
+    List<ContainerInfoSearchGitRepo> searchByGrep_io(GitRepoFilterSearch filterSearch);
+
+    /**
+     * Search for matches in files in git repositories by pattern. Git grep command.
+     * <p>Uses a search engine {@link SearchEngineGrep}.</p>
+     *
+     * @param filterSearch Filter for searching git repositories.
+     * @return Search result in git repository.
+     */
     List<ContainerInfoSearchGitRepo> searchByGrepVirtualThreads_jgit(GitRepoFilterSearch filterSearch);
 
     static GitRepoManager create() {

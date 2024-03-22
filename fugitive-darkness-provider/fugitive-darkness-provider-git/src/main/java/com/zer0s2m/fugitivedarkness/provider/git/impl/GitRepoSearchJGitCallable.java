@@ -10,13 +10,13 @@ import java.util.concurrent.Callable;
 /**
  * Call the repository search and return the result.
  */
-class GitRepoSearchCallable implements Callable<List<ContainerInfoSearchGitRepo>> {
+class GitRepoSearchJGitCallable implements Callable<List<ContainerInfoSearchGitRepo>> {
 
     private final GitRepoFilterSearch filterSearch;
 
     private final GitRepoManager gitRepoService = new GitRepoManagerImpl();
 
-    public GitRepoSearchCallable(GitRepoFilterSearch filterSearch) {
+    public GitRepoSearchJGitCallable(GitRepoFilterSearch filterSearch) {
         this.filterSearch = filterSearch;
     }
 

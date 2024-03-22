@@ -4,7 +4,13 @@ import com.zer0s2m.fugitivedarkness.provider.git.*;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.regex.Pattern;
 
 /**
@@ -41,8 +47,51 @@ class SearchEngineIOGitGrepImpl extends SearchEngineIOGitGrepAbstract implements
      * @throws IOException IO exception.
      */
     @Override
-    public List<ContainerInfoSearchFileGitRepo> callGrep() {
-        return null;
+    public List<ContainerInfoSearchFileGitRepo> callGrep() throws IOException {
+        final List<ContainerInfoSearchFileGitRepo> containerInfoSearchFileGitRepos = new ArrayList<>();
+        final Set<Path> files = SearchEngineIOGitWalkingDirectory
+                .walkDirectory(getDirectory(), getMaxDepth());
+        final List<SearchInFileMatchFilterCallableAbstract<ContainerInfoSearchFileGitRepo>> searchIOFileCallables =
+                collectVirtualThreads(files);
+
+        try (final ExecutorService executor = Executors.newVirtualThreadPerTaskExecutor()) {
+            List<Future<ContainerInfoSearchFileGitRepo>> futures =
+                    executor.invokeAll(searchIOFileCallables);
+            futures.forEach(future -> {
+                try {
+                    final ContainerInfoSearchFileGitRepo containerInfoSearchFileGitRepo = future.get();
+                    if (containerInfoSearchFileGitRepo != null) {
+                        containerInfoSearchFileGitRepos.add(containerInfoSearchFileGitRepo);
+                    }
+                } catch (InterruptedException | ExecutionException e) {
+                    throw new RuntimeException(e);
+                }
+            });
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+
+        return containerInfoSearchFileGitRepos;
+    }
+
+    private List<SearchInFileMatchFilterCallableAbstract<ContainerInfoSearchFileGitRepo>> collectVirtualThreads(
+            Set<Path> files) {
+        final List<SearchInFileMatchFilterCallableAbstract<ContainerInfoSearchFileGitRepo>> searchIOFileCallables =
+                new ArrayList<>();
+        files.forEach(file -> {
+            SearchInFileMatchFilterCallableAbstract<ContainerInfoSearchFileGitRepo> searchFilterCallableAbstract =
+                    new SearchIOFileCallable(file);
+
+            searchFilterCallableAbstract.setContainerGitRepoMeta(getContainerGitRepoMeta());
+            searchFilterCallableAbstract.setFile(file.toString());
+            searchFilterCallableAbstract.setCurrentBranch("master");
+            searchFilterCallableAbstract.setIsUseMatcherCounterInFile(false);
+            searchFilterCallableAbstract.setMaxCount(getMaxCount());
+            searchFilterCallableAbstract.setPattern(getPattern());
+
+            searchIOFileCallables.add(searchFilterCallableAbstract);
+        });
+        return searchIOFileCallables;
     }
 
 }
