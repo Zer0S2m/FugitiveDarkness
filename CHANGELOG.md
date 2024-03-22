@@ -10,6 +10,7 @@
 ### Fixed:
 
 - Fix an error when retrieving the entire file - an unterminated string.
+- Local repositories search in a chaotic state.
 
 ## [0.0.5] 2024-02-25
 

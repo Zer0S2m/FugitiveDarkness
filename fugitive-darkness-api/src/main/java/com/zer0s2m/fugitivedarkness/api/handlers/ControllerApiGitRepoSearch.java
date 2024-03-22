@@ -105,9 +105,12 @@ final public class ControllerApiGitRepoSearch implements Handler<RoutingContext>
                                     );
                                 } else {
                                     sourceLocalProjects.put(
-                                            "LOCAL__" + gitRepository.getGroup(), Path.of(gitRepository.getSource()));
+                                            "LOCAL__" + gitRepository.getProject(), Path.of(gitRepository.getSource()));
                                 }
                             });
+
+                            System.out.println(hostGitRepoByGroupAndProject);
+                            System.out.println(sourceLocalProjects);
 
                             gitRepoSearch.filters().git()
                                     .forEach(repo -> {
@@ -116,7 +119,7 @@ final public class ControllerApiGitRepoSearch implements Handler<RoutingContext>
                                             source = HelperGitRepo
                                                     .getSourceGitRepository(repo.group(), repo.project());
                                         } else {
-                                            source = sourceLocalProjects.get("LOCAL__" + repo.group());
+                                            source = sourceLocalProjects.get("LOCAL__" + repo.project());
                                         }
 
                                         gitRepoFilterSearch
@@ -130,7 +133,7 @@ final public class ControllerApiGitRepoSearch implements Handler<RoutingContext>
                                     });
 
                             final List<ContainerInfoSearchGitRepo> resultSearch = serviceGit
-                                    .searchByGrepVirtualThreads(gitRepoFilterSearch);
+                                    .searchByGrepVirtualThreads_jgit(gitRepoFilterSearch);
 
                             gitRepoRepository.closeClient();
 

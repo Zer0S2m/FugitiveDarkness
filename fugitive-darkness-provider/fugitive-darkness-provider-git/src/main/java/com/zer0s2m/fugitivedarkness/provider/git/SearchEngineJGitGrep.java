@@ -8,7 +8,7 @@ import java.nio.file.Path;
 /**
  * Search engine for <a href="https://git-scm.com/docs/git-grep">git grep</a> command.
  */
-public interface SearchEngineGitGrep extends SearchEngineGrep {
+public interface SearchEngineJGitGrep extends SearchEngineGrep {
 
     /**
      * Install the git repository via its source path.

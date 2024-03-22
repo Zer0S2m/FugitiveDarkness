@@ -1,6 +1,5 @@
 package com.zer0s2m.fugitivedarkness.provider.git;
 
-import java.io.IOException;
 import java.nio.file.Path;
 import java.util.HashSet;
 import java.util.Objects;

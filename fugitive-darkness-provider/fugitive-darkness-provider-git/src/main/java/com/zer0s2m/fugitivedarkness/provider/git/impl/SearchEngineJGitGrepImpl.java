@@ -26,9 +26,9 @@ import java.util.regex.Pattern;
  * Service for providing search in git repositories. Similar to the
  * <a href="https://git-scm.com/docs/git-grep">grep</a> command in git.
  */
-class SearchEngineGitGrepImpl extends SearchEngineGitGrepAbstract implements SearchEngineGrep {
+class SearchEngineJGitGrepImpl extends SearchEngineGitGrepAbstract implements SearchEngineJGitGrep {
 
-    Logger logger = LoggerFactory.getLogger(SearchEngineGitGrepImpl.class);
+    Logger logger = LoggerFactory.getLogger(SearchEngineJGitGrepImpl.class);
 
     /**
      * Helper for finding past lines of code.
@@ -58,7 +58,7 @@ class SearchEngineGitGrepImpl extends SearchEngineGitGrepAbstract implements Sea
      * @param containerGitRepoMeta Additional Information.
      * @throws IOException If an IO error occurred.
      */
-    public SearchEngineGitGrepImpl(Pattern pattern, Path source, ContainerGitRepoMeta containerGitRepoMeta)
+    public SearchEngineJGitGrepImpl(Pattern pattern, Path source, ContainerGitRepoMeta containerGitRepoMeta)
             throws IOException {
         super(pattern, source, containerGitRepoMeta);
     }

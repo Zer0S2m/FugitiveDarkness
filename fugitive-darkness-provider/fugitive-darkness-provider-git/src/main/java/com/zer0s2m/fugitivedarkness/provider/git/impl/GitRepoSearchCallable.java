@@ -27,7 +27,7 @@ class GitRepoSearchCallable implements Callable<List<ContainerInfoSearchGitRepo>
      */
     @Override
     public List<ContainerInfoSearchGitRepo> call() {
-        return gitRepoService.searchByGrep(filterSearch);
+        return gitRepoService.searchByGrep_jgit(filterSearch);
     }
 
 }
