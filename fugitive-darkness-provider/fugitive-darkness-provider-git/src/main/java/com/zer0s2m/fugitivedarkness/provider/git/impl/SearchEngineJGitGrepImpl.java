@@ -130,7 +130,7 @@ class SearchEngineJGitGrepImpl extends SearchEngineGitGrepAbstract implements Se
                         continue;
                     }
 
-                    if (!isBinary(objectLoader.openStream())) {
+                    if (!SearchEngineGitUtils.isBinary(objectLoader.openStream())) {
                         final String extensionFile = FileSystemUtils
                                 .getExtensionFromRawStrFile(it.getEntryPathString());
 

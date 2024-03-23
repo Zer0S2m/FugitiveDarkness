@@ -2,6 +2,7 @@ package com.zer0s2m.fugitivedarkness.provider.git.impl;
 
 import com.zer0s2m.fugitivedarkness.provider.git.ContainerInfoSearchFileGitRepo;
 import com.zer0s2m.fugitivedarkness.provider.git.ContainerInfoSearchFileMatcherGitRepo;
+import com.zer0s2m.fugitivedarkness.provider.git.FileSystemUtils;
 import com.zer0s2m.fugitivedarkness.provider.git.GitRepoUtils;
 
 import java.io.FileReader;
@@ -41,13 +42,9 @@ class SearchIOFileCallable extends SearchInFileMatchFilterCallableAbstract<Conta
                 return null;
             }
 
-            final String[] splitFile = file.toString().split("/");
-            final String splitFileLast = splitFile[splitFile.length - 1];
-            final String[] fileExtensionSplit = splitFileLast.split("//.");
-
             return new ContainerInfoSearchFileGitRepo(
                     file.toString(),
-                    fileExtensionSplit[fileExtensionSplit.length - 1],
+                    FileSystemUtils.getExtensionFromRawStrFile(file.toString()),
                     GitRepoUtils.getLinkForFile(
                             containerGitRepoMeta,
                             file.toString(),

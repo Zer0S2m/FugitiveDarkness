@@ -50,7 +50,13 @@ class SearchEngineIOGitGrepImpl extends SearchEngineIOGitGrepAbstract implements
     public List<ContainerInfoSearchFileGitRepo> callGrep() throws IOException {
         final List<ContainerInfoSearchFileGitRepo> containerInfoSearchFileGitRepos = new ArrayList<>();
         final Set<Path> files = SearchEngineIOGitWalkingDirectory
-                .walkDirectory(getDirectory(), getMaxDepth());
+                .walkDirectory(
+                        getDirectory(),
+                        getMaxDepth(),
+                        getIncludeExtensionFilesForSearchGrep(),
+                        getExcludeExtensionFilesForSearchGrep(),
+                        getPatternForIncludeFile(),
+                        getPatternForExcludeFile());
         final List<SearchInFileMatchFilterCallableAbstract<ContainerInfoSearchFileGitRepo>> searchIOFileCallables =
                 collectVirtualThreads(files);
 
@@ -62,6 +68,7 @@ class SearchEngineIOGitGrepImpl extends SearchEngineIOGitGrepAbstract implements
                     final ContainerInfoSearchFileGitRepo containerInfoSearchFileGitRepo = future.get();
                     if (containerInfoSearchFileGitRepo != null) {
                         containerInfoSearchFileGitRepos.add(containerInfoSearchFileGitRepo);
+                        addExtensionFilesGrep(containerInfoSearchFileGitRepo.extension());
                     }
                 } catch (InterruptedException | ExecutionException e) {
                     throw new RuntimeException(e);
@@ -85,7 +92,7 @@ class SearchEngineIOGitGrepImpl extends SearchEngineIOGitGrepAbstract implements
             searchFilterCallableAbstract.setContainerGitRepoMeta(getContainerGitRepoMeta());
             searchFilterCallableAbstract.setFile(file.toString());
             searchFilterCallableAbstract.setCurrentBranch("master");
-            searchFilterCallableAbstract.setIsUseMatcherCounterInFile(false);
+            searchFilterCallableAbstract.setIsUseMatcherCounterInFile(getMaxCount() != -1);
             searchFilterCallableAbstract.setMaxCount(getMaxCount());
             searchFilterCallableAbstract.setPattern(getPattern());
 
