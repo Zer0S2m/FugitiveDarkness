@@ -40,6 +40,10 @@ abstract class SearchInFileMatchFilterCallableAbstract<T> implements SearchFilte
      */
     protected Pattern pattern;
 
+    protected int contextBeforeReal;
+
+    protected int contextAfterReal;
+
     @Override
     public void setPattern(Pattern pattern) {
         this.pattern = pattern;
@@ -68,6 +72,16 @@ abstract class SearchInFileMatchFilterCallableAbstract<T> implements SearchFilte
     @Override
     public void setIsUseMatcherCounterInFile(boolean isUseMatcherCounterInFile) {
         this.isUseMatcherCounterInFile = isUseMatcherCounterInFile;
+    }
+
+    @Override
+    public void setContextBeforeReal(int contextBeforeReal) {
+        this.contextBeforeReal = contextBeforeReal;
+    }
+
+    @Override
+    public void setContextAfterReal(int contextAfterReal) {
+        this.contextAfterReal = contextAfterReal;
     }
 
 }

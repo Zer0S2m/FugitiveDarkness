@@ -95,6 +95,8 @@ class SearchEngineIOGitGrepImpl extends SearchEngineIOGitGrepAbstract implements
             searchFilterCallableAbstract.setIsUseMatcherCounterInFile(getMaxCount() != -1);
             searchFilterCallableAbstract.setMaxCount(getMaxCount());
             searchFilterCallableAbstract.setPattern(getPattern());
+            searchFilterCallableAbstract.setContextBeforeReal(getContextBefore() == -1 ? 1 : getContextBefore());
+            searchFilterCallableAbstract.setContextAfterReal(getContextAfter() == -1 ? 1 : getContextAfter());
 
             searchIOFileCallables.add(searchFilterCallableAbstract);
         });

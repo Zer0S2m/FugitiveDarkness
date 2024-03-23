@@ -302,7 +302,7 @@ public abstract class SearchEngineGrepAbstract implements SearchEngineGrep {
         if (contextBefore < -1) {
             throw new SearchEngineGitSetContextException();
         }
-        if (maxCount == 0) {
+        if (contextBefore == 0) {
             this.contextBefore = -1;
         } else {
             this.contextBefore = contextBefore;
@@ -331,7 +331,7 @@ public abstract class SearchEngineGrepAbstract implements SearchEngineGrep {
         if (contextAfter < -1) {
             throw new SearchEngineGitSetContextException();
         }
-        if (maxCount == 0) {
+        if (contextAfter == 0) {
             this.contextAfter = -1;
         } else {
             this.contextAfter = contextAfter;

@@ -19,4 +19,8 @@ interface SearchFilterCallable<T> extends Callable<T> {
 
     void setIsUseMatcherCounterInFile(boolean isUseMatcherCounterInFile);
 
+    void setContextBeforeReal(int contextBeforeReal);
+
+    void setContextAfterReal(int contextAfterReal);
+
 }

@@ -36,6 +36,9 @@ class SearchIOFileCallable extends SearchInFileMatchFilterCallableAbstract<Conta
             searchInFileMatchCallable.setIsUseMatcherCounterInFile(isUseMatcherCounterInFile);
             searchInFileMatchCallable.setMaxCount(maxCount);
             searchInFileMatchCallable.setPattern(pattern);
+            searchInFileMatchCallable.setContextBeforeReal(contextBeforeReal);
+            searchInFileMatchCallable.setContextAfterReal(contextAfterReal);
+            searchInFileMatchCallable.setPattern(pattern);
 
             final List<ContainerInfoSearchFileMatcherGitRepo> result = searchInFileMatchCallable.call();
             if (result.isEmpty()) {

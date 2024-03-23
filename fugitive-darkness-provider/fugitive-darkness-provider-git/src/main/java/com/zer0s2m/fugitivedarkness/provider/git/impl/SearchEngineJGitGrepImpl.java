@@ -155,9 +155,8 @@ class SearchEngineJGitGrepImpl extends SearchEngineGitGrepAbstract implements Se
                             continue;
                         }
 
-                        List<ContainerInfoSearchFileMatcherGitRepo> matchers = getMatchedLines(
+                        final List<ContainerInfoSearchFileMatcherGitRepo> matchers = getMatchedLines(
                                 objectLoader.openStream(), it.getEntryPathString());
-                        matchers = collectPreviewCode(matchers, it.getEntryPathString());
 
                         if (!matchers.isEmpty()) {
                             infoSearchFileGitRepos.add(new ContainerInfoSearchFileGitRepo(
@@ -198,6 +197,8 @@ class SearchEngineJGitGrepImpl extends SearchEngineGitGrepAbstract implements Se
             searchInFileMatchCallable.setIsUseMatcherCounterInFile(isUseMatcherCounterInFile);
             searchInFileMatchCallable.setMaxCount(getMaxCount());
             searchInFileMatchCallable.setPattern(getPattern());
+            searchInFileMatchCallable.setContextBeforeReal(contextBeforeReal);
+            searchInFileMatchCallable.setContextAfterReal(contextAfterReal);
 
             matchers = new ArrayList<>(searchInFileMatchCallable.call());
         } catch (Exception e) {
@@ -205,100 +206,6 @@ class SearchEngineJGitGrepImpl extends SearchEngineGitGrepAbstract implements Se
         }
 
         return matchers;
-    }
-
-    /**
-     * Set hints to preview past lines before the main match and next lines after the match
-     * if there is no obvious match.
-     * <p>Uses the helper class {@link GitRepoCommandGrepUtils.GitRepoCommandGrepUtilPreviewCode}</p>
-     *
-     * @param matchers Raw search results.
-     * @param file     The name of the file where the search for matches took place.
-     * @return Collected search results.
-     */
-    private List<ContainerInfoSearchFileMatcherGitRepo> collectPreviewCode(
-            final List<ContainerInfoSearchFileMatcherGitRepo> matchers,
-            final String file) {
-        final List<ContainerInfoSearchFileMatcherGitRepo> collectedMatchers = new ArrayList<>();
-        final AtomicInteger currentLineNumber = new AtomicInteger(1);
-
-        matchers.forEach(matcher -> {
-            ContainerInfoSearchFileMatcherGitRepo collectedMatcher = new ContainerInfoSearchFileMatcherGitRepo(
-                    matcher.matcher(),
-                    matcher.link(),
-                    matcher.lineNumber(),
-                    matcher.groups(),
-                    matcher.previewLast(),
-                    matcher.previewNext());
-            currentLineNumber.set(matcher.lineNumber());
-
-            if (currentLineNumber.get() != 1 && utilPreviewCode.getPreviewCodeLast(currentLineNumber.get()) != null) {
-                final Set<ContainerInfoSearchFileMatcherGitRepo> previewLastCode = new HashSet<>();
-
-                try {
-                    for (int i = 0; i < contextBeforeReal; i++) {
-                        if ((currentLineNumber.get() - i) < 0) {
-                            break;
-                        }
-
-                        final String previewCodeLineLast = utilPreviewCode.getPreviewCodeLast(
-                                currentLineNumber.get() - i);
-
-                        if (previewCodeLineLast != null) {
-                            previewLastCode.add(new ContainerInfoSearchFileMatcherGitRepo(
-                                    previewCodeLineLast,
-                                    GitRepoUtils.getLinkForMatcherLine(
-                                            getContainerGitRepoMeta(),
-                                            file,
-                                            getGitRepositoryGrep().getBranch(),
-                                            utilPreviewCode.getPreviewLineNumberLast(currentLineNumber.get() - i)),
-                                    utilPreviewCode.getPreviewLineNumberLast(currentLineNumber.get() - i),
-                                    null,
-                                    null,
-                                    null
-                            ));
-                        }
-                    }
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-
-                collectedMatcher = collectedMatcher.copyAndSetPreviewLast(previewLastCode);
-            }
-
-            if (utilPreviewCode.getPreviewCodeNext(currentLineNumber.get()) != null) {
-                final Set<ContainerInfoSearchFileMatcherGitRepo> previewNextCode = new HashSet<>();
-                try {
-                    for (int i = 0; i < contextAfterReal; i++) {
-                        final String previewCodeLineNext = utilPreviewCode.getPreviewCodeNext(
-                                currentLineNumber.get() + i);
-
-                        if (previewCodeLineNext != null) {
-                            previewNextCode.add(new ContainerInfoSearchFileMatcherGitRepo(
-                                    previewCodeLineNext,
-                                    GitRepoUtils.getLinkForMatcherLine(
-                                            getContainerGitRepoMeta(),
-                                            file,
-                                            getGitRepositoryGrep().getBranch(),
-                                            utilPreviewCode.getPreviewLineNumberNext(currentLineNumber.get() + i)),
-                                    utilPreviewCode.getPreviewLineNumberNext(currentLineNumber.get() + i),
-                                    null,
-                                    null,
-                                    null
-                            ));
-                        }
-                    }
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-
-                collectedMatcher = collectedMatcher.copyAndSetPreviewNext(previewNextCode);
-            }
-
-            collectedMatchers.add(collectedMatcher);
-        });
-
-        return collectedMatchers;
     }
 
     /**
