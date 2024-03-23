@@ -203,6 +203,9 @@ public class GitRepoManagerImpl implements GitRepoManager {
                     final ContainerGitRepoMeta gitRepo = filterSearch.getGitMeta(source);
                     try {
                         final SearchEngineGrep commandGrep = searchEngineGitGrep_jgit(filterSearch, source, gitRepo);
+
+                        long start = System.currentTimeMillis();
+
                         final List<ContainerInfoSearchFileGitRepo> searchResult = commandGrep.callGrep();
 
                         searchFileGitRepos.add(new ContainerInfoSearchGitRepo(
@@ -214,6 +217,18 @@ public class GitRepoManagerImpl implements GitRepoManager {
                                 searchResult
                         ));
 
+                        long finish = System.currentTimeMillis();
+                        long timeElapsed = finish - start;
+
+                        logger.info("""
+                                        Statistics       [{}]
+                                        \tExecution time                                  [{}]
+                                        \tThe number of files in the project              [{}]
+                                        \tThe number of files in which matches were found [{}]""",
+                                source,
+                                timeElapsed,
+                                commandGrep.getCountFiles(),
+                                searchResult.size());
                         logger.info("End of search    [{}]", source);
                     } catch (IOException | SearchEngineGitException e) {
                         throw new RuntimeException(e);
@@ -239,6 +254,9 @@ public class GitRepoManagerImpl implements GitRepoManager {
                     final ContainerGitRepoMeta gitRepo = filterSearch.getGitMeta(source);
                     try {
                         final SearchEngineGrep commandGrep = searchEngineGitGrep_io(filterSearch, source, gitRepo);
+
+                        long start = System.currentTimeMillis();
+
                         final List<ContainerInfoSearchFileGitRepo> searchResult = commandGrep.callGrep();
 
                         searchFileGitRepos.add(new ContainerInfoSearchGitRepo(
@@ -250,6 +268,18 @@ public class GitRepoManagerImpl implements GitRepoManager {
                                 searchResult
                         ));
 
+                        long finish = System.currentTimeMillis();
+                        long timeElapsed = finish - start;
+
+                        logger.info("""
+                                        Statistics       [{}]
+                                        \tExecution time                                  [{}]
+                                        \tThe number of files in the project              [{}]
+                                        \tThe number of files in which matches were found [{}]""",
+                                source,
+                                timeElapsed,
+                                commandGrep.getCountFiles(),
+                                searchResult.size());
                         logger.info("End of search    [{}]", source);
                     } catch (IOException | SearchEngineGitException e) {
                         throw new RuntimeException(e);

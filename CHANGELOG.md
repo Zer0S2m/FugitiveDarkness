@@ -7,6 +7,7 @@
 - A new search engine for searching through docx files.
 - Showing an error when setting environment variables.
 - Indexes of the found items in the line.
+- Statistics output in the search engine for git projects.
 
 ### Fixed:
 

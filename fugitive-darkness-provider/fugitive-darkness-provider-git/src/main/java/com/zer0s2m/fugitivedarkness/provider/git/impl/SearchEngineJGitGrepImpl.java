@@ -53,6 +53,11 @@ class SearchEngineJGitGrepImpl extends SearchEngineGitGrepAbstract implements Se
     private int contextAfterReal = 1;
 
     /**
+     * Count files in project.
+     */
+    private final AtomicInteger countFiles = new AtomicInteger(0);
+
+    /**
      * @param pattern              A pattern for finding matches in files.
      * @param source               Source path to the git repository.
      * @param containerGitRepoMeta Additional Information.
@@ -119,6 +124,7 @@ class SearchEngineJGitGrepImpl extends SearchEngineGitGrepAbstract implements Se
                 treeWalk.setRecursive(true);
 
                 while (treeWalk.next()) {
+                    countFiles.set(countFiles.get() + 1);
                     AbstractTreeIterator it = treeWalk.getTree(treeIndex, AbstractTreeIterator.class);
                     ObjectId objectId = it.getEntryObjectId();
                     ObjectLoader objectLoader;
@@ -293,6 +299,18 @@ class SearchEngineJGitGrepImpl extends SearchEngineGitGrepAbstract implements Se
         });
 
         return collectedMatchers;
+    }
+
+    /**
+     * Get the number of files in the project.
+     *
+     * @return Count files.
+     */
+    @Override
+    public int getCountFiles() {
+        final int countFiles_ = countFiles.get();
+        countFiles.set(0);
+        return countFiles_;
     }
 
 }

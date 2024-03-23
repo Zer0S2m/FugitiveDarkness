@@ -8,7 +8,7 @@ import java.util.regex.Pattern;
 /**
  * Search engine for <a href="https://git-scm.com/docs/git-grep">git grep</a> command.
  */
-public interface SearchEngineGrep extends SearchEngineGitUtils {
+public interface SearchEngineGrep extends SearchEngineGitUtils, SearchEngineGrepStatistics {
 
     /**
      * Start search.

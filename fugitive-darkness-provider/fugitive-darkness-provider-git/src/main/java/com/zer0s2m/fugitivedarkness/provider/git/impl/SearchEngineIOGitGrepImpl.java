@@ -101,4 +101,16 @@ class SearchEngineIOGitGrepImpl extends SearchEngineIOGitGrepAbstract implements
         return searchIOFileCallables;
     }
 
+    /**
+     * Get the number of files in the project.
+     *
+     * @return Count files.
+     */
+    @Override
+    public int getCountFiles() {
+        final int countFiles = SearchEngineIOGitWalkingDirectory.COUNT_FILES.get();
+        SearchEngineIOGitWalkingDirectory.COUNT_FILES.set(0);
+        return countFiles;
+    }
+
 }

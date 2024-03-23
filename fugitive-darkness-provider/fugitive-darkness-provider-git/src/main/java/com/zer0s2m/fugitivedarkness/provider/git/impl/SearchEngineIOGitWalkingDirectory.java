@@ -9,11 +9,14 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 interface SearchEngineIOGitWalkingDirectory {
+
+    AtomicInteger COUNT_FILES = new AtomicInteger(0);
 
     /**
      * Bypass the directory and get a list of all files.
@@ -44,6 +47,8 @@ interface SearchEngineIOGitWalkingDirectory {
             return stream
                     .filter(file -> !Files.isDirectory(file))
                     .filter(file -> {
+                        COUNT_FILES.set(COUNT_FILES.get() + 1);
+
                         try (final InputStream inputStream = new FileInputStream(file.toFile())) {
                             return !SearchEngineGitUtils.isBinary(inputStream);
                         } catch (IOException e) {
