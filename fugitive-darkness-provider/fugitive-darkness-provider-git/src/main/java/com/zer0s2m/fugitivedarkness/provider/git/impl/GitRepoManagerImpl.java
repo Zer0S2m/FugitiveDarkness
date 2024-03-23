@@ -121,9 +121,13 @@ public class GitRepoManagerImpl implements GitRepoManager {
     public void gCheckout(String group, String project) throws IOException, GitAPIException {
         final Path sourceGitRepository = HelperGitRepo.getSourceGitRepository(group, project);
 
-        Git.open(sourceGitRepository.toFile())
-                .checkout()
-                .call();
+        try (final Git git = Git.open(sourceGitRepository.toFile())) {
+            final Repository repository = git.getRepository();
+            git
+                    .checkout()
+                    .setName(repository.getBranch())
+                    .call();
+        }
     }
 
     /**

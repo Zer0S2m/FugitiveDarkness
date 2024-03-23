@@ -51,7 +51,8 @@ public class GitRepoRepositoryImpl extends RepositoryImpl implements GitRepoRepo
                                git_repositories.created_at,
                                git_repositories.source,
                                git_repositories.is_load,
-                               git_repositories.is_local
+                               git_repositories.is_local,
+                               git_repositories.is_unpacking
                         FROM git_repositories;
                         """)
                 .execute();
@@ -261,6 +262,27 @@ public class GitRepoRepositoryImpl extends RepositoryImpl implements GitRepoRepo
                         RETURNING *
                         """)
                 .execute(Tuple.of(isLoad, group, project));
+    }
+
+    /**
+     * Update the "is_unpacking" attribute by group and project.
+     *
+     * @param group       Must not be null.
+     * @param project     Must not be null.
+     * @param isUnpacking Attribute. Must not be null.
+     * @return Result.
+     */
+    @Override
+    public Future<RowSet<Row>> updateIsUnpackingByGroupAndProject(String group, String project, boolean isUnpacking) {
+        return sqlClient(vertx)
+                .preparedQuery("""
+                        UPDATE "git_repositories"
+                        SET is_unpacking = $1
+                        WHERE group_ = $2
+                          AND project = $3
+                        RETURNING *
+                        """)
+                .execute(Tuple.of(isUnpacking, group, project));
     }
 
 }

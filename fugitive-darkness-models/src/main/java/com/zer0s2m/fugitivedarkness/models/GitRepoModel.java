@@ -27,6 +27,9 @@ public class GitRepoModel {
     @JsonProperty("is_load")
     private boolean isLoad;
 
+    @JsonProperty("is_unpacking")
+    private boolean isUnpacking;
+
     @JsonProperty("is_local")
     private boolean isLocal;
 
@@ -82,11 +85,15 @@ public class GitRepoModel {
         return isLocal;
     }
 
+    public boolean getIsUnpacking() {
+        return isUnpacking;
+    }
+
     public String toString() {
         return String.format(
-                "%s[id=%s,group=%s,project=%s,host=%s,createdAt=%s,isLoad=%s,source=%s, isLocal=%s]",
+                "%s[id=%s,group=%s,project=%s,host=%s,createdAt=%s,isLoad=%s,source=%s, isLocal=%s, isUnpacking=%s]",
                 super.toString(),
-                id, group, project, host, createdAt, isLoad, source, isLocal
+                id, group, project, host, createdAt, isLoad, source, isLocal, isUnpacking
         );
     }
 
