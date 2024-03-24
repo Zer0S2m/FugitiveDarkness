@@ -43,6 +43,7 @@ interface SearchEngineIOGitWalkingDirectory {
             maxDepth = Integer.MAX_VALUE;
         }
 
+        // TODO: Add a filter for files .gitignore
         try (Stream<Path> stream = Files.walk(source, maxDepth)) {
             return stream
                     .filter(file -> !Files.isDirectory(file))
@@ -54,6 +55,16 @@ interface SearchEngineIOGitWalkingDirectory {
                         } catch (IOException e) {
                             throw new RuntimeException(e);
                         }
+                    })
+                    .filter(file -> {
+                        final String fileName = FileSystemUtils.getFileName(file.toString());
+                        return getWhetherSearchByIncludeOrExcludeFileByPattern(
+                                patternForIncludeFile, fileName, false);
+                    })
+                    .filter(file -> {
+                        final String fileName = FileSystemUtils.getFileName(file.toString());
+                        return !getWhetherSearchByIncludeOrExcludeFileByPattern(
+                                patternForExcludeFile, fileName, true);
                     })
                     .filter(file -> {
                         final String extensionFile = FileSystemUtils.getExtensionFromRawStrFile(file.toString());
@@ -68,16 +79,6 @@ interface SearchEngineIOGitWalkingDirectory {
                             return true;
                         }
                         return !excludeFiles.contains(extensionFile);
-                    })
-                    .filter(file -> {
-                        final String fileName = FileSystemUtils.getFileName(file.toString());
-                        return getWhetherSearchByIncludeOrExcludeFileByPattern(
-                                patternForIncludeFile, fileName, false);
-                    })
-                    .filter(file -> {
-                        final String fileName = FileSystemUtils.getFileName(file.toString());
-                        return !getWhetherSearchByIncludeOrExcludeFileByPattern(
-                                patternForExcludeFile, fileName, true);
                     })
                     .collect(Collectors.toSet());
         }

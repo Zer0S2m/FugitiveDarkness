@@ -215,7 +215,7 @@ public class GitRepoManagerImpl implements GitRepoManager {
                         searchFileGitRepos.add(new ContainerInfoSearchGitRepo(
                                 gitRepo.group(),
                                 gitRepo.project(),
-                                filterSearch.getPattern().toString(),
+                                filterSearch.getPattern().pattern(),
                                 gitRepo.getLink(true),
                                 commandGrep.getExtensionFilesGrep(),
                                 searchResult
