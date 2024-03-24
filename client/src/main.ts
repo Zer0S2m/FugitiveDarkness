@@ -25,5 +25,5 @@ hljs.highlightAll();
 hljs.registerAliases(['aj'], { languageName: 'java' });
 hljs.registerAliases(['flake8', 'factories', 'conf'], { languageName: 'ini' });
 hljs.registerAliases(['gitignore', 'in', 'mvnw'], { languageName: 'bash' });
-hljs.registerAliases(['LICENSE', 'types', 'rst'], { languageName: 'plaintext' });
+hljs.registerAliases(['LICENSE', 'types', 'rst', 'lst'], { languageName: 'plaintext' });
 hljs.registerAliases(['scss', 'sass'], { languageName: 'css' });

@@ -10,7 +10,7 @@ import java.util.regex.Pattern;
 /**
  * Abstract class for initializing basic search parameters.
  */
-public abstract class SearchEngineGitGrepAbstract extends SearchEngineGrepAbstract implements SearchEngineJGitGrep {
+public abstract class SearchEngineJGitGrepAbstract extends SearchEngineGrepAbstract implements SearchEngineJGitGrep {
 
     private Repository repository;
 
@@ -21,7 +21,7 @@ public abstract class SearchEngineGitGrepAbstract extends SearchEngineGrepAbstra
      *
      * @throws IOException If an IO error occurred.
      */
-    protected SearchEngineGitGrepAbstract(Pattern pattern, Path source, ContainerGitRepoMeta containerGitRepoMeta)
+    protected SearchEngineJGitGrepAbstract(Pattern pattern, Path source, ContainerGitRepoMeta containerGitRepoMeta)
             throws IOException {
         super(pattern, source, containerGitRepoMeta);
 

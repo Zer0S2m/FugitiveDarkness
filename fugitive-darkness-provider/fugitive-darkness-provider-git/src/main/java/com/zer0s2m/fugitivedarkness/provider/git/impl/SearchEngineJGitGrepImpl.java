@@ -26,7 +26,7 @@ import java.util.regex.Pattern;
  * Service for providing search in git repositories. Similar to the
  * <a href="https://git-scm.com/docs/git-grep">grep</a> command in git.
  */
-class SearchEngineJGitGrepImpl extends SearchEngineGitGrepAbstract implements SearchEngineJGitGrep {
+class SearchEngineJGitGrepImpl extends SearchEngineJGitGrepAbstract implements SearchEngineJGitGrep {
 
     Logger logger = LoggerFactory.getLogger(SearchEngineJGitGrepImpl.class);
 

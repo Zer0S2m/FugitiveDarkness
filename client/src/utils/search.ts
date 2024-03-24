@@ -1,19 +1,40 @@
+import { type IMatcherFoundGroupByGrepGitRepository } from '@/types/gitRepository';
+
 export const REG_PATTERN: string = '($0)(?![^<]*>|[^<>]*\\\\)';
+
 export const MATCH_CLASS: string = 'match-found';
 
-function replace(code: string, pattern: string): string {
+function replace(
+  code: string,
+  pattern: string,
+  groups: IMatcherFoundGroupByGrepGitRepository[]
+): string {
+  let index: number = 0;
   return code.replace(
     new RegExp(REG_PATTERN.replace('$0', pattern), 'g'),
-    `<span class="${MATCH_CLASS}">${pattern}</span>`
+    (substring: string, args: any[]): string => {
+      if (groups[index]) {
+        const resultHtmlCode: string = `<span class="${MATCH_CLASS}">${groups[index].group}</span>`;
+        index++;
+        return resultHtmlCode;
+      }
+      const resultHtmlCode: string = `<span class="${MATCH_CLASS}">${pattern}</span>`;
+      index++;
+      return resultHtmlCode;
+    }
   );
 }
 
-export function searchMatch(code: string, pattern: string): string {
+export function searchMatch(
+  code: string,
+  pattern: string,
+  groups: IMatcherFoundGroupByGrepGitRepository[]
+): string {
   const patternParts: string[] = pattern.split(' ');
 
   if (patternParts.length !== 1) {
     return code;
   } else {
-    return replace(code, patternParts[0]);
+    return replace(code, patternParts[0], groups);
   }
 }
