@@ -30,11 +30,12 @@ class SearchInFileMatchCallable extends SearchInFileMatchFilterCallableAbstract<
         final List<ContainerInfoSearchFileMatcherGitRepo> containerInfoSearchFileMatcherGitRepos = new ArrayList<>();
         final AtomicInteger lineNumber = new AtomicInteger(0);
         final AtomicInteger matcherCounterInFile = new AtomicInteger(0);
+        final Matcher matcherCompile = pattern.matcher("");
 
         try (final BufferedReader buf = new BufferedReader(reader)) {
             for (String line; (line = buf.readLine()) != null; ) {
                 lineNumber.set(lineNumber.get() + 1);
-                final Matcher matcher = pattern.matcher(line);
+                final Matcher matcher = matcherCompile.reset(line);
 
                 Set<ContainerInfoSearchFileMatcherGroupGitRepo> searchFileMatcherGroupGitRepos = new HashSet<>();
 
