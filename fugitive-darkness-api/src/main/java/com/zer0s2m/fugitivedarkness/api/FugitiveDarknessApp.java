@@ -68,6 +68,7 @@ public class FugitiveDarknessApp extends AbstractVerticle {
                                 \t\u001b[42mPOST\u001b[0m   [/api/v1/git/repo/install]
                                 \t\u001b[41mDELETE\u001b[0m [/api/v1/git/repo/delete]
                                 \t\u001b[43mPUT\u001b[0m    [/api/v1/git/repo/fetch]
+                                \t\u001b[43mPUT\u001b[0m    [/api/v1/git/repo/checkout]
                                 \t\u001b[44mGET\u001b[0m    [/api/v1/git/matcher/note]
                                 \t\u001b[42mPOST\u001b[0m   [/api/v1/git/matcher/note]
                                 \t\u001b[43mPUT\u001b[0m    [/api/v1/git/matcher/note/:ID]
@@ -203,6 +204,15 @@ public class FugitiveDarknessApp extends AbstractVerticle {
                         .setHandleFileUploads(false))
                 .handler(ControllerApiValidation.GitRepoControlValidation.validator(vertx))
                 .handler(new ControllerApiGitRepoFetch())
+                .handler(new HandlerLogger.HandlerLoggerResponse());
+        router
+                .put("/api/v1/git/repo/checkout")
+                .consumes("application/json")
+                .handler(BodyHandler
+                        .create()
+                        .setHandleFileUploads(false))
+                .handler(ControllerApiValidation.GitRepoControlValidation.validator(vertx))
+                .handler(new ControllerApiGitRepoCheckout())
                 .handler(new HandlerLogger.HandlerLoggerResponse());
         router
                 .get("/api/v1/git/provider")

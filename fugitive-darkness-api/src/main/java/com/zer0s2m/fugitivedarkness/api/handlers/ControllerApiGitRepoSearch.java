@@ -23,10 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.nio.file.Path;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.regex.Pattern;
 
 /**
@@ -50,37 +47,40 @@ final public class ControllerApiGitRepoSearch implements Handler<RoutingContext>
                 .asJsonObject()
                 .mapTo(ContainerGitRepoSearch.class);
 
-        final GitRepoFilterSearch gitRepoFilterSearch = GitRepoFilterSearch
+        final GitRepoFilterSearch gitRepoFilterSearch_jgit = GitRepoFilterSearch
                 .create()
                 .setPattern(gitRepoSearch.pattern());
 
         if (gitRepoSearch.filters().includeExtensionFiles() != null &&
                 !gitRepoSearch.filters().includeExtensionFiles().isEmpty()) {
-            gitRepoFilterSearch.setIncludeExtensionFile(gitRepoSearch.filters().includeExtensionFiles());
+            gitRepoFilterSearch_jgit.setIncludeExtensionFile(gitRepoSearch.filters().includeExtensionFiles());
         }
         if (gitRepoSearch.filters().excludeExtensionFiles() != null &&
                 !gitRepoSearch.filters().excludeExtensionFiles().isEmpty()) {
-            gitRepoFilterSearch.setExcludeExtensionFile(gitRepoSearch.filters().excludeExtensionFiles());
+            gitRepoFilterSearch_jgit.setExcludeExtensionFile(gitRepoSearch.filters().excludeExtensionFiles());
         }
         if (gitRepoSearch.filters().patternForIncludeFile() != null &&
                 !gitRepoSearch.filters().patternForIncludeFile().isEmpty()) {
-            gitRepoFilterSearch.setPatternForIncludeFile(
+            gitRepoFilterSearch_jgit.setPatternForIncludeFile(
                     Pattern.compile(gitRepoSearch.filters().patternForIncludeFile()));
         }
         if (gitRepoSearch.filters().patternForExcludeFile() != null &&
                 !gitRepoSearch.filters().patternForExcludeFile().isEmpty()) {
-            gitRepoFilterSearch.setPatternForExcludeFile(
+            gitRepoFilterSearch_jgit.setPatternForExcludeFile(
                     Pattern.compile(gitRepoSearch.filters().patternForExcludeFile()));
         }
 
-        gitRepoFilterSearch.setMaxCount(gitRepoSearch.filters().maxCount());
-        gitRepoFilterSearch.setMaxDepth(gitRepoSearch.filters().maxDepth());
+        gitRepoFilterSearch_jgit.setMaxCount(gitRepoSearch.filters().maxCount());
+        gitRepoFilterSearch_jgit.setMaxDepth(gitRepoSearch.filters().maxDepth());
         if (gitRepoSearch.filters().context() == -1 || gitRepoSearch.filters().context() == 0) {
-            gitRepoFilterSearch.setContextBefore(gitRepoSearch.filters().contextBefore());
-            gitRepoFilterSearch.setContextAfter(gitRepoSearch.filters().contextAfter());
+            gitRepoFilterSearch_jgit.setContextBefore(gitRepoSearch.filters().contextBefore());
+            gitRepoFilterSearch_jgit.setContextAfter(gitRepoSearch.filters().contextAfter());
         } else {
-            gitRepoFilterSearch.setContext(gitRepoSearch.filters().context());
+            gitRepoFilterSearch_jgit.setContext(gitRepoSearch.filters().context());
         }
+
+        final GitRepoFilterSearch gitRepoFilterSearch_io = GitRepoFilterSearch.clone(gitRepoFilterSearch_jgit);
+        gitRepoFilterSearch_io.clearSources();
 
         JsonObject object = new JsonObject();
         object.put("success", true);
@@ -97,6 +97,7 @@ final public class ControllerApiGitRepoSearch implements Handler<RoutingContext>
                                     .mapTo(ar.result());
                             final Map<String, String> hostGitRepoByGroupAndProject = new HashMap<>();
                             final Map<String, Path> sourceLocalProjects = new HashMap<>();
+                            final Set<String> sourceUnpackingGitProject = new HashSet<>();
                             gitRepositories.forEach(gitRepository -> {
                                 if (!Objects.equals(gitRepository.getGroup(), "LOCAL")) {
                                     hostGitRepoByGroupAndProject.put(
@@ -105,7 +106,12 @@ final public class ControllerApiGitRepoSearch implements Handler<RoutingContext>
                                     );
                                 } else {
                                     sourceLocalProjects.put(
-                                            "LOCAL__" + gitRepository.getGroup(), Path.of(gitRepository.getSource()));
+                                            "LOCAL__" + gitRepository.getProject(), Path.of(gitRepository.getSource()));
+                                }
+
+                                if (gitRepository.getIsUnpacking()) {
+                                    sourceUnpackingGitProject.add(
+                                            gitRepository.getGroup() + "__" + gitRepository.getProject());
                                 }
                             });
 
@@ -116,21 +122,36 @@ final public class ControllerApiGitRepoSearch implements Handler<RoutingContext>
                                             source = HelperGitRepo
                                                     .getSourceGitRepository(repo.group(), repo.project());
                                         } else {
-                                            source = sourceLocalProjects.get("LOCAL__" + repo.group());
+                                            source = sourceLocalProjects.get("LOCAL__" + repo.project());
                                         }
 
-                                        gitRepoFilterSearch
-                                                .addGitRepo(source)
-                                                .addGitMeta(source, new ContainerGitRepoMeta(
-                                                        repo.group(),
-                                                        repo.project(),
-                                                        hostGitRepoByGroupAndProject.get(
-                                                                repo.group() + "__" + repo.project())
-                                                ));
+                                        if (sourceUnpackingGitProject.contains(repo.group() + "__" + repo.project())) {
+                                            gitRepoFilterSearch_io
+                                                    .addGitRepo(source)
+                                                    .addGitMeta(source, new ContainerGitRepoMeta(
+                                                            repo.group(),
+                                                            repo.project(),
+                                                            hostGitRepoByGroupAndProject.get(
+                                                                    repo.group() + "__" + repo.project())
+                                                    ));
+                                        } else {
+                                            gitRepoFilterSearch_jgit
+                                                    .addGitRepo(source)
+                                                    .addGitMeta(source, new ContainerGitRepoMeta(
+                                                            repo.group(),
+                                                            repo.project(),
+                                                            hostGitRepoByGroupAndProject.get(
+                                                                    repo.group() + "__" + repo.project())
+                                                    ));
+                                        }
                                     });
 
-                            final List<ContainerInfoSearchGitRepo> resultSearch = serviceGit
-                                    .searchByGrepVirtualThreads(gitRepoFilterSearch);
+                            final List<ContainerInfoSearchGitRepo> resultSearch = new ArrayList<>();
+
+                            resultSearch.addAll(serviceGit
+                                    .searchByGrepVirtualThreads_jgit(gitRepoFilterSearch_jgit));
+                            resultSearch.addAll(serviceGit
+                                    .searchByGrep_io(gitRepoFilterSearch_io));
 
                             gitRepoRepository.closeClient();
 

@@ -1,9 +1,5 @@
 package com.zer0s2m.fugitivedarkness.provider.git;
 
-import org.eclipse.jgit.api.Git;
-import org.eclipse.jgit.lib.Repository;
-
-import java.io.IOException;
 import java.nio.file.Path;
 import java.util.HashSet;
 import java.util.Objects;
@@ -13,7 +9,7 @@ import java.util.regex.Pattern;
 /**
  * Abstract class for initializing basic search parameters.
  */
-public abstract class SearchEngineGitGrepAbstract implements SearchEngineGitGrep {
+public abstract class SearchEngineGrepAbstract implements SearchEngineGrep {
 
     /**
      * A pattern for finding matches in files.
@@ -73,23 +69,18 @@ public abstract class SearchEngineGitGrepAbstract implements SearchEngineGitGrep
      */
     private int contextAfter = -1;
 
-    private Repository repository;
-
     /**
      * @param pattern              A pattern for finding matches in files.
      * @param source               Source path to the git repository.
      * @param containerGitRepoMeta Additional Information.
-     * @throws IOException If an IO error occurred.
      */
-    protected SearchEngineGitGrepAbstract(Pattern pattern, Path source, ContainerGitRepoMeta containerGitRepoMeta)
-            throws IOException {
+    protected SearchEngineGrepAbstract(Pattern pattern, Path source, ContainerGitRepoMeta containerGitRepoMeta) {
         Objects.requireNonNull(pattern, "Pattern needs to be set");
         Objects.requireNonNull(source, "You need to set the path to the git repository");
         Objects.requireNonNull(containerGitRepoMeta, "Additional repository information needs to be set");
 
         setContainerGitRepoMeta(containerGitRepoMeta);
         setPattern(pattern);
-        setGitRepositoryGrep(source);
     }
 
     /**
@@ -175,29 +166,6 @@ public abstract class SearchEngineGitGrepAbstract implements SearchEngineGitGrep
     @Override
     public Set<String> getExcludeExtensionFilesForSearchGrep() {
         return extensionFilesForIncludeExcludeSearch;
-    }
-
-    /**
-     * Install the git repository via its source path.
-     *
-     * @param source Source path of the repository.
-     * @throws IOException If an IO error occurred.
-     */
-    @Override
-    public void setGitRepositoryGrep(Path source) throws IOException {
-        this.repository = Git.open(HelperGitRepo.cleanPathForGitRepo(source).toFile())
-                .checkout()
-                .getRepository();
-    }
-
-    /**
-     * Get the git repository.
-     *
-     * @return Git repository.
-     */
-    @Override
-    public Repository getGitRepositoryGrep() {
-        return repository;
     }
 
     /**
@@ -334,7 +302,7 @@ public abstract class SearchEngineGitGrepAbstract implements SearchEngineGitGrep
         if (contextBefore < -1) {
             throw new SearchEngineGitSetContextException();
         }
-        if (maxCount == 0) {
+        if (contextBefore == 0) {
             this.contextBefore = -1;
         } else {
             this.contextBefore = contextBefore;
@@ -363,7 +331,7 @@ public abstract class SearchEngineGitGrepAbstract implements SearchEngineGitGrep
         if (contextAfter < -1) {
             throw new SearchEngineGitSetContextException();
         }
-        if (maxCount == 0) {
+        if (contextAfter == 0) {
             this.contextAfter = -1;
         } else {
             this.contextAfter = contextAfter;

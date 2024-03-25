@@ -110,6 +110,27 @@ public class GitRepoManagerImpl implements GitRepoManager {
     }
 
     /**
+     * Unpack the git archive of the project.
+     *
+     * @param group   Project group. Must not be {@literal null}.
+     * @param project Project. Must not be {@literal null}.
+     * @throws IOException     If an IO error occurred.
+     * @throws GitAPIException The exception is caused by the internal functionality of managing git repositories.
+     */
+    @Override
+    public void gCheckout(String group, String project) throws IOException, GitAPIException {
+        final Path sourceGitRepository = HelperGitRepo.getSourceGitRepository(group, project);
+
+        try (final Git git = Git.open(sourceGitRepository.toFile())) {
+            final Repository repository = git.getRepository();
+            git
+                    .checkout()
+                    .setName(repository.getBranch())
+                    .call();
+        }
+    }
+
+    /**
      * Open and get the contents of a file from a git repository by group and project name.
      *
      * @param group   The name of the git repository group.
@@ -171,13 +192,13 @@ public class GitRepoManagerImpl implements GitRepoManager {
 
     /**
      * Search for matches in files in git repositories by pattern. Git grep command.
-     * <p>Uses a search engine {@link SearchEngineGitGrep}.</p>
+     * <p>Uses a search engine {@link SearchEngineGrep}.</p>
      *
      * @param filterSearch Filter for searching git repositories.
      * @return Search result in git repository.
      */
     @Override
-    public List<ContainerInfoSearchGitRepo> searchByGrep(GitRepoFilterSearch filterSearch) {
+    public List<ContainerInfoSearchGitRepo> searchByGrep_jgit(GitRepoFilterSearch filterSearch) {
         final List<ContainerInfoSearchGitRepo> searchFileGitRepos = new ArrayList<>();
         filterSearch.getSources()
                 .forEach(source -> {
@@ -185,18 +206,33 @@ public class GitRepoManagerImpl implements GitRepoManager {
 
                     final ContainerGitRepoMeta gitRepo = filterSearch.getGitMeta(source);
                     try {
-                        final SearchEngineGitGrep commandGrep = searchEngineGitGrep(filterSearch, source, gitRepo);
+                        final SearchEngineGrep commandGrep = searchEngineGitGrep_jgit(filterSearch, source, gitRepo);
+
+                        long start = System.currentTimeMillis();
+
                         final List<ContainerInfoSearchFileGitRepo> searchResult = commandGrep.callGrep();
 
                         searchFileGitRepos.add(new ContainerInfoSearchGitRepo(
                                 gitRepo.group(),
                                 gitRepo.project(),
-                                filterSearch.getPattern().toString(),
+                                filterSearch.getPattern().pattern(),
                                 gitRepo.getLink(true),
                                 commandGrep.getExtensionFilesGrep(),
                                 searchResult
                         ));
 
+                        long finish = System.currentTimeMillis();
+                        long timeElapsed = finish - start;
+
+                        logger.info("""
+                                        Statistics       [{}]
+                                        \tExecution time                                  [{}]
+                                        \tThe number of files in the project              [{}]
+                                        \tThe number of files in which matches were found [{}]""",
+                                source,
+                                timeElapsed,
+                                commandGrep.getCountFiles(),
+                                searchResult.size());
                         logger.info("End of search    [{}]", source);
                     } catch (IOException | SearchEngineGitException e) {
                         throw new RuntimeException(e);
@@ -207,17 +243,68 @@ public class GitRepoManagerImpl implements GitRepoManager {
 
     /**
      * Search for matches in files in git repositories by pattern. Git grep command.
-     * <p>Uses a search engine {@link SearchEngineGitGrep}.</p>
+     * <p>Uses a search engine {@link SearchEngineGrep}.</p>
      *
      * @param filterSearch Filter for searching git repositories.
      * @return Search result in git repository.
      */
     @Override
-    public List<ContainerInfoSearchGitRepo> searchByGrepVirtualThreads(GitRepoFilterSearch filterSearch) {
+    public List<ContainerInfoSearchGitRepo> searchByGrep_io(GitRepoFilterSearch filterSearch) {
+        final List<ContainerInfoSearchGitRepo> searchFileGitRepos = new ArrayList<>();
+        filterSearch.getSources()
+                .forEach(source -> {
+                    logger.info("Start the search [{}]", source);
+
+                    final ContainerGitRepoMeta gitRepo = filterSearch.getGitMeta(source);
+                    try {
+                        final SearchEngineGrep commandGrep = searchEngineGitGrep_io(filterSearch, source, gitRepo);
+
+                        long start = System.currentTimeMillis();
+
+                        final List<ContainerInfoSearchFileGitRepo> searchResult = commandGrep.callGrep();
+
+                        searchFileGitRepos.add(new ContainerInfoSearchGitRepo(
+                                filterSearch.getGitMeta(source).group(),
+                                filterSearch.getGitMeta(source).project(),
+                                filterSearch.getPattern().pattern(),
+                                filterSearch.getGitMeta(source).getLink(true),
+                                commandGrep.getExtensionFilesGrep(),
+                                searchResult
+                        ));
+
+                        long finish = System.currentTimeMillis();
+                        long timeElapsed = finish - start;
+
+                        logger.info("""
+                                        Statistics       [{}]
+                                        \tExecution time                                  [{}]
+                                        \tThe number of files in the project              [{}]
+                                        \tThe number of files in which matches were found [{}]""",
+                                source,
+                                timeElapsed,
+                                commandGrep.getCountFiles(),
+                                searchResult.size());
+                        logger.info("End of search    [{}]", source);
+                    } catch (IOException | SearchEngineGitException e) {
+                        throw new RuntimeException(e);
+                    }
+                });
+        return searchFileGitRepos;
+    }
+
+    /**
+     * Search for matches in files in git repositories by pattern. Git grep command.
+     * <p>Uses a search engine {@link SearchEngineGrep}.</p>
+     *
+     * @param filterSearch Filter for searching git repositories.
+     * @return Search result in git repository.
+     */
+    @Override
+    public List<ContainerInfoSearchGitRepo> searchByGrepVirtualThreads_jgit(GitRepoFilterSearch filterSearch) {
         final List<ContainerInfoSearchGitRepo> searchFileGitRepos = new ArrayList<>();
 
         try (final ExecutorService executor = Executors.newVirtualThreadPerTaskExecutor()) {
-            final List<GitRepoSearchCallable> gitRepoSearchCallables = new ArrayList<>();
+            final List<GitRepoSearchJGitCallable> gitRepoSearchCallables = new ArrayList<>();
             filterSearch.getSources().forEach((source) -> {
                 final GitRepoFilterSearch newFilterSearch = GitRepoFilterSearch.clone(filterSearch);
                 newFilterSearch.clearGitMeta();
@@ -225,7 +312,7 @@ public class GitRepoManagerImpl implements GitRepoManager {
                 newFilterSearch.addGitRepo(source);
                 newFilterSearch.addGitMeta(source, filterSearch.getGitMeta(source));
 
-                gitRepoSearchCallables.add(new GitRepoSearchCallable(newFilterSearch));
+                gitRepoSearchCallables.add(new GitRepoSearchJGitCallable(newFilterSearch));
             });
 
             final List<Future<List<ContainerInfoSearchGitRepo>>> futures =
@@ -246,7 +333,7 @@ public class GitRepoManagerImpl implements GitRepoManager {
     }
 
     /**
-     * Build a search engine based on {@link SearchEngineGitGrep}.
+     * Build a search engine based on {@link SearchEngineGrep} - {@link SearchEngineJGitGrepImpl}.
      *
      * @param filterSearch Installed search filters.
      * @param source       Source path of the git repository.
@@ -257,16 +344,61 @@ public class GitRepoManagerImpl implements GitRepoManager {
      * @throws SearchEngineGitSetMaxDepthException Exception for setting maximum search depth.
      * @throws SearchEngineGitSetContextException  Exception for setting preview code after and before matches.
      */
-    private static SearchEngineGitGrep searchEngineGitGrep(
+    private static SearchEngineGrep searchEngineGitGrep_jgit(
             GitRepoFilterSearch filterSearch,
             Path source,
             ContainerGitRepoMeta gitRepo) throws IOException, SearchEngineGitSetMaxCountException,
             SearchEngineGitSetMaxDepthException, SearchEngineGitSetContextException {
-        final SearchEngineGitGrep commandGrep = new SearchEngineGitGrepImpl(
+        final SearchEngineGrep commandGrep = new SearchEngineJGitGrepImpl(
                 filterSearch.getPattern(),
                 source,
                 gitRepo
         );
+
+        searchEngineGitGrepCollectFilter(filterSearch, commandGrep);
+
+        return commandGrep;
+    }
+
+    /**
+     * Build a search engine based on {@link SearchEngineGrep} - {@link SearchEngineIOGitGrepImpl}.
+     *
+     * @param filterSearch Installed search filters.
+     * @param source       Source path of the git repository.
+     * @param gitRepo      More information about the git repository.
+     * @return Assembled search engine.
+     * @throws SearchEngineGitSetMaxCountException Exception for setting the maximum number of matches in one file.
+     * @throws SearchEngineGitSetMaxDepthException Exception for setting maximum search depth.
+     * @throws SearchEngineGitSetContextException  Exception for setting preview code after and before matches.
+     */
+    private static SearchEngineGrep searchEngineGitGrep_io(
+            GitRepoFilterSearch filterSearch,
+            Path source,
+            ContainerGitRepoMeta gitRepo) throws SearchEngineGitSetMaxDepthException,
+            SearchEngineGitSetContextException, SearchEngineGitSetMaxCountException {
+        final SearchEngineGrep commandGrep = new SearchEngineIOGitGrepImpl(
+                filterSearch.getPattern(),
+                source,
+                gitRepo
+        );
+
+        searchEngineGitGrepCollectFilter(filterSearch, commandGrep);
+
+        return commandGrep;
+    }
+
+    /**
+     * Collect filter a search engine based on {@link SearchEngineGrep}.
+     *
+     * @param filterSearch Installed search filters.
+     * @param commandGrep  Search engine.
+     * @throws SearchEngineGitSetMaxCountException Exception for setting the maximum number of matches in one file.
+     * @throws SearchEngineGitSetMaxDepthException Exception for setting maximum search depth.
+     * @throws SearchEngineGitSetContextException  Exception for setting preview code after and before matches.
+     */
+    private static void searchEngineGitGrepCollectFilter(
+            GitRepoFilterSearch filterSearch, SearchEngineGrep commandGrep)
+            throws SearchEngineGitSetMaxCountException, SearchEngineGitSetContextException, SearchEngineGitSetMaxDepthException {
         if (filterSearch.getIncludeExtensionFile() != null) {
             commandGrep.setIncludeExtensionFilesForSearchGrep(filterSearch.getIncludeExtensionFile());
         }
@@ -291,8 +423,6 @@ public class GitRepoManagerImpl implements GitRepoManager {
         } else {
             commandGrep.setContext(filterSearch.getContext());
         }
-
-        return commandGrep;
     }
 
 }

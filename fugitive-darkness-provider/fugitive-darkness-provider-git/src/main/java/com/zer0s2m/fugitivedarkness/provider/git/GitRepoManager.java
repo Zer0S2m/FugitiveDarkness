@@ -57,7 +57,7 @@ public interface GitRepoManager {
     /**
      * Get git repository information from URI.
      *
-     * @param URI Remote git repository host.
+     * @param URI     Remote git repository host.
      * @param isLocal Whether the repository is local to the file system .
      * @return Git repository information.
      */
@@ -96,6 +96,16 @@ public interface GitRepoManager {
     void gFetch(String group, String project) throws IOException, GitAPIException;
 
     /**
+     * Unpack the git archive of the project.
+     *
+     * @param group   Project group. Must not be {@literal null}.
+     * @param project Project. Must not be {@literal null}.
+     * @throws IOException     If an IO error occurred.
+     * @throws GitAPIException The exception is caused by the internal functionality of managing git repositories.
+     */
+    void gCheckout(String group, String project) throws IOException, GitAPIException;
+
+    /**
      * Open and get the contents of a file from a git repository by group and project name.
      *
      * @param group   The name of the git repository group.
@@ -108,21 +118,30 @@ public interface GitRepoManager {
 
     /**
      * Search for matches in files in git repositories by pattern. Git grep command.
-     * <p>Uses a search engine {@link SearchEngineGitGrep}.</p>
+     * <p>Uses a search engine {@link SearchEngineGrep}.</p>
      *
      * @param filterSearch Filter for searching git repositories.
      * @return Search result in git repository.
      */
-    List<ContainerInfoSearchGitRepo> searchByGrep(GitRepoFilterSearch filterSearch);
+    List<ContainerInfoSearchGitRepo> searchByGrep_jgit(GitRepoFilterSearch filterSearch);
 
     /**
      * Search for matches in files in git repositories by pattern. Git grep command.
-     * <p>Uses a search engine {@link SearchEngineGitGrep}.</p>
+     * <p>Uses a search engine {@link SearchEngineGrep}.</p>
      *
      * @param filterSearch Filter for searching git repositories.
      * @return Search result in git repository.
      */
-    List<ContainerInfoSearchGitRepo> searchByGrepVirtualThreads(GitRepoFilterSearch filterSearch);
+    List<ContainerInfoSearchGitRepo> searchByGrep_io(GitRepoFilterSearch filterSearch);
+
+    /**
+     * Search for matches in files in git repositories by pattern. Git grep command.
+     * <p>Uses a search engine {@link SearchEngineGrep}.</p>
+     *
+     * @param filterSearch Filter for searching git repositories.
+     * @return Search result in git repository.
+     */
+    List<ContainerInfoSearchGitRepo> searchByGrepVirtualThreads_jgit(GitRepoFilterSearch filterSearch);
 
     static GitRepoManager create() {
         return new GitRepoManagerImpl();

@@ -10,6 +10,8 @@ public record ContainerInfoSearchFileMatcherGitRepo(
 
         int lineNumber,
 
+        Set<ContainerInfoSearchFileMatcherGroupGitRepo> groups,
+
         Set<ContainerInfoSearchFileMatcherGitRepo> previewLast,
 
         Set<ContainerInfoSearchFileMatcherGitRepo> previewNext
@@ -22,6 +24,7 @@ public record ContainerInfoSearchFileMatcherGitRepo(
                 matcher,
                 link,
                 lineNumber,
+                groups,
                 previewLast,
                 previewNext
         );
@@ -33,6 +36,7 @@ public record ContainerInfoSearchFileMatcherGitRepo(
                 matcher,
                 link,
                 lineNumber,
+                groups,
                 previewLast,
                 previewNext
         );

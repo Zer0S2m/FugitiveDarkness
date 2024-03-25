@@ -17,7 +17,7 @@ public interface SearchEngineGitUtils {
      * @return Is the file object a binary.
      * @throws IOException If input stream could not be read.
      */
-    default boolean isBinary(InputStream stream) throws IOException {
+    static boolean isBinary(InputStream stream) throws IOException {
         try (stream) {
             return RawText.isBinary(stream);
         }

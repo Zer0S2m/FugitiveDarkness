@@ -1,5 +1,9 @@
 # Fugitive Darkness
 
+[![](https://img.shields.io/github/v/release/Zer0S2m/FugitiveDarkness.svg)](https://github.com/Zer0S2m/FugitiveDarkness/releases/latest "GitHub release")
+![](http://img.shields.io/badge/platform-jvm-DB413D.svg?style=flat)
+[![](https://img.shields.io/badge/license-Apache%20License%202.0-blue.svg?style=flat)](https://www.apache.org/licenses/LICENSE-2.0)
+
 Search engine from different sources:
 
 - Indexing git sources and searching.

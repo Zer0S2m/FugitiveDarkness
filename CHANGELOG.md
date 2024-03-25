@@ -6,10 +6,15 @@
 
 - A new search engine for searching through docx files.
 - Showing an error when setting environment variables.
+- Indexes of the found items in the line.
+- Statistics output in the search engine for git projects.
+- Unpacking a git project.
 
 ### Fixed:
 
 - Fix an error when retrieving the entire file - an unterminated string.
+- Local repositories search in a chaotic state.
+- Implement a regular expression pattern when highlighting matches (client).
 
 ## [0.0.5] 2024-02-25
 

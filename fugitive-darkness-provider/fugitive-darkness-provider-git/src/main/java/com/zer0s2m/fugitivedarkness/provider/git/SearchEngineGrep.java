@@ -1,9 +1,6 @@
 package com.zer0s2m.fugitivedarkness.provider.git;
 
-import org.eclipse.jgit.lib.Repository;
-
 import java.io.IOException;
-import java.nio.file.Path;
 import java.util.List;
 import java.util.Set;
 import java.util.regex.Pattern;
@@ -11,21 +8,21 @@ import java.util.regex.Pattern;
 /**
  * Search engine for <a href="https://git-scm.com/docs/git-grep">git grep</a> command.
  */
-public interface SearchEngineGitGrep extends SearchEngineGitUtils {
+public interface SearchEngineGrep extends SearchEngineGitUtils, SearchEngineGrepStatistics {
 
     /**
      * Start search.
      * <p>The search is based on the following criteria:</p>
      * <ul>
      *     <li>Including files in the search that have the specified
-     *     extensions {@link SearchEngineGitGrep#getIncludeExtensionFilesForSearchGrep}.</li>
+     *     extensions {@link SearchEngineGrep#getIncludeExtensionFilesForSearchGrep}.</li>
      *     <li>Excluding files from the search that have the specified
-     *     extensions {@link SearchEngineGitGrep#getExcludeExtensionFilesForSearchGrep}.</li>
-     *     <li>Match pattern {@link SearchEngineGitGrep#getPattern}.</li>
-     *     <li>Include files by pattern {@link SearchEngineGitGrep#getPatternForIncludeFile} in the search.</li>
-     *     <li>Exclude files from the search by pattern {@link SearchEngineGitGrep#getPatternForExcludeFile}.</li>
-     *     <li>Maximum search depth {@link SearchEngineGitGrep#getMaxDepth()}.</li>
-     *     <li>Maximum number of matches in one file {@link SearchEngineGitGrep#getMaxCount()}.</li>
+     *     extensions {@link SearchEngineGrep#getExcludeExtensionFilesForSearchGrep}.</li>
+     *     <li>Match pattern {@link SearchEngineGrep#getPattern}.</li>
+     *     <li>Include files by pattern {@link SearchEngineGrep#getPatternForIncludeFile} in the search.</li>
+     *     <li>Exclude files from the search by pattern {@link SearchEngineGrep#getPatternForExcludeFile}.</li>
+     *     <li>Maximum search depth {@link SearchEngineGrep#getMaxDepth()}.</li>
+     *     <li>Maximum number of matches in one file {@link SearchEngineGrep#getMaxCount()}.</li>
      * </ul>
      *
      * @return Search results.
@@ -63,7 +60,7 @@ public interface SearchEngineGitGrep extends SearchEngineGitUtils {
     Set<String> getIncludeExtensionFilesForSearchGrep();
 
     /**
-     * Whether to search by file extension from filtering {@link SearchEngineGitGrep#getIncludeExtensionFilesForSearchGrep()}.
+     * Whether to search by file extension from filtering {@link SearchEngineGrep#getIncludeExtensionFilesForSearchGrep()}.
      *
      * @param extensionFile File extension.
      * @return Whether to search.
@@ -91,7 +88,7 @@ public interface SearchEngineGitGrep extends SearchEngineGitUtils {
 
     /**
      * Should search by file extension be excluded from filtering
-     * {@link SearchEngineGitGrep#getExcludeExtensionFilesForSearchGrep()}.
+     * {@link SearchEngineGrep#getExcludeExtensionFilesForSearchGrep()}.
      *
      * @param extensionFile File extension.
      * @return Exclude from search.
@@ -102,21 +99,6 @@ public interface SearchEngineGitGrep extends SearchEngineGitUtils {
         }
         return false;
     }
-
-    /**
-     * Install the git repository via its source path.
-     *
-     * @param source Source path of the repository.
-     * @throws IOException If an IO error occurred.
-     */
-    void setGitRepositoryGrep(Path source) throws IOException;
-
-    /**
-     * Get the git repository.
-     *
-     * @return Git repository.
-     */
-    Repository getGitRepositoryGrep();
 
     /**
      * Set a pattern to search for matches.
@@ -147,7 +129,7 @@ public interface SearchEngineGitGrep extends SearchEngineGitUtils {
     Pattern getPatternForIncludeFile();
 
     /**
-     * Should the file be searched if the pattern matches {@link SearchEngineGitGrep#getPatternForIncludeFile}.
+     * Should the file be searched if the pattern matches {@link SearchEngineGrep#getPatternForIncludeFile}.
      *
      * @param file The file in which the check will be carried out.
      * @return Whether to search.
@@ -176,7 +158,7 @@ public interface SearchEngineGitGrep extends SearchEngineGitUtils {
     Pattern getPatternForExcludeFile();
 
     /**
-     * Should the file be searched if the pattern matches {@link SearchEngineGitGrep#getPatternForExcludeFile}.
+     * Should the file be searched if the pattern matches {@link SearchEngineGrep#getPatternForExcludeFile}.
      *
      * @param file The file in which the check will be carried out.
      * @return Whether to search.

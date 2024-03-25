@@ -52,10 +52,17 @@ export interface IFilterSearchGitRepositories {
   contextAfter: number;
 }
 
+export interface IMatcherFoundGroupByGrepGitRepository {
+  group: string;
+  start: number;
+  end: number;
+}
+
 export interface IMatcherFoundByGrepGitRepository {
   matcher: string;
   link: string;
   lineNumber: number;
+  groups: IMatcherFoundGroupByGrepGitRepository[];
   previewLast: IMatcherFoundByGrepGitRepository[] | null;
   previewNext: IMatcherFoundByGrepGitRepository[] | null;
 }
