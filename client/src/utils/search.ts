@@ -17,10 +17,13 @@ function replace(
         const resultHtmlCode: string = `<span class="${MATCH_CLASS}">${groups[index].group}</span>`;
         index++;
         return resultHtmlCode;
+      } else {
+        // TODO: Crutch - the lines of code can be combined and there will be only one group
+        index = 0;
+        const resultHtmlCode: string = `<span class="${MATCH_CLASS}">${groups[index].group}</span>`;
+        index++;
+        return resultHtmlCode;
       }
-      const resultHtmlCode: string = `<span class="${MATCH_CLASS}">${pattern}</span>`;
-      index++;
-      return resultHtmlCode;
     }
   );
 }
