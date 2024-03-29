@@ -5,6 +5,7 @@ export interface IGitRepository {
   host: string;
   created_at: string;
   is_load: boolean;
+  is_unpacking: boolean;
   is_local: boolean;
 }
 

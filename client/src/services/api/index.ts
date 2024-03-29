@@ -60,6 +60,11 @@ export default {
       ...data
     });
   },
+  async checkoutGitRepository(data: IControlGitRepository): Promise<any> {
+    return apiClient.put('/git/repo/checkout', {
+      ...data
+    });
+  },
   async searchByGrep(
     data: IFilterSearchGitRepository
   ): Promise<AxiosResponse<IResponseSearchByGrepGitRepository>> {

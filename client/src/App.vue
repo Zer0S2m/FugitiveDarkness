@@ -4,6 +4,7 @@ import Header from '@/components/common/Header.vue';
 import { ModalsContainer } from 'vue-final-modal';
 import ModalAddMatcherNote from '@/components/matcherNote/modals/ModalAddMatcherNote.vue';
 import ModalAddGitFilterSearch from '@/components/git/modals/ModalAddGitFilterSearch.vue';
+import ModalSettingsGitRepository from '@/components/git/modals/ModalSettingsGitRepository.vue';
 </script>
 
 <template>
@@ -15,6 +16,7 @@ import ModalAddGitFilterSearch from '@/components/git/modals/ModalAddGitFilterSe
   </div>
   <ModalAddMatcherNote />
   <ModalAddGitFilterSearch title="Saving a search filter" />
+  <ModalSettingsGitRepository title="Git repository settings" />
   <ModalsContainer />
 </template>
 

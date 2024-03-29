@@ -36,6 +36,13 @@
               class="git-item__update-icon"
             />
           </button>
+          <button
+            class="git-item__settings"
+            v-if="item.is_load"
+            @click="onClickOpenSettingsGitRepository"
+          >
+            <IconSettings />
+          </button>
         </div>
       </div>
     </div>
@@ -44,6 +51,7 @@
 
 <script setup lang="ts">
 import IconDelete from '@/assets/icon-delete.svg';
+import IconSettings from '@/assets/icon-settings.svg';
 import IconUpdate from '@/assets/icon-update.svg';
 import type { IGitRepository } from '@/types/gitRepository';
 import { useGitRepositoryState } from '@/stores/useGitRepositoryState';
@@ -51,8 +59,10 @@ import { HalfCircleSpinner } from 'epic-spinners';
 import ContainerCardItem from '@/components/common/ContainerCardItem.vue';
 import IconDateAdd from '@/assets/icon-date-add.svg';
 import { computed } from 'vue';
+import { useVfm } from 'vue-final-modal';
 
 const useGitRepositoryStore = useGitRepositoryState();
+const useVfmStore = useVfm();
 const props = defineProps<{ item: IGitRepository }>();
 
 const deleteGitRepository = async (): Promise<void> => {
@@ -67,6 +77,11 @@ const updateGitRepository = async (): Promise<void> => {
     group: props.item.group_,
     project: props.item.project
   });
+};
+
+const onClickOpenSettingsGitRepository = (): void => {
+  useGitRepositoryStore.setActiveSelectGitRepositorySettings(props.item);
+  useVfmStore.open('modalSettingsGitFilterSearch');
 };
 
 const convertDate = computed((): string => {
@@ -93,12 +108,14 @@ const convertDate = computed((): string => {
   flex-direction: column;
 }
 
-.git-item__delete {
+.git-item__delete,
+.git-item__settings {
   margin-bottom: 4px;
 }
 
 .git-item__delete > svg,
-.git-item__update > svg {
+.git-item__update > svg,
+.git-item__settings > svg {
   width: 20px;
   height: 20px;
 }

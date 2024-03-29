@@ -8,6 +8,10 @@
   font-size: 20px;
 }
 
+.modal-title--second {
+  font-size: 18px;
+}
+
 .modal-content {
   display: flex;
   flex-direction: column;
