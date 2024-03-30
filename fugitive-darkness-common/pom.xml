@@ -6,11 +6,11 @@
   <parent>
     <groupId>com.zer0s2m.fugitive-darkness</groupId>
     <artifactId>fugitive-darkness</artifactId>
-    <version>0.0.5</version>
+    <version>0.0.6</version>
   </parent>
 
   <artifactId>fugitive-darkness-common</artifactId>
-  <version>0.0.5</version>
+  <version>0.0.6</version>
   <name>fugitive-darkness-common</name>
   <description>Common project code base</description>
 
