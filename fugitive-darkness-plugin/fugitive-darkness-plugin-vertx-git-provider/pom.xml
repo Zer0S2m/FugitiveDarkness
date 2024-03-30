@@ -25,7 +25,7 @@
     </dependency>
     <dependency>
       <groupId>com.zer0s2m.fugitive-darkness</groupId>
-      <artifactId>fugitive-darkness-provider</artifactId>
+      <artifactId>fugitive-darkness-provider-git</artifactId>
     </dependency>
     <dependency>
       <groupId>com.zer0s2m.fugitive-darkness</groupId>

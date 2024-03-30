@@ -45,6 +45,16 @@ public interface GitRepoRepository extends Repository<RowSet<Row>, GitRepoModel>
     Future<RowSet<Row>> updateIsLoadByGroupAndProject(String group, String project, boolean isLoad);
 
     /**
+     * Update the "is_unpacking" attribute by group and project.
+     *
+     * @param group       Must not be null.
+     * @param project     Must not be null.
+     * @param isUnpacking Attribute. Must not be null.
+     * @return Result.
+     */
+    Future<RowSet<Row>> updateIsUnpackingByGroupAndProject(String group, String project, boolean isUnpacking);
+
+    /**
      * Save all entities to the database.
      *
      * @param entities Entities.
@@ -56,7 +66,7 @@ public interface GitRepoRepository extends Repository<RowSet<Row>, GitRepoModel>
      * Find all entities by project group and remote host.
      *
      * @param group Project group.
-     * @param host Remote host.
+     * @param host  Remote host.
      * @return Result.
      */
     Future<RowSet<Row>> findAllByGroupAndHost(String group, String host);
@@ -64,7 +74,7 @@ public interface GitRepoRepository extends Repository<RowSet<Row>, GitRepoModel>
     /**
      * Find an entity by group name and project.
      *
-     * @param group Project group.
+     * @param group   Project group.
      * @param project Name of the project.
      * @return Result.
      */

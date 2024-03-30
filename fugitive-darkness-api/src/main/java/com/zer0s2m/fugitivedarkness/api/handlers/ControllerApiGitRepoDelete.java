@@ -3,8 +3,8 @@ package com.zer0s2m.fugitivedarkness.api.handlers;
 import com.zer0s2m.fugitivedarkness.api.exception.NotFoundException;
 import com.zer0s2m.fugitivedarkness.common.dto.ContainerGitRepoControl;
 import com.zer0s2m.fugitivedarkness.models.GitRepoModel;
-import com.zer0s2m.fugitivedarkness.provider.GitRepo;
-import com.zer0s2m.fugitivedarkness.provider.HelperGitRepo;
+import com.zer0s2m.fugitivedarkness.provider.git.GitRepoManager;
+import com.zer0s2m.fugitivedarkness.provider.git.HelperGitRepo;
 import com.zer0s2m.fugitivedarkness.repository.GitRepoRepository;
 import com.zer0s2m.fugitivedarkness.repository.impl.GitRepoRepositoryImpl;
 import io.netty.handler.codec.http.HttpResponseStatus;
@@ -24,7 +24,7 @@ final public class ControllerApiGitRepoDelete implements Handler<RoutingContext>
 
     static private final Logger logger = LoggerFactory.getLogger(ControllerApiGitRepoDelete.class);
 
-    private final GitRepo gitRepo = GitRepo.create();
+    private final GitRepoManager gitRepo = GitRepoManager.create();
 
     /**
      * Delete a repository from the system.

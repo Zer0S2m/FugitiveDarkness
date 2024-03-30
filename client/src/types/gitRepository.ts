@@ -3,8 +3,9 @@ export interface IGitRepository {
   group_: string;
   project: string;
   host: string;
-  create_at: string;
+  created_at: string;
   is_load: boolean;
+  is_unpacking: boolean;
   is_local: boolean;
 }
 
@@ -52,10 +53,17 @@ export interface IFilterSearchGitRepositories {
   contextAfter: number;
 }
 
+export interface IMatcherFoundGroupByGrepGitRepository {
+  group: string;
+  start: number;
+  end: number;
+}
+
 export interface IMatcherFoundByGrepGitRepository {
   matcher: string;
   link: string;
   lineNumber: number;
+  groups: IMatcherFoundGroupByGrepGitRepository[];
   previewLast: IMatcherFoundByGrepGitRepository[] | null;
   previewNext: IMatcherFoundByGrepGitRepository[] | null;
 }

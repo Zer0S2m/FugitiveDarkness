@@ -30,3 +30,20 @@ dev:
 	@$(run-migrate)
 	@$(mvn_bin) clean install package
 	@$(mvn_bin) exec:java -pl fugitive-darkness-api
+
+run-debug:
+	java \
+		-XX:NativeMemoryTracking=detail \
+		-XX:StartFlightRecording:+jdk.VirtualThreadStart#enabled=true,\+jdk.VirtualThreadEnd#enabled=true,filename=./out/recording.jfr \
+		-jar ./fugitive-darkness-api/target/fugitive-darkness-api-0.0.5-fat.jar
+
+show-debug:
+	@jfr view hot-methods ./out/recording.jfr
+	@jfr view allocation-by-site ./out/recording.jfr
+	@echo ""
+	@echo "Event Types by Name (Experimental)"
+	@echo ""
+	@echo "Event Type                                                                Count"
+	@echo "------------------------------------------------------------------------ ------"
+	@jfr view events-by-name ./out/recording.jfr | grep "Virtual Thread"
+	@jfr view native-memory-committed ./out/recording.jfr

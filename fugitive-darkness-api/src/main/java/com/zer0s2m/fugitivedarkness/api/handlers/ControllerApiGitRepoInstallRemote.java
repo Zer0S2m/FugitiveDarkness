@@ -6,7 +6,7 @@ import com.zer0s2m.fugitivedarkness.models.GitRepoModel;
 import com.zer0s2m.fugitivedarkness.plugin.vertx.git.provider.GitRepoProviderConverter;
 import com.zer0s2m.fugitivedarkness.plugin.vertx.git.provider.GitRepoProviderWebClient;
 import com.zer0s2m.fugitivedarkness.plugin.vertx.git.provider.RepositoryInstallerRemoteVertx;
-import com.zer0s2m.fugitivedarkness.provider.*;
+import com.zer0s2m.fugitivedarkness.provider.git.*;
 import com.zer0s2m.fugitivedarkness.repository.GitProviderRepository;
 import com.zer0s2m.fugitivedarkness.repository.GitRepoRepository;
 import com.zer0s2m.fugitivedarkness.repository.impl.GitProviderRepositoryImpl;
@@ -25,7 +25,7 @@ import java.util.concurrent.atomic.AtomicReference;
 /**
  * Request handler for cloning git repositories from a remote host.
  */
-public class ControllerApiGitRepoInstallRemote implements Handler<RoutingContext> {
+final public class ControllerApiGitRepoInstallRemote implements Handler<RoutingContext> {
 
     static private final Logger logger = LoggerFactory.getLogger(ControllerApiGitRepoInstallRemote.class);
 

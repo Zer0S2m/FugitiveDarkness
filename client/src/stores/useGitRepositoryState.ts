@@ -63,6 +63,7 @@ export const useGitRepositoryState = defineStore('gitRepository', () => {
     },
     language: ''
   });
+  const activeSelectGitRepositorySettings: Ref<IGitRepository | null> = ref(null);
 
   const loadGitRepositories = async (): Promise<void> => {
     if (isLoadData.value) return;
@@ -251,13 +252,14 @@ export const useGitRepositoryState = defineStore('gitRepository', () => {
     gitRepositories.value = [
       ...gitRepositories.value,
       {
-        create_at: '',
+        created_at: '',
         group_: resultInstalledData.gitRepository.group,
         host: resultInstalledData.gitRepository.host,
         id: 0,
         is_load: resultInstalledData.isLoadGitRepository,
         is_local: resultInstalledData.isLocalGitRepository,
-        project: resultInstalledData.gitRepository.project
+        project: resultInstalledData.gitRepository.project,
+        is_unpacking: false
       }
     ];
   };
@@ -451,6 +453,17 @@ export const useGitRepositoryState = defineStore('gitRepository', () => {
     return gitRepo !== undefined;
   };
 
+  const setActiveSelectGitRepositorySettings = (gitRepository: IGitRepository | null): void => {
+    activeSelectGitRepositorySettings.value = gitRepository;
+  };
+
+  const unpackingGitRepository = async (group: string, project: string): Promise<void> => {
+    await api.checkoutGitRepository({
+      group,
+      project
+    });
+  };
+
   return {
     loadGitRepositories,
     deleteGitRepository,
@@ -488,6 +501,8 @@ export const useGitRepositoryState = defineStore('gitRepository', () => {
     setAllFiltersForSearch,
     resetAllFilters,
     checkExistsRepoBy_Host_Group_Project,
+    setActiveSelectGitRepositorySettings,
+    unpackingGitRepository,
 
     gitRepositories,
     resultSearchByGrepGitRepositories,
@@ -499,6 +514,7 @@ export const useGitRepositoryState = defineStore('gitRepository', () => {
     filtersByRepository,
     stateFormAddGitRepositoryErrors,
     urlSearch,
-    activeShowFile
+    activeShowFile,
+    activeSelectGitRepositorySettings
   };
 });

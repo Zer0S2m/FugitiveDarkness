@@ -13,7 +13,7 @@ import { RouterLink } from 'vue-router';
           <div class="nav-item__wrapper">
             <RouterLink
               class="nav-item__link"
-              :to="{ name: 'search' }"
+              :to="{ name: 'git-search' }"
               >Search</RouterLink
             >
           </div>

@@ -59,7 +59,10 @@
           >
             <Highlightjs
               class="code"
-              :code="code"
+              :groups="code.groups"
+              :code="code.code"
+              :preview-last-code="code.previewLastCode"
+              :preview-next-code="code.previewNextCode"
               :pattern="useGitRepositoryStore.filtersForSearch.pattern"
               :language="matcher.extension"
             />
@@ -77,6 +80,7 @@ import IconNote from '@/assets/icon-note.svg';
 import type {
   IGitRepository,
   IMatcherFoundByGrepGitRepository,
+  IMatcherFoundGroupByGrepGitRepository,
   ISearchFoundByGrepGitRepository
 } from '@/types/gitRepository';
 import { useGitRepositoryState } from '@/stores/useGitRepositoryState';
@@ -99,46 +103,76 @@ const props = defineProps<{
   projectRepository: string;
 }>();
 
-const collectCode = computed((): string[] => {
-  const codes: string[] = [];
-  let code: string = '';
+const collectCode = computed(
+  (): {
+    groups: IMatcherFoundGroupByGrepGitRepository[];
+    code: string;
+    previewLastCode: string;
+    previewNextCode: string;
+  }[] => {
+    const codes: {
+      groups: IMatcherFoundGroupByGrepGitRepository[];
+      code: string;
+      previewLastCode: string;
+      previewNextCode: string;
+    }[] = [];
+    let previewLastCode: string = '';
+    let previewNextCode: string = '';
+    let code: string = '';
+    let groups: IMatcherFoundGroupByGrepGitRepository[] = [];
 
-  props.matcher.matchers.forEach((matcher, index) => {
-    if (matcher.previewLast !== null && matcher.previewLast.length !== 0) {
-      matcher.previewLast
-        .sort((matcherPreviewLastFirst, matcherPreviewLastSecond) => {
-          return matcherPreviewLastFirst.lineNumber - matcherPreviewLastSecond.lineNumber;
-        })
-        .forEach((matcherPreviewLast) => {
-          code += `${matcherPreviewLast.matcher}\n`;
+    props.matcher.matchers.forEach((matcher, index) => {
+      if (matcher.previewLast !== null && matcher.previewLast.length !== 0) {
+        matcher.previewLast
+          .sort((matcherPreviewLastFirst, matcherPreviewLastSecond) => {
+            return matcherPreviewLastFirst.lineNumber - matcherPreviewLastSecond.lineNumber;
+          })
+          .forEach((matcherPreviewLast) => {
+            previewLastCode += `${matcherPreviewLast.matcher}\n`;
+          });
+      }
+
+      code += `${matcher.matcher}\n`;
+      groups = matcher.groups;
+
+      if (matcher.previewNext !== null && matcher.previewNext.length !== 0) {
+        matcher.previewNext
+          .sort((matcherPreviewNextFirst, matcherPreviewNextSecond) => {
+            return matcherPreviewNextFirst.lineNumber - matcherPreviewNextSecond.lineNumber;
+          })
+          .forEach((matcherPreviewNext) => {
+            previewNextCode += `${matcherPreviewNext.matcher}\n`;
+          });
+      }
+
+      if (!getIsSequelLineCodeMatcher(matcher, index)) {
+        codes.push({
+          code: code,
+          groups: groups,
+          previewLastCode: previewLastCode,
+          previewNextCode: previewNextCode
         });
-    }
+        code = '';
+        previewLastCode = '';
+        previewNextCode = '';
+      }
+    });
 
-    code += `${matcher.matcher}\n`;
-
-    if (matcher.previewNext !== null && matcher.previewNext.length !== 0) {
-      matcher.previewNext
-        .sort((matcherPreviewNextFirst, matcherPreviewNextSecond) => {
-          return matcherPreviewNextFirst.lineNumber - matcherPreviewNextSecond.lineNumber;
-        })
-        .forEach((matcherPreviewNext) => {
-          code += `${matcherPreviewNext.matcher}\n`;
-        });
-    }
-
-    if (!getIsSequelLineCodeMatcher(matcher, index)) {
-      codes.push(code);
+    if (code.length !== 0) {
+      codes.push({
+        code: code,
+        groups: groups,
+        previewLastCode: previewLastCode,
+        previewNextCode: previewNextCode
+      });
       code = '';
+      previewLastCode = '';
+      previewNextCode = '';
     }
-  });
 
-  if (code.length !== 0) {
-    codes.push(code);
-    code = '';
+    return codes;
   }
-
-  return codes.length ? codes : [code];
-});
+);
 
 const matchersLinks = computed((): { link: string; lineNumber: number; isSequel: boolean }[] => {
   const links: { link: string; lineNumber: number; isSequel: boolean }[] = [];

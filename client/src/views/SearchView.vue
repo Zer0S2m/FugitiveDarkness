@@ -52,7 +52,7 @@ const vueRouteStore = useRoute();
 const searchByGrep = async () => {
   await useGitRepositoryStore.searchByGrep();
   await router.push({
-    name: 'search',
+    name: 'git-search',
     query: {
       q: useGitRepositoryStore.urlSearch['q'],
       repo: useGitRepositoryStore.urlSearch['repo'],
@@ -91,7 +91,7 @@ const loadPage = async () => {
   }
 
   await router.push({
-    name: 'search',
+    name: 'git-search',
     query
   });
 };

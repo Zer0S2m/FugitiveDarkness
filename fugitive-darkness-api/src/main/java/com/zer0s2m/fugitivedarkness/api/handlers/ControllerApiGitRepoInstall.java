@@ -3,8 +3,8 @@ package com.zer0s2m.fugitivedarkness.api.handlers;
 import com.zer0s2m.fugitivedarkness.api.exception.ObjectISExistsInSystemException;
 import com.zer0s2m.fugitivedarkness.common.dto.ContainerGitRepoInstall;
 import com.zer0s2m.fugitivedarkness.models.GitRepoModel;
-import com.zer0s2m.fugitivedarkness.provider.ContainerInfoRepo;
-import com.zer0s2m.fugitivedarkness.provider.GitRepo;
+import com.zer0s2m.fugitivedarkness.provider.git.ContainerInfoRepo;
+import com.zer0s2m.fugitivedarkness.provider.git.GitRepoManager;
 import com.zer0s2m.fugitivedarkness.repository.GitRepoRepository;
 import com.zer0s2m.fugitivedarkness.repository.impl.GitRepoRepositoryImpl;
 import io.netty.handler.codec.http.HttpResponseStatus;
@@ -33,7 +33,7 @@ import static io.vertx.json.schema.common.dsl.Schemas.*;
  */
 final public class ControllerApiGitRepoInstall implements Handler<RoutingContext> {
 
-    private static final GitRepo serviceGit = GitRepo.create();
+    private static final GitRepoManager serviceGit = GitRepoManager.create();
 
     static private final Logger logger = LoggerFactory.getLogger(ControllerApiGitRepoInstall.class);
 
