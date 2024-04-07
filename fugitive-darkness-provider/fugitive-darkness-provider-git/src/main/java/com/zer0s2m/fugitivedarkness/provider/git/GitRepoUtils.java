@@ -1,5 +1,7 @@
 package com.zer0s2m.fugitivedarkness.provider.git;
 
+import com.zer0s2m.fugitivedarkness.common.Environment;
+
 public interface GitRepoUtils {
 
     String LINE_NUMBER_POINTER = "#L";
@@ -34,6 +36,19 @@ public interface GitRepoUtils {
             final String targetBranch,
             final int lineNumber) {
         return getLinkForFile(gitRepoMeta, file, targetBranch) + LINE_NUMBER_POINTER + lineNumber;
+    }
+
+    static String cleanRawFilePath(String path, String ...parts) {
+        StringBuilder readyParts = new StringBuilder(Environment.ROOT_PATH_REPO);
+        if (!readyParts.substring(readyParts.length() - 1).equals('/')) {
+            readyParts.append('/');
+        }
+
+        for (String part : parts) {
+            readyParts.append(part).append('/');
+        }
+
+        return path.replace(readyParts.toString(), "");
     }
 
 }

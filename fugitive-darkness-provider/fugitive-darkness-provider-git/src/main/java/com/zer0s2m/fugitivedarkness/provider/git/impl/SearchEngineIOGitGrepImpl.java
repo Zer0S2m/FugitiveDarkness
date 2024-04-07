@@ -1,6 +1,7 @@
 package com.zer0s2m.fugitivedarkness.provider.git.impl;
 
 import com.zer0s2m.fugitivedarkness.provider.git.*;
+import com.zer0s2m.fugitivedarkness.provider.git.helpers.RepositoryBranch;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -18,6 +19,8 @@ import java.util.regex.Pattern;
  * <a href="https://git-scm.com/docs/git-grep">grep</a> command in git.
  */
 class SearchEngineIOGitGrepImpl extends SearchEngineIOGitGrepAbstract implements SearchEngineIOGitGrep {
+
+    private final RepositoryBranch repositoryBranch = new RepositoryBranch();
 
     /**
      * @param pattern              A pattern for finding matches in files.
@@ -91,7 +94,7 @@ class SearchEngineIOGitGrepImpl extends SearchEngineIOGitGrepAbstract implements
 
             searchFilterCallableAbstract.setContainerGitRepoMeta(getContainerGitRepoMeta());
             searchFilterCallableAbstract.setFile(file.toString());
-            searchFilterCallableAbstract.setCurrentBranch("master");
+            searchFilterCallableAbstract.setCurrentBranch(getCurrentBranch());
             searchFilterCallableAbstract.setIsUseMatcherCounterInFile(getMaxCount() != -1);
             searchFilterCallableAbstract.setMaxCount(getMaxCount());
             searchFilterCallableAbstract.setPattern(getPattern());
@@ -113,6 +116,13 @@ class SearchEngineIOGitGrepImpl extends SearchEngineIOGitGrepAbstract implements
         final int countFiles = SearchEngineIOGitWalkingDirectory.COUNT_FILES.get();
         SearchEngineIOGitWalkingDirectory.COUNT_FILES.set(0);
         return countFiles;
+    }
+
+    private String getCurrentBranch() {
+        repositoryBranch.setSourceHeadFile(
+                Path.of(getDirectory().toString(), ".git", "HEAD"));
+
+        return repositoryBranch.getCurrentBranch();
     }
 
 }

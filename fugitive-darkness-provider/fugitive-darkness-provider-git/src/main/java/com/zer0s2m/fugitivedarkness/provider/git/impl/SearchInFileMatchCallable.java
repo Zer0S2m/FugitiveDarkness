@@ -61,7 +61,11 @@ class SearchInFileMatchCallable extends SearchInFileMatchFilterCallableAbstract<
                             line,
                             GitRepoUtils.getLinkForMatcherLine(
                                     containerGitRepoMeta,
-                                    file,
+                                    GitRepoUtils.cleanRawFilePath(
+                                            file,
+                                            containerGitRepoMeta.group(),
+                                            containerGitRepoMeta.project()
+                                    ),
                                     currentBranch,
                                     lineNumber.get()),
                             lineNumber.get(),
@@ -119,8 +123,12 @@ class SearchInFileMatchCallable extends SearchInFileMatchFilterCallableAbstract<
                                 previewCodeLineLast,
                                 GitRepoUtils.getLinkForMatcherLine(
                                         containerGitRepoMeta,
-                                        file,
-                                        "master",
+                                        GitRepoUtils.cleanRawFilePath(
+                                                file,
+                                                containerGitRepoMeta.group(),
+                                                containerGitRepoMeta.project()
+                                        ),
+                                        currentBranch,
                                         utilPreviewCode.getPreviewLineNumberLast(currentLineNumber.get() - i)),
                                 utilPreviewCode.getPreviewLineNumberLast(currentLineNumber.get() - i),
                                 null,
@@ -144,8 +152,12 @@ class SearchInFileMatchCallable extends SearchInFileMatchFilterCallableAbstract<
                                 previewCodeLineNext,
                                 GitRepoUtils.getLinkForMatcherLine(
                                         containerGitRepoMeta,
-                                        file,
-                                        "master",
+                                        GitRepoUtils.cleanRawFilePath(
+                                                file,
+                                                containerGitRepoMeta.group(),
+                                                containerGitRepoMeta.project()
+                                        ),
+                                        currentBranch,
                                         utilPreviewCode.getPreviewLineNumberNext(currentLineNumber.get() + i)),
                                 utilPreviewCode.getPreviewLineNumberNext(currentLineNumber.get() + i),
                                 null,

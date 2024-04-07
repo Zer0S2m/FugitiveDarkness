@@ -45,12 +45,17 @@ class SearchIOFileCallable extends SearchInFileMatchFilterCallableAbstract<Conta
                 return null;
             }
 
-            return new ContainerInfoSearchFileGitRepo(
+            final String filename = GitRepoUtils.cleanRawFilePath(
                     file.toString(),
+                    containerGitRepoMeta.group(),
+                    containerGitRepoMeta.project());
+
+            return new ContainerInfoSearchFileGitRepo(
+                    filename,
                     FileSystemUtils.getExtensionFromRawStrFile(file.toString()),
                     GitRepoUtils.getLinkForFile(
                             containerGitRepoMeta,
-                            file.toString(),
+                            filename,
                             "master"),
                     result);
         }
