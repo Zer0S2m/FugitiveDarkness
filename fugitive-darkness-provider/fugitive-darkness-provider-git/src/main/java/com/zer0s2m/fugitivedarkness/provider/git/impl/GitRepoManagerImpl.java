@@ -227,10 +227,12 @@ public class GitRepoManagerImpl implements GitRepoManager {
                         logger.info("""
                                         Statistics       [{}]
                                         \tExecution time                                  [{}]
+                                        \tAverage file processing time                    [{}]
                                         \tThe number of files in the project              [{}]
                                         \tThe number of files in which matches were found [{}]""",
                                 source,
                                 timeElapsed,
+                                commandGrep.getAverageFileProcessingTime(),
                                 commandGrep.getCountFiles(),
                                 searchResult.size());
                         logger.info("End of search    [{}]", source);
@@ -278,10 +280,12 @@ public class GitRepoManagerImpl implements GitRepoManager {
                         logger.info("""
                                         Statistics       [{}]
                                         \tExecution time                                  [{}]
+                                        \tAverage file processing time                    [{}]
                                         \tThe number of files in the project              [{}]
                                         \tThe number of files in which matches were found [{}]""",
                                 source,
                                 timeElapsed,
+                                commandGrep.getAverageFileProcessingTime(),
                                 commandGrep.getCountFiles(),
                                 searchResult.size());
                         logger.info("End of search    [{}]", source);

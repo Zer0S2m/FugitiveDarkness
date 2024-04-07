@@ -1,5 +1,16 @@
 # Change Log
 
+## [Unreleased]
+
+### Added
+
+- Update search statistics - average time to process a file.
+
+### Fixed
+
+- Remove the full path to the file from the file link.
+- Specify the current repository branch in the search engine without JGIT.
+
 ## [0.0.6] 2024-03-30
 
 ### Added

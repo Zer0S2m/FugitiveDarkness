@@ -118,6 +118,19 @@ class SearchEngineIOGitGrepImpl extends SearchEngineIOGitGrepAbstract implements
         return countFiles;
     }
 
+    /**
+     * Get the average file processing time.
+     *
+     * @return Average file processing time.
+     */
+    @Override
+    public long getAverageFileProcessingTime() {
+        final int countFiles = SearchEngineIOGitWalkingDirectory.COUNT_FILES.get();
+        final long totalProcessingTimeFile = StateEngineIOGitStatistics.TOTAL_PROCESSING_FILE.get();
+        StateEngineIOGitStatistics.TOTAL_PROCESSING_FILE.set(0);
+        return countFiles / totalProcessingTimeFile;
+    }
+
     private String getCurrentBranch() {
         repositoryBranch.setSourceHeadFile(
                 Path.of(getDirectory().toString(), ".git", "HEAD"));
