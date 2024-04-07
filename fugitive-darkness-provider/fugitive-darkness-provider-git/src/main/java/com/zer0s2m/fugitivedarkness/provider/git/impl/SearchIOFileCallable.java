@@ -56,7 +56,7 @@ class SearchIOFileCallable extends SearchInFileMatchFilterCallableAbstract<Conta
                     GitRepoUtils.getLinkForFile(
                             containerGitRepoMeta,
                             filename,
-                            "master"),
+                            currentBranch),
                     result);
         }
     }

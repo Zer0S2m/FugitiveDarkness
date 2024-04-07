@@ -18,7 +18,13 @@ public interface GitRepoUtils {
             final ContainerGitRepoMeta gitRepoMeta,
             final String file,
             final String targetBranch) {
-        return gitRepoMeta.getLink(false) + "/tree/" + targetBranch + "/" + file;
+        return gitRepoMeta.getLink(false)
+                + "/"
+                + GitEquipment.REMOTE_TREE.value()
+                + "/"
+                + targetBranch
+                + "/"
+                + file;
     }
 
     /**
@@ -38,7 +44,7 @@ public interface GitRepoUtils {
         return getLinkForFile(gitRepoMeta, file, targetBranch) + LINE_NUMBER_POINTER + lineNumber;
     }
 
-    static String cleanRawFilePath(String path, String ...parts) {
+    static String cleanRawFilePath(String path, String... parts) {
         StringBuilder readyParts = new StringBuilder(Environment.ROOT_PATH_REPO);
         if (!readyParts.substring(readyParts.length() - 1).equals('/')) {
             readyParts.append('/');

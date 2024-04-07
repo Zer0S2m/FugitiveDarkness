@@ -133,7 +133,9 @@ class SearchEngineIOGitGrepImpl extends SearchEngineIOGitGrepAbstract implements
 
     private String getCurrentBranch() {
         repositoryBranch.setSourceHeadFile(
-                Path.of(getDirectory().toString(), ".git", "HEAD"));
+                Path.of(getDirectory().toString(),
+                        GitEquipment.FOLDER.value(),
+                        GitEquipment.HEAD_FILE.value()));
 
         return repositoryBranch.getCurrentBranch();
     }

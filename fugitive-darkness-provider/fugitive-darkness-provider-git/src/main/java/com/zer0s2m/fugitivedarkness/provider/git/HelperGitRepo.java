@@ -28,7 +28,7 @@ public interface HelperGitRepo {
             return new ContainerInfoRepo(
                     URISplit[URISplit.length - 3],
                     URISplit[URISplit.length - 2],
-                    URISplit[URISplit.length - 1].replace(".git", ""),
+                    URISplit[URISplit.length - 1].replace(GitEquipment.FOLDER.value(), ""),
                     URI,
                     null
             );
@@ -67,7 +67,7 @@ public interface HelperGitRepo {
      */
     static Path cleanPathForGitRepo(Path source) {
         List<String> splitSource = Arrays.asList(source.toString().split("/"));
-        if (splitSource.get(splitSource.size() - 1).contains(".git")) {
+        if (splitSource.get(splitSource.size() - 1).contains(GitEquipment.FOLDER.value())) {
             splitSource.remove(splitSource.size() - 1);
             return Path.of(String.join("/", splitSource));
         } else {
