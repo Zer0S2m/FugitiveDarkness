@@ -249,7 +249,13 @@ const onClickShowFile = async (): Promise<void> => {
   );
 
   await router.push({
-    name: 'git-show-file-from-git'
+    name: 'git-show-file-from-git',
+    query: {
+      f: props.matcher.filename,
+      e: props.matcher.extension,
+      group: props.groupRepository,
+      project: props.projectRepository
+    }
   });
 };
 
