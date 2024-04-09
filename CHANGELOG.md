@@ -5,6 +5,7 @@
 ### Added
 
 - Update search statistics - average time to process a file.
+- Filter for the file .gitignore for use in the search engine for local repositories.
 
 ### Fixed
 

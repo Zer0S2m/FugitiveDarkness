@@ -6,6 +6,10 @@ public enum GitEquipment {
 
     REMOTE_TREE("tree"),
 
+    GITIGNORE_FILE(".gitignore"),
+
+    GITIGNORE_COMMENT("#"),
+
     FOLDER(".git");
 
     private final String value;

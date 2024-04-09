@@ -1,13 +1,12 @@
 package com.zer0s2m.fugitivedarkness.provider.git.impl;
 
 import com.zer0s2m.fugitivedarkness.provider.git.*;
+import com.zer0s2m.fugitivedarkness.provider.git.helpers.FileReader;
 import com.zer0s2m.fugitivedarkness.provider.git.helpers.RepositoryBranch;
 
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -51,6 +50,16 @@ class SearchEngineIOGitGrepImpl extends SearchEngineIOGitGrepAbstract implements
      */
     @Override
     public List<ContainerInfoSearchFileGitRepo> callGrep() throws IOException {
+        final Set<String> blobs;
+
+        if (getContainerGitRepoMeta().group().equals("LOCAL")) {
+            final Collection<Path> gitignoreFiles = GitIgnoreIndexer.find(getDirectory(), 1);
+            Collection<String> gitignoreLines = FileReader.read(gitignoreFiles);
+            blobs = GitIgnoreParser.parse(gitignoreLines);
+        } else {
+            blobs = new HashSet<>();
+        }
+
         final List<ContainerInfoSearchFileGitRepo> containerInfoSearchFileGitRepos = new ArrayList<>();
         final Set<Path> files = SearchEngineIOGitWalkingDirectory
                 .walkDirectory(
@@ -59,7 +68,8 @@ class SearchEngineIOGitGrepImpl extends SearchEngineIOGitGrepAbstract implements
                         getIncludeExtensionFilesForSearchGrep(),
                         getExcludeExtensionFilesForSearchGrep(),
                         getPatternForIncludeFile(),
-                        getPatternForExcludeFile());
+                        getPatternForExcludeFile(),
+                        blobs);
         final List<SearchInFileMatchFilterCallableAbstract<ContainerInfoSearchFileGitRepo>> searchIOFileCallables =
                 collectVirtualThreads(files);
 
