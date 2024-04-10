@@ -27,7 +27,7 @@ import java.nio.file.Path;
 
 import static io.vertx.json.schema.common.dsl.Schemas.*;
 
-public class ControllerApiDocxSearch implements Handler<RoutingContext> {
+final public class ControllerApiDocxSearch implements Handler<RoutingContext> {
 
     static private final Logger logger = LoggerFactory.getLogger(ControllerApiDocxSearch.class);
 

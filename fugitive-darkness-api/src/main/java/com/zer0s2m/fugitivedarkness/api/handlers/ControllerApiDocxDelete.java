@@ -13,7 +13,7 @@ import org.slf4j.LoggerFactory;
 /**
  * The handler for the request to delete the docx file.
  */
-public class ControllerApiDocxDelete implements Handler<RoutingContext> {
+final public class ControllerApiDocxDelete implements Handler<RoutingContext> {
 
     static private final Logger logger = LoggerFactory.getLogger(ControllerApiDocxDelete.class);
 

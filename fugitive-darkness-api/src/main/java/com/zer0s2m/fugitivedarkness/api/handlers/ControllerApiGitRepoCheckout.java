@@ -19,7 +19,7 @@ import java.io.IOException;
 /**
  * The request handler for unpacking the git project.
  */
-public class ControllerApiGitRepoCheckout implements Handler<RoutingContext> {
+final public class ControllerApiGitRepoCheckout implements Handler<RoutingContext> {
 
     static private final Logger logger = LoggerFactory.getLogger(ControllerApiGitRepoCheckout.class);
 

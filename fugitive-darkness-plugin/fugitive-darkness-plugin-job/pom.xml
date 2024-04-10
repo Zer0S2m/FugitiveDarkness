@@ -18,4 +18,11 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
 
+  <dependencies>
+    <dependency>
+      <groupId>com.zer0s2m.fugitive-darkness</groupId>
+      <artifactId>fugitive-darkness-provider-git</artifactId>
+    </dependency>
+  </dependencies>
+
 </project>
