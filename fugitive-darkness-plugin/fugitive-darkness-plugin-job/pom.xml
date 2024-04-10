@@ -5,17 +5,12 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>com.zer0s2m.fugitive-darkness</groupId>
-    <artifactId>fugitive-darkness</artifactId>
+    <artifactId>fugitive-darkness-plugin</artifactId>
     <version>0.0.7</version>
   </parent>
 
-  <artifactId>fugitive-darkness-plugin</artifactId>
   <version>0.0.7</version>
-  <packaging>pom</packaging>
-  <modules>
-    <module>fugitive-darkness-plugin-job</module>
-    <module>fugitive-darkness-plugin-vertx-git-provider</module>
-  </modules>
+  <artifactId>fugitive-darkness-plugin-job</artifactId>
 
   <properties>
     <maven.compiler.source>21</maven.compiler.source>
