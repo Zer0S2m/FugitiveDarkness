@@ -97,20 +97,31 @@ final public class ControllerApiGitRepoProvider implements Handler<RoutingContex
 
                                     event.next();
                                 })
-                                .onFailure(handler -> {
+                                .onFailure(error -> {
                                     gitProviderRepository.closeClient();
 
-                                    logger.error("Failure (HTTP CLIENT): " + handler.fillInStackTrace());
+                                    logger.error("Failure (HTTP CLIENT): " + error.fillInStackTrace());
+
+                                    JsonObject object = new JsonObject();
+                                    object.put("type", error.getClass().getSimpleName());
+                                    object.put("message", error.getMessage());
 
                                     event
                                             .response()
-                                            .setStatusCode(HttpResponseStatus.INTERNAL_SERVER_ERROR.code());
+                                            .putHeader(
+                                                    HttpHeaders.CONTENT_LENGTH,
+                                                    String.valueOf(object.toString().length()))
+                                            .putHeader(HttpHeaders.CONTENT_TYPE, "application/json")
+                                            .setStatusCode(HttpResponseStatus.SERVICE_UNAVAILABLE.code())
+                                            .write(object.toString());
 
-                                    event.response().end();
+                                    event.next();
                                 });
                     } else {
                         gitProviderRepository.closeClient();
                         logger.error("Failure (DB): " + ar.cause());
+
+                        event.next();
                     }
                 });
     }

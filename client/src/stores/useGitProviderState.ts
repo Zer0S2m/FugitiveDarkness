@@ -11,8 +11,12 @@ import api from '@/services/api';
 import type { IGitRepositoryInProvider } from '@/types/gitProvider';
 import { GitProviderType } from '@/enums/gitProvider';
 import type { AxiosResponse } from 'axios';
-import type { IResponseInstallError } from '@/types/api';
-import { type ILoadRepoGitProvider } from '@/types/gitProvider';
+import type { IError, IResponseInstallError } from '@/types/api';
+import {
+  type ILoadRepoGitProvider,
+  type IResponseGitRepositoryInProvider
+} from '@/types/gitProvider';
+import { instanceIResponseError } from '@/utils/defenders';
 
 export const useGitProviderState = defineStore('gitProvider', () => {
   const gitProviders: Ref<IGitProvider[]> = ref([]);
@@ -22,6 +26,7 @@ export const useGitProviderState = defineStore('gitProvider', () => {
       {
         isLoading: boolean;
         items: IGitRepositoryInProvider[];
+        error: IError | null;
       }
     >
   > = ref(new Map());
@@ -57,7 +62,8 @@ export const useGitProviderState = defineStore('gitProvider', () => {
     gitProviders.value.forEach((gitProvider) => {
       gitRepositoriesInProvider.value.set(`${gitProvider.type}/${gitProvider.target}`, {
         isLoading: true,
-        items: []
+        items: [],
+        error: null
       });
     });
   };
@@ -66,12 +72,23 @@ export const useGitProviderState = defineStore('gitProvider', () => {
     type: GitProviderType,
     target: string
   ): Promise<void> => {
-    const gitRepositories = (await api.getAllGitRepositoriesInProvider(type, target)).data
-      .gitRepositories;
+    let gitRepositories: IResponseGitRepositoryInProvider | IError = (
+      await api.getAllGitRepositoriesInProvider(type, target)
+    ).data;
+    let items: IGitRepositoryInProvider[] = [];
+    let error: IError | null = null;
+
+    if (instanceIResponseError(gitRepositories)) {
+      // @ts-ignore
+      error = gitRepositories;
+    } else {
+      items = gitRepositories.gitRepositories;
+    }
 
     gitRepositoriesInProvider.value.set(`${type}/${target}`, {
       isLoading: false,
-      items: gitRepositories
+      items: items,
+      error: error
     });
   };
 
@@ -85,12 +102,19 @@ export const useGitProviderState = defineStore('gitProvider', () => {
   const getRepositoryInProviderByTypeAndTarget = (
     type: GitProviderType,
     target: string
-  ): IGitRepositoryInProvider[] => {
+  ): {
+    items: IGitRepositoryInProvider[];
+    error: IError | null;
+  } => {
     if (gitRepositoriesInProvider.value.has(`${type}/${target}`)) {
-      return gitRepositoriesInProvider.value.get(`${type}/${target}`)?.items ?? [];
+      // @ts-ignore
+      return gitRepositoriesInProvider.value.get(`${type}/${target}`);
     }
 
-    return [];
+    return {
+      items: [],
+      error: null
+    };
   };
 
   const installingGitProvider = async (payload: IInstallGitProvider): Promise<void> => {

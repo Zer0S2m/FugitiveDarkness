@@ -7,7 +7,8 @@
 - Update search statistics - average time to process a file.
 - Filter for the file .gitignore for use in the search engine for local repositories.
 - The link to the file when viewing it is a URL request.
-- 
+- Output error information when receiving repositories.
+
 ### Fixed
 
 - Remove the full path to the file from the file link.
