@@ -44,6 +44,8 @@ abstract class SearchInFileMatchFilterCallableAbstract<T> implements SearchFilte
 
     protected int contextAfterReal;
 
+    protected long fileProcessingTime;
+
     @Override
     public void setPattern(Pattern pattern) {
         this.pattern = pattern;

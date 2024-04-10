@@ -67,7 +67,13 @@
             useGitProviderStore.getRepositoryInProviderByTypeAndTarget(
               gitProvider.type,
               gitProvider.target
-            )
+            ).items
+          "
+          :error="
+            useGitProviderStore.getRepositoryInProviderByTypeAndTarget(
+              gitProvider.type,
+              gitProvider.target
+            ).error
           "
           v-if="
             !useGitProviderStore.getIsLoadingRepositoryInProviderByTypeAndTarget(

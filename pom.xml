@@ -6,7 +6,7 @@
 
   <groupId>com.zer0s2m.fugitive-darkness</groupId>
   <artifactId>fugitive-darkness</artifactId>
-  <version>0.0.6</version>
+  <version>0.0.7</version>
   <packaging>pom</packaging>
   <modules>
     <module>fugitive-darkness-api</module>
@@ -50,13 +50,13 @@
     <postgresql.version>42.6.0</postgresql.version>
     <scram-common.version>2.1</scram-common.version>
     <scram-client.version>2.1</scram-client.version>
-    <fugitive-darkness-common.version>0.0.6</fugitive-darkness-common.version>
-    <fugitive-darkness-provider-git.version>0.0.6</fugitive-darkness-provider-git.version>
-    <fugitive-darkness-provider-docx.version>0.0.6</fugitive-darkness-provider-docx.version>
-    <fugitive-darkness-models.version>0.0.6</fugitive-darkness-models.version>
-    <fugitive-darkness-repository.version>0.0.6</fugitive-darkness-repository.version>
-    <fugitive-darkness-plugin.version>0.0.6</fugitive-darkness-plugin.version>
-    <fugitive-darkness-plugin-vertx-git-provider.version>0.0.6</fugitive-darkness-plugin-vertx-git-provider.version>
+    <fugitive-darkness-common.version>0.0.7</fugitive-darkness-common.version>
+    <fugitive-darkness-provider-git.version>0.0.7</fugitive-darkness-provider-git.version>
+    <fugitive-darkness-provider-docx.version>0.0.7</fugitive-darkness-provider-docx.version>
+    <fugitive-darkness-models.version>0.0.7</fugitive-darkness-models.version>
+    <fugitive-darkness-repository.version>0.0.7</fugitive-darkness-repository.version>
+    <fugitive-darkness-plugin.version>0.0.7</fugitive-darkness-plugin.version>
+    <fugitive-darkness-plugin-vertx-git-provider.version>0.0.7</fugitive-darkness-plugin-vertx-git-provider.version>
   </properties>
 
   <dependencyManagement>

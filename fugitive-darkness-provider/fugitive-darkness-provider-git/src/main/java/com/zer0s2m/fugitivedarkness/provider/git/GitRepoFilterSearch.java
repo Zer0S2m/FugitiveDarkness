@@ -250,6 +250,8 @@ public interface GitRepoFilterSearch {
                 .addGitRepo(real.getSources())
                 .setContextBefore(real.getContextBefore())
                 .setContextAfter(real.getContextAfter())
+                .setMaxDepth(real.getMaxDepth())
+                .setMaxCount(real.getMaxCount())
                 .setIncludeExtensionFile(real.getIncludeExtensionFile())
                 .setExcludeExtensionFile(real.getExcludeExtensionFile())
                 .setPatternForIncludeFile(real.getPatternForIncludeFile())

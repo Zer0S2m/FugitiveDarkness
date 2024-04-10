@@ -35,7 +35,7 @@ run-debug:
 	java \
 		-XX:NativeMemoryTracking=detail \
 		-XX:StartFlightRecording:+jdk.VirtualThreadStart#enabled=true,\+jdk.VirtualThreadEnd#enabled=true,filename=./out/recording.jfr \
-		-jar ./fugitive-darkness-api/target/fugitive-darkness-api-0.0.6-fat.jar
+		-jar ./fugitive-darkness-api/target/fugitive-darkness-api-0.0.7-fat.jar
 
 show-debug:
 	@jfr view hot-methods ./out/recording.jfr

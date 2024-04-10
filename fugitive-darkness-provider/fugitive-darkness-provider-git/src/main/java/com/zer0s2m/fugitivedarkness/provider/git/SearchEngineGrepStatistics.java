@@ -9,4 +9,11 @@ public interface SearchEngineGrepStatistics {
      */
     int getCountFiles();
 
+    /**
+     * Get the average file processing time.
+     *
+     * @return Average file processing time.
+     */
+    long getAverageFileProcessingTime();
+
 }

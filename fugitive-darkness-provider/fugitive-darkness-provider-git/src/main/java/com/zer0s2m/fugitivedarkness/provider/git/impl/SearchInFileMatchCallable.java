@@ -32,6 +32,8 @@ class SearchInFileMatchCallable extends SearchInFileMatchFilterCallableAbstract<
         final AtomicInteger matcherCounterInFile = new AtomicInteger(0);
         final Matcher matcherCompile = pattern.matcher("");
 
+        long start = System.currentTimeMillis();
+
         try (final BufferedReader buf = new BufferedReader(reader)) {
             for (String line; (line = buf.readLine()) != null; ) {
                 lineNumber.set(lineNumber.get() + 1);
@@ -61,7 +63,11 @@ class SearchInFileMatchCallable extends SearchInFileMatchFilterCallableAbstract<
                             line,
                             GitRepoUtils.getLinkForMatcherLine(
                                     containerGitRepoMeta,
-                                    file,
+                                    GitRepoUtils.cleanRawFilePath(
+                                            file,
+                                            containerGitRepoMeta.group(),
+                                            containerGitRepoMeta.project()
+                                    ),
                                     currentBranch,
                                     lineNumber.get()),
                             lineNumber.get(),
@@ -74,6 +80,13 @@ class SearchInFileMatchCallable extends SearchInFileMatchFilterCallableAbstract<
                 }
             }
         }
+
+        long finish = System.currentTimeMillis();
+
+        fileProcessingTime = finish - start;
+
+        StateEngineIOGitStatistics.TOTAL_PROCESSING_FILE.set(
+                StateEngineIOGitStatistics.TOTAL_PROCESSING_FILE.get() + fileProcessingTime);
 
         return collectPreviewCode(containerInfoSearchFileMatcherGitRepos, file);
     }
@@ -119,8 +132,12 @@ class SearchInFileMatchCallable extends SearchInFileMatchFilterCallableAbstract<
                                 previewCodeLineLast,
                                 GitRepoUtils.getLinkForMatcherLine(
                                         containerGitRepoMeta,
-                                        file,
-                                        "master",
+                                        GitRepoUtils.cleanRawFilePath(
+                                                file,
+                                                containerGitRepoMeta.group(),
+                                                containerGitRepoMeta.project()
+                                        ),
+                                        currentBranch,
                                         utilPreviewCode.getPreviewLineNumberLast(currentLineNumber.get() - i)),
                                 utilPreviewCode.getPreviewLineNumberLast(currentLineNumber.get() - i),
                                 null,
@@ -144,8 +161,12 @@ class SearchInFileMatchCallable extends SearchInFileMatchFilterCallableAbstract<
                                 previewCodeLineNext,
                                 GitRepoUtils.getLinkForMatcherLine(
                                         containerGitRepoMeta,
-                                        file,
-                                        "master",
+                                        GitRepoUtils.cleanRawFilePath(
+                                                file,
+                                                containerGitRepoMeta.group(),
+                                                containerGitRepoMeta.project()
+                                        ),
+                                        currentBranch,
                                         utilPreviewCode.getPreviewLineNumberNext(currentLineNumber.get() + i)),
                                 utilPreviewCode.getPreviewLineNumberNext(currentLineNumber.get() + i),
                                 null,

@@ -57,6 +57,7 @@ import { RouterLink } from 'vue-router';
   position: sticky;
   top: 0;
   background-color: var(--color-background);
+  z-index: 1;
 }
 
 .nav-header__wrapper {

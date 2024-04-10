@@ -44,6 +44,7 @@ public class GitRepoProviderWebClientImpl implements GitRepoProviderWebClient {
         return client
                 .get(infoProvider.host(), infoProvider.path())
                 .expect(ResponsePredicate.SC_SUCCESS)
+                .expect(ResponsePredicate.JSON)
                 .putHeaders(MultiMap
                         .caseInsensitiveMultiMap()
                         .addAll(infoProvider.headers()))

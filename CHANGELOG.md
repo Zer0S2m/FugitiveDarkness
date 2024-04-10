@@ -1,5 +1,19 @@
 # Change Log
 
+## [0.0.7] 2024-04-10
+
+### Added
+
+- Update search statistics - average time to process a file.
+- Filter for the file .gitignore for use in the search engine for local repositories.
+- The link to the file when viewing it is a URL request.
+- Output error information when receiving repositories.
+
+### Fixed
+
+- Remove the full path to the file from the file link.
+- Specify the current repository branch in the search engine without JGIT.
+
 ## [0.0.6] 2024-03-30
 
 ### Added

@@ -30,19 +30,48 @@ import type { AxiosResponse } from 'axios';
 import type { IResponseFileFromGitRepository } from '@/types/gitRepository';
 import Code from '@/components/common/Code.vue';
 import { HalfCircleSpinner } from 'epic-spinners';
+import { useRoute } from 'vue-router';
 
 const useGitRepositoryStore = useGitRepositoryState();
+const vueRouteStore = useRoute();
 const fileContent: Ref<IResponseFileFromGitRepositoryContent[]> = ref([]);
 const isLoading: Ref<boolean> = ref(true);
 
 const loadData = async (): Promise<void> => {
+  let isDataSet: boolean = false;
   if (
     !useGitRepositoryStore.activeShowFile.file.project ||
     !useGitRepositoryStore.activeShowFile.file.group ||
     !useGitRepositoryStore.activeShowFile.file.file
   ) {
+    isDataSet = false;
+  }
+
+  if (!isDataSet) {
+    if (
+      vueRouteStore.query['f'] &&
+      vueRouteStore.query['group'] &&
+      vueRouteStore.query['project'] &&
+      vueRouteStore.query['e']
+    ) {
+      isDataSet = true;
+      useGitRepositoryStore.setActiveShowFile(
+        {
+          group: vueRouteStore.query['group'] as string,
+          project: vueRouteStore.query['project'] as string,
+          file: vueRouteStore.query['f'] as string
+        },
+        vueRouteStore.query['e'] as string
+      );
+    } else {
+      isDataSet = false;
+    }
+  }
+
+  if (!isDataSet) {
     return;
   }
+
   isLoading.value = true;
 
   const resultGetFile: AxiosResponse<IResponseFileFromGitRepository> = await api.getFileContent(
