@@ -20,6 +20,11 @@
 
   <dependencies>
     <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-simple</artifactId>
+    </dependency>
+
+    <dependency>
       <groupId>com.zer0s2m.fugitive-darkness</groupId>
       <artifactId>fugitive-darkness-provider-git</artifactId>
     </dependency>

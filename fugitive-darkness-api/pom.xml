@@ -67,6 +67,10 @@
       <groupId>com.zer0s2m.fugitive-darkness</groupId>
       <artifactId>fugitive-darkness-plugin-vertx-git-provider</artifactId>
     </dependency>
+    <dependency>
+      <groupId>com.zer0s2m.fugitive-darkness</groupId>
+      <artifactId>fugitive-darkness-plugin-job</artifactId>
+    </dependency>
   </dependencies>
 
   <build>

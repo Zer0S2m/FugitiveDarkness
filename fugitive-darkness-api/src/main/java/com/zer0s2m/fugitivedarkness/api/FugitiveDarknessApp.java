@@ -4,9 +4,7 @@ import com.zer0s2m.fugitivedarkness.api.exception.NotFoundException;
 import com.zer0s2m.fugitivedarkness.api.exception.ObjectISExistsInSystemException;
 import com.zer0s2m.fugitivedarkness.api.handlers.*;
 import com.zer0s2m.fugitivedarkness.api.handlers.logger.HandlerLogger;
-import com.zer0s2m.fugitivedarkness.api.handlers.validation.DocxFileValidationExists;
-import com.zer0s2m.fugitivedarkness.api.handlers.validation.GitProviderValidationExists;
-import com.zer0s2m.fugitivedarkness.api.handlers.validation.MatcherNoteValidationExists;
+import com.zer0s2m.fugitivedarkness.api.handlers.validation.*;
 import com.zer0s2m.fugitivedarkness.common.Environment;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.vertx.core.AbstractVerticle;
@@ -49,6 +47,7 @@ public class FugitiveDarknessApp extends AbstractVerticle {
 
         installingRouterAPI(router);
         installingHandlerErrorsAPI(router);
+        installJobs();
 
         server
                 .requestHandler(router)
@@ -79,6 +78,10 @@ public class FugitiveDarknessApp extends AbstractVerticle {
                                 \t\u001b[44mGET\u001b[0m    [/api/v1/git/provider]
                                 \t\u001b[41mDELETE\u001b[0m [/api/v1/git/provider/delete]
                                 \t\u001b[42mPOST\u001b[0m   [/api/v1/git/provider/install]
+                                \t\u001b[44mGET\u001b[0m    [/api/v1/git/job]
+                                \t\u001b[42mPOST\u001b[0m   [/api/v1/git/job]
+                                \t\u001b[41mDELETE\u001b[0m [/api/v1/git/job/:ID]
+                                \t\u001b[43mPUT\u001b[0m    [/api/v1/git/job/:ID]
                                 \t\u001b[44mGET\u001b[0m    [/api/v1/docx]
                                 \t\u001b[41mDELETE\u001b[0m [/api/v1/docx/:ID]
                                 \t\u001b[42mPOST\u001b[0m   [/api/v1/docx/upload]""");
@@ -104,6 +107,9 @@ public class FugitiveDarknessApp extends AbstractVerticle {
                         startPromise.fail(http.cause());
                     }
                 });
+    }
+
+    private void installJobs() {
     }
 
     /**
@@ -251,7 +257,7 @@ public class FugitiveDarknessApp extends AbstractVerticle {
                         .create()
                         .setHandleFileUploads(false))
                 .handler(ControllerApiMatcherNoteCreate.MatcherNoteValidation.validator(vertx))
-                .handler(new ControllerApiMatcherNoteCreate.MatcherNoteValidationExistsGitRepo())
+                .handler(new GitRepoValidationExists())
                 .handler(new ControllerApiMatcherNoteCreate())
                 .handler(new HandlerLogger.HandlerLoggerResponse());
         router
@@ -289,6 +295,36 @@ public class FugitiveDarknessApp extends AbstractVerticle {
                 .handler(ControllerApiValidation.ValidationControlID.validator(vertx))
                 .handler(new ControllerApiGitFilterDelete.GitFilterCheckIsExists())
                 .handler(new ControllerApiGitFilterDelete())
+                .handler(new HandlerLogger.HandlerLoggerResponse());
+        router
+                .get("/api/v1/git/job")
+                .handler(new ControllerApiGitJobGet())
+                .handler(new HandlerLogger.HandlerLoggerResponse());
+        router
+                .post("/api/v1/git/job")
+                .handler(BodyHandler
+                        .create()
+                        .setHandleFileUploads(false))
+                .handler(ControllerApiGitJobCreate.GitJobCreateValidation.validator(vertx))
+                .handler(new CronValidation("cron"))
+                .handler(new GitRepoValidationExists())
+                .handler(new ControllerApiGitJobCreate())
+                .handler(new HandlerLogger.HandlerLoggerResponse());
+        router
+                .delete("/api/v1/git/job/:ID")
+                .handler(ControllerApiValidation.ValidationControlID.validator(vertx))
+                .handler(new GitJobValidationExists())
+                .handler(new ControllerApiGitJobDelete())
+                .handler(new HandlerLogger.HandlerLoggerResponse());
+        router
+                .put("/api/v1/git/job/:ID")
+                .handler(BodyHandler
+                        .create()
+                        .setHandleFileUploads(false))
+                .handler(ControllerApiValidation.ValidationControlID.validator(vertx))
+                .handler(new GitJobValidationExists())
+                .handler(new CronValidation("cron"))
+                .handler(new ControllerApiGitJobEdit())
                 .handler(new HandlerLogger.HandlerLoggerResponse());
 
         // DOCX
