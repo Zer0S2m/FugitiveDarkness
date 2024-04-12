@@ -4,6 +4,9 @@
 
 ### Added
 
+- Scheduled tasks:
+    - Functionality for creating scheduled tasks.
+    - Rules for running scheduled tasks.
 - Functionality for updating the repository in the form of scheduled tasks.
 
 ## [0.0.7] 2024-04-10

@@ -91,4 +91,8 @@ public class GitJobModel extends Job<String> implements FieldObject {
         return nextRunAt;
     }
 
+    public boolean getIsGitRepoIsLocal() {
+        return gitRepoIsLocal;
+    }
+
 }

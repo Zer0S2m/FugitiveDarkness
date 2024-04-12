@@ -1,10 +1,10 @@
 package com.zer0s2m.fugitivedarkness.plugin.job.impl;
 
 import com.zer0s2m.fugitivedarkness.plugin.job.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Map;
+import java.util.*;
 
 /**
  * A manager for performing scheduled tasks of various types.
@@ -14,7 +14,9 @@ import java.util.Map;
  *     <li>{@link GitTypeJob#ONETIME_USE}</li>
  * </ul>
  */
-public class JobManagerImpl implements JobManager {
+public class JobManagerImpl extends JobRunnableRuleAbstract implements JobManager {
+
+    private final Logger logger = LoggerFactory.getLogger(JobManagerImpl.class);
 
     private final GitJobManager gitJobManager = new GitJobManagerImpl();
 
@@ -29,6 +31,15 @@ public class JobManagerImpl implements JobManager {
      */
     @Override
     public void call(Object type, Map<String, Object> properties) throws JobException {
+        setProperties(properties);
+
+        try {
+            run(type);
+        } catch (JobValidationRuleException e) {
+            logger.warn("Failed to start a deferred task [" + e.getMessage() + "]");
+            return;
+        }
+
         if (type.equals(GitTypeJob.ONETIME_USE)) {
             JobManagerCheckProperties.checkPropertiesGitJobType(properties);
 
@@ -48,6 +59,11 @@ public class JobManagerImpl implements JobManager {
                     "Task executor of the type was not found "
                             + "[" + type + "]");
         }
+    }
+
+    @Override
+    protected void setProperties(Map<String, Object> properties) {
+        this.properties = properties;
     }
 
     static class JobManagerCheckProperties {

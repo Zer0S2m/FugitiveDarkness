@@ -19,6 +19,7 @@ interface ListenerGitJobUtils {
 
         properties.put("group", gitJob.getGitRepoGroup());
         properties.put("project", gitJob.getGitRepoProject());
+        properties.put("isLocal", gitJob.getIsGitRepoIsLocal());
 
         return properties;
     }
@@ -33,7 +34,7 @@ interface ListenerGitJobUtils {
                                 .build(
                                         row,
                                         GitJobModel.class,
-                                        List.of("id", "group_", "project", "cron", "next_run_at")));
+                                        List.of("id", "group_", "project", "cron", "next_run_at", "is_local")));
                     } catch (NoSuchMethodException | InvocationTargetException | InstantiationException |
                              IllegalAccessException e) {
                         throw new RuntimeException(e);

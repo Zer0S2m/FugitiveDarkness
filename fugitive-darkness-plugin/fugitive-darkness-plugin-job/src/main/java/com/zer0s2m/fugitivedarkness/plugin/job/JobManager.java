@@ -10,7 +10,7 @@ import java.util.Map;
  *     <li>{@link GitTypeJob#ONETIME_USE}</li>
  * </ul>
  */
-public interface JobManager {
+public interface JobManager extends JobRunnableRule {
 
     /**
      * Run a task with a certain type and a certain set of properties.
