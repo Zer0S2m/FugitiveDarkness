@@ -26,9 +26,13 @@ class GitJobExecutorOnetimeUseImpl extends GitJobExecutorAbstract
         try {
             checkExistsGitRepository();
 
+            logger.info("The beginning of cloning the repository [" + group + ":" + project + "]");
+
             GitRepoManager
                     .create()
                     .gFetch(group, project);
+
+            logger.info("End of repository cloning [" + group + ":" + project + "]");
         } catch (JobException | IOException | GitAPIException e) {
             logger.error(e.getMessage());
             throw new RuntimeException(e);

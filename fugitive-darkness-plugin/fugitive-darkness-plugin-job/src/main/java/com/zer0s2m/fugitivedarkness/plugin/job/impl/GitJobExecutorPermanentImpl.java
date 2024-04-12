@@ -22,10 +22,14 @@ class GitJobExecutorPermanentImpl extends GitJobExecutorAbstract
         try {
             checkExistsGitRepository();
 
+            logger.info("The beginning of cloning the repository [" + group + ":" + project + "]");
+
             GitRepoManager
                     .create()
                     .gFetch(group, project);
-        } catch (JobException | IOException | GitAPIException e) {
+
+            logger.info("End of repository cloning [" + group + ":" + project + "]");
+        } catch (JobException | GitAPIException | IOException e) {
             logger.error(e.getMessage());
             throw new RuntimeException(e);
         }

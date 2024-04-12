@@ -16,6 +16,8 @@ import java.util.Map;
  */
 public class JobManagerImpl implements JobManager {
 
+    private final GitJobManager gitJobManager = new GitJobManagerImpl();
+
     /**
      * Run a task with a certain type and a certain set of properties.
      *
@@ -30,22 +32,22 @@ public class JobManagerImpl implements JobManager {
         if (type.equals(GitTypeJob.ONETIME_USE)) {
             JobManagerCheckProperties.checkPropertiesGitJobType(properties);
 
-            GitJobExecutor executor = new GitJobExecutorOnetimeUseImpl();
-            executor.setGroup((String) properties.get("group"));
-            executor.setProject((String) properties.get("project"));
-            executor.run();
+            gitJobManager.call(
+                    (String) properties.get("group"),
+                    (String) properties.get("project"),
+                    GitTypeJob.ONETIME_USE);
         } else if (type.equals(GitTypeJob.PERMANENT)) {
             JobManagerCheckProperties.checkPropertiesGitJobType(properties);
 
-            GitJobExecutor executor = new GitJobExecutorPermanentImpl();
-            executor.setGroup((String) properties.get("group"));
-            executor.setProject((String) properties.get("project"));
-            executor.run();
+            gitJobManager.call(
+                    (String) properties.get("group"),
+                    (String) properties.get("project"),
+                    GitTypeJob.PERMANENT);
+        } else {
+            throw new JobNotFoundExecutorException(
+                    "Task executor of the type was not found "
+                            + "[" + type + "]");
         }
-
-        throw new JobNotFoundExecutorException(
-                "Task executor of the type was not found "
-                        + "[" + type + "]");
     }
 
     static class JobManagerCheckProperties {

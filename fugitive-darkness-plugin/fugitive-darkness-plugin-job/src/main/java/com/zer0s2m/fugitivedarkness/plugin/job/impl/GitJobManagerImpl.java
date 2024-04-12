@@ -29,9 +29,9 @@ public class GitJobManagerImpl implements GitJobManager {
             gitJobExecutor.setProject(project);
 
             new Thread(gitJobExecutor, "jobs.git-permanent.fetch-repository").start();
+        } else {
+            throw new JobNotFoundExecutorException("The task executor was not found.");
         }
-
-        throw new JobNotFoundExecutorException("The task executor was not found.");
     }
 
 }

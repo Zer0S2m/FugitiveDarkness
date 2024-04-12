@@ -3,6 +3,9 @@ package com.zer0s2m.fugitivedarkness.plugin.vertx.job.impl;
 import com.zer0s2m.fugitivedarkness.common.mapper.FieldBuilder;
 import com.zer0s2m.fugitivedarkness.models.GitJobModel;
 import com.zer0s2m.fugitivedarkness.plugin.job.GitTypeJob;
+import com.zer0s2m.fugitivedarkness.plugin.job.JobException;
+import com.zer0s2m.fugitivedarkness.plugin.job.JobManager;
+import com.zer0s2m.fugitivedarkness.plugin.job.impl.JobManagerImpl;
 import com.zer0s2m.fugitivedarkness.plugin.job.support.CronExpression;
 import com.zer0s2m.fugitivedarkness.plugin.vertx.job.Listener;
 import com.zer0s2m.fugitivedarkness.repository.GitJobRepository;
@@ -13,11 +16,8 @@ import io.vertx.sqlclient.Row;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.lang.reflect.InvocationTargetException;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.StreamSupport;
 
 /**
  * Listener for scheduled tasks of the type {@link GitTypeJob#PERMANENT}.
@@ -27,6 +27,8 @@ public class ListenerGitJobPermanent implements Listener {
     Logger logger = LoggerFactory.getLogger(ListenerGitJobPermanent.class);
 
     final private FieldBuilder<Row> fieldBuilder = new FieldBuilderRow();
+
+    final private JobManager jobManager = new JobManagerImpl();
 
     /**
      * Run a listening scan from different sources.
@@ -40,21 +42,8 @@ public class ListenerGitJobPermanent implements Listener {
         gitJobRepository
                 .findAllByType(GitTypeJob.PERMANENT.name())
                 .onSuccess(ar -> {
-                    final List<GitJobModel> gitJobs = new ArrayList<>();
-
-                    StreamSupport.stream(ar.spliterator(), false)
-                            .forEach(row -> {
-                                try {
-                                    gitJobs.add((GitJobModel) fieldBuilder
-                                            .build(
-                                                    row,
-                                                    GitJobModel.class,
-                                                    List.of("id", "group_", "project", "cron", "next_run_at")));
-                                } catch (NoSuchMethodException | InvocationTargetException | InstantiationException |
-                                         IllegalAccessException e) {
-                                    throw new RuntimeException(e);
-                                }
-                            });
+                    final List<GitJobModel> gitJobs = ListenerGitJobUtils
+                            .getGitJobsFromRowSet(ar, fieldBuilder);
 
                     gitJobs.forEach(gitJob -> {
                         LocalDateTime currentDate = LocalDateTime.now();
@@ -68,7 +57,14 @@ public class ListenerGitJobPermanent implements Listener {
                             if (currentDate.isAfter(gitJob.getNextRunAt())) {
                                 isUpdateRow = true;
 
-                                // TODO: trigger run job
+                                try {
+                                    jobManager.call(
+                                            GitTypeJob.PERMANENT,
+                                            ListenerGitJobUtils.collectProperties(gitJob));
+                                } catch (JobException e) {
+                                    logger.error(e.getMessage());
+                                    throw new RuntimeException(e);
+                                }
                             }
                         }
 
