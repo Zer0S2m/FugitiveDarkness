@@ -1,5 +1,11 @@
 # Change Log
 
+## [Unreleased]
+
+### Added
+
+- Functionality for updating the repository in the form of scheduled tasks.
+
 ## [0.0.7] 2024-04-10
 
 ### Added

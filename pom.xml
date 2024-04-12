@@ -45,6 +45,7 @@
     <maven-surefire-plugin.version>2.22.2</maven-surefire-plugin.version>
     <maven-shade-plugin.version>3.2.4</maven-shade-plugin.version>
     <jackson-databind.version>2.16.0</jackson-databind.version>
+    <jackson-datatype-jsr310.version>2.16.0</jackson-datatype-jsr310.version>
     <flyway-maven-plugin.version>10.2.0</flyway-maven-plugin.version>
     <flyway-database-postgresql.version>10.2.0</flyway-database-postgresql.version>
     <postgresql.version>42.6.0</postgresql.version>
@@ -57,6 +58,8 @@
     <fugitive-darkness-repository.version>0.0.7</fugitive-darkness-repository.version>
     <fugitive-darkness-plugin.version>0.0.7</fugitive-darkness-plugin.version>
     <fugitive-darkness-plugin-vertx-git-provider.version>0.0.7</fugitive-darkness-plugin-vertx-git-provider.version>
+    <fugitive-darkness-plugin-job.version>0.0.7</fugitive-darkness-plugin-job.version>
+    <fugitive-darkness-plugin-vertx-job.version>0.0.7</fugitive-darkness-plugin-vertx-job.version>
   </properties>
 
   <dependencyManagement>
@@ -125,6 +128,11 @@
         <version>${jackson-databind.version}</version>
       </dependency>
       <dependency>
+        <groupId>com.fasterxml.jackson.datatype</groupId>
+        <artifactId>jackson-datatype-jsr310</artifactId>
+        <version>${jackson-datatype-jsr310.version}</version>
+      </dependency>
+      <dependency>
         <groupId>org.flywaydb</groupId>
         <artifactId>flyway-database-postgresql</artifactId>
         <version>${flyway-database-postgresql.version}</version>
@@ -173,6 +181,16 @@
         <groupId>com.zer0s2m.fugitive-darkness</groupId>
         <artifactId>fugitive-darkness-plugin-vertx-git-provider</artifactId>
         <version>${fugitive-darkness-plugin-vertx-git-provider.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.zer0s2m.fugitive-darkness</groupId>
+        <artifactId>fugitive-darkness-plugin-job</artifactId>
+        <version>${fugitive-darkness-plugin-job.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.zer0s2m.fugitive-darkness</groupId>
+        <artifactId>fugitive-darkness-plugin-vertx-job</artifactId>
+        <version>${fugitive-darkness-plugin-vertx-job.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
