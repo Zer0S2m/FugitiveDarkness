@@ -6,6 +6,9 @@ import com.zer0s2m.fugitivedarkness.api.handlers.*;
 import com.zer0s2m.fugitivedarkness.api.handlers.logger.HandlerLogger;
 import com.zer0s2m.fugitivedarkness.api.handlers.validation.*;
 import com.zer0s2m.fugitivedarkness.common.Environment;
+import com.zer0s2m.fugitivedarkness.plugin.vertx.job.Listener;
+import com.zer0s2m.fugitivedarkness.plugin.vertx.job.impl.ListenerGitJobOnetimeUse;
+import com.zer0s2m.fugitivedarkness.plugin.vertx.job.impl.ListenerGitJobPermanent;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Promise;
@@ -31,6 +34,10 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class FugitiveDarknessApp extends AbstractVerticle {
 
     static private final Logger logger = LoggerFactory.getLogger(FugitiveDarknessApp.class);
+
+    private final Listener listenerGitJobOnetimeUse = new ListenerGitJobOnetimeUse();
+
+    private final Listener listenerGitJobPermanent = new ListenerGitJobPermanent();
 
     /**
      * Start app.
@@ -109,7 +116,14 @@ public class FugitiveDarknessApp extends AbstractVerticle {
                 });
     }
 
+    /**
+     * Set listening for scheduled tasks.
+     */
     private void installJobs() {
+        vertx.setPeriodic(1000 * 60, id -> {
+            listenerGitJobOnetimeUse.listen(vertx);
+            listenerGitJobPermanent.listen(vertx);
+        });
     }
 
     /**

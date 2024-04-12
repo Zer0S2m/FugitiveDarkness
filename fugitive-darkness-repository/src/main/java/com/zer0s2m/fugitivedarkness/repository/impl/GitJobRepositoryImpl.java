@@ -8,6 +8,7 @@ import io.vertx.sqlclient.Row;
 import io.vertx.sqlclient.RowSet;
 import io.vertx.sqlclient.Tuple;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.StreamSupport;
 
@@ -41,6 +42,7 @@ public class GitJobRepositoryImpl extends RepositoryImpl implements GitJobReposi
                 .query("""
                         SELECT "git_jobs"."id",
                                "git_jobs"."created_at",
+                               "git_jobs"."next_run_at",
                                "git_jobs"."type",
                                "git_jobs"."cron",
                                "git_jobs"."git_repository_id"
@@ -69,6 +71,32 @@ public class GitJobRepositoryImpl extends RepositoryImpl implements GitJobReposi
                         entity.getGitRepositoryId(),
                         entity.getType(),
                         entity.getCron()));
+    }
+
+    /**
+     * Find all entities by type.
+     *
+     * @param type The type of scheduled tasks.
+     * @return Result.
+     */
+    @Override
+    public Future<RowSet<Row>> findAllByType(String type) {
+        return sqlClient(vertx)
+                .preparedQuery("""
+                        SELECT "gj"."id",
+                               "gj"."created_at",
+                               "gj"."type",
+                               "gj"."cron",
+                               "gj"."git_repository_id",
+                               "gj"."next_run_at",
+                               "gr"."is_local",
+                               "gr"."group_",
+                               "gr".project
+                        FROM "git_jobs" gj
+                                 INNER JOIN "git_repositories" gr ON gr.id = "gj"."git_repository_id"
+                        WHERE "gj"."type" = $1
+                        """)
+                .execute(Tuple.of(type));
     }
 
     /**
@@ -122,6 +150,25 @@ public class GitJobRepositoryImpl extends RepositoryImpl implements GitJobReposi
                         RETURNING *
                         """)
                 .execute(Tuple.of(cron, id));
+    }
+
+    /**
+     * Update the next run at field entity by ID.
+     *
+     * @param nextRunAt New value.
+     * @param id   ID git job.
+     * @return Result.
+     */
+    @Override
+    public Future<RowSet<Row>> updateNextRunAtById(LocalDateTime nextRunAt, long id) {
+        return sqlClient(vertx)
+                .preparedQuery("""
+                        UPDATE "git_jobs"
+                        SET next_run_at = $1
+                        WHERE id = $2
+                        RETURNING *
+                        """)
+                .execute(Tuple.of(nextRunAt, id));
     }
 
     /**

@@ -4,6 +4,8 @@ import com.zer0s2m.fugitivedarkness.plugin.job.*;
 import com.zer0s2m.fugitivedarkness.provider.git.GitRepoManager;
 import com.zer0s2m.fugitivedarkness.provider.git.HelperGitRepo;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 
@@ -12,6 +14,8 @@ import java.io.IOException;
  */
 class GitJobExecutorPermanentImpl extends GitJobExecutorAbstract
         implements GitJobExecutorPermanent {
+
+    Logger logger = LoggerFactory.getLogger(GitJobExecutorPermanentImpl.class);
 
     @Override
     public void run() {
@@ -22,6 +26,7 @@ class GitJobExecutorPermanentImpl extends GitJobExecutorAbstract
                     .create()
                     .gFetch(group, project);
         } catch (JobException | IOException | GitAPIException e) {
+            logger.error(e.getMessage());
             throw new RuntimeException(e);
         }
     }

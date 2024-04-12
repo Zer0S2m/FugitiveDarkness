@@ -8,6 +8,8 @@ import com.zer0s2m.fugitivedarkness.plugin.job.JobNotFoundGitRepositoryException
 import com.zer0s2m.fugitivedarkness.provider.git.GitRepoManager;
 import com.zer0s2m.fugitivedarkness.provider.git.HelperGitRepo;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 
@@ -16,6 +18,8 @@ import java.io.IOException;
  */
 class GitJobExecutorOnetimeUseImpl extends GitJobExecutorAbstract
         implements GitJobExecutorOnetimeUse {
+
+    Logger logger = LoggerFactory.getLogger(GitJobExecutorOnetimeUseImpl.class);
 
     @Override
     public void run() {
@@ -26,6 +30,7 @@ class GitJobExecutorOnetimeUseImpl extends GitJobExecutorAbstract
                     .create()
                     .gFetch(group, project);
         } catch (JobException | IOException | GitAPIException e) {
+            logger.error(e.getMessage());
             throw new RuntimeException(e);
         }
     }

@@ -15,6 +15,7 @@
   <modules>
     <module>fugitive-darkness-plugin-job</module>
     <module>fugitive-darkness-plugin-vertx-git-provider</module>
+    <module>fugitive-darkness-plugin-vertx-job</module>
   </modules>
 
   <properties>
