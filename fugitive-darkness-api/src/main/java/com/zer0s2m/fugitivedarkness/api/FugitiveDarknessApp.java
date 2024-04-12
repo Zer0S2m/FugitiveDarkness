@@ -322,6 +322,7 @@ public class FugitiveDarknessApp extends AbstractVerticle {
                 .handler(ControllerApiGitJobCreate.GitJobCreateValidation.validator(vertx))
                 .handler(new CronValidation("cron"))
                 .handler(new GitRepoValidationExists())
+                .handler(new ControllerApiGitJobCreate.GitRepoValidationIsLocal())
                 .handler(new ControllerApiGitJobCreate())
                 .handler(new HandlerLogger.HandlerLoggerResponse());
         router
