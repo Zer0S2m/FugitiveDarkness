@@ -7,6 +7,7 @@ import com.zer0s2m.fugitivedarkness.plugin.job.JobException;
 import com.zer0s2m.fugitivedarkness.plugin.job.JobManager;
 import com.zer0s2m.fugitivedarkness.plugin.job.Rule;
 import com.zer0s2m.fugitivedarkness.plugin.job.impl.JobManagerImpl;
+import com.zer0s2m.fugitivedarkness.plugin.job.rule.RuleISRepoExists;
 import com.zer0s2m.fugitivedarkness.plugin.job.rule.RuleIsLocalGitRepo;
 import com.zer0s2m.fugitivedarkness.plugin.job.support.CronExpression;
 import com.zer0s2m.fugitivedarkness.plugin.vertx.job.Listener;
@@ -34,8 +35,11 @@ public class ListenerGitJobPermanent implements Listener {
 
     final private Rule ruleIsLocalGitRepo = new RuleIsLocalGitRepo();
 
+    final private Rule ruleIsRepoExists = new RuleISRepoExists();
+
     {
         ruleIsLocalGitRepo.setTypeTask(GitTypeJob.PERMANENT);
+        ruleIsRepoExists.setTypeTask(GitTypeJob.PERMANENT);
     }
 
     /**
@@ -68,6 +72,7 @@ public class ListenerGitJobPermanent implements Listener {
                                 try {
                                     jobManager.clearRule();
                                     jobManager.addRule(ruleIsLocalGitRepo);
+                                    jobManager.addRule(ruleIsRepoExists);
 
                                     jobManager.call(
                                             GitTypeJob.PERMANENT,

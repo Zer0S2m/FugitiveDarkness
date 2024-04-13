@@ -19,7 +19,6 @@ public interface JobManager extends JobRunnableRule {
      * @param properties A set of properties required to run a specific scheduled task.
      * @throws JobException                  A general exception.
      * @throws JobMissingPropertiesException There are no required parameters to start a scheduled task.
-     * @throws JobNotFoundExecutorException  The scheduled task type was not found.
      */
     void call(Object type, Map<String, Object> properties) throws JobException;
 

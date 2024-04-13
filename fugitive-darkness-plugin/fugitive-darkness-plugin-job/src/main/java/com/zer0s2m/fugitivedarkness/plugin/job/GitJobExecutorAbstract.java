@@ -32,11 +32,4 @@ public abstract class GitJobExecutorAbstract implements GitJobExecutor {
         this.project = project;
     }
 
-    /**
-     * Check the repository for its existence.
-     *
-     * @throws JobNotFoundGitRepositoryException The git repository was not found.
-     */
-    protected abstract void checkExistsGitRepository() throws JobException;
-
 }
