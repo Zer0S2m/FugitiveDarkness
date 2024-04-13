@@ -9,6 +9,10 @@
     - Rules for running scheduled tasks.
 - Functionality for updating the repository in the form of scheduled tasks.
 
+### Security
+
+- The postgresql package has been updated - CVE-2024-1597
+
 ## [0.0.7] 2024-04-10
 
 ### Added

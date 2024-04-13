@@ -48,7 +48,7 @@
     <jackson-datatype-jsr310.version>2.16.0</jackson-datatype-jsr310.version>
     <flyway-maven-plugin.version>10.2.0</flyway-maven-plugin.version>
     <flyway-database-postgresql.version>10.2.0</flyway-database-postgresql.version>
-    <postgresql.version>42.6.0</postgresql.version>
+    <postgresql.version>42.7.3</postgresql.version>
     <scram-common.version>2.1</scram-common.version>
     <scram-client.version>2.1</scram-client.version>
     <fugitive-darkness-common.version>0.0.7</fugitive-darkness-common.version>
