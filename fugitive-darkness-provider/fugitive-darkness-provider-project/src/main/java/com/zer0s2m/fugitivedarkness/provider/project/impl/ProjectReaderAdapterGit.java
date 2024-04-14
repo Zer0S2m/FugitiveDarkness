@@ -67,9 +67,10 @@ public class ProjectReaderAdapterGit extends ProjectReaderAdapterAbstract implem
                     int treeIndex = treeWalk.addTree(treeParser);
                     treeWalk.setRecursive(true);
 
-                    AbstractTreeIterator it = treeWalk.getTree(treeIndex, AbstractTreeIterator.class);
-
-                    paths.add(it.getEntryPathString());
+                    while (treeWalk.next()) {
+                        AbstractTreeIterator it = treeWalk.getTree(treeIndex, AbstractTreeIterator.class);
+                        paths.add(it.getEntryPathString());
+                    }
                 }
             }
         }

@@ -30,14 +30,14 @@ public class ProjectReaderAdapterLocal extends ProjectReaderAdapterAbstract impl
      * @throws IOException                              If an IO error occurred.
      */
     @Override
+    @SuppressWarnings("resource")
     public Stream<String> getStream(Map<String, Object> properties) throws ProjectException, IOException {
         checkProperties(properties);
 
         final Path source = Path.of((String) properties.get("source"));
 
-        try (Stream<Path> walkDirectory = Files.walk(source)) {
-            return walkDirectory.map(Path::toString);
-        }
+        Stream<Path> walkDirectory = Files.walk(source);
+        return walkDirectory.map(Path::toString);
     }
 
     @Override
