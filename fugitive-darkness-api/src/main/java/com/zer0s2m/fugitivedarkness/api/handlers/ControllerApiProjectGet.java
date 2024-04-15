@@ -2,8 +2,7 @@ package com.zer0s2m.fugitivedarkness.api.handlers;
 
 import com.zer0s2m.fugitivedarkness.common.dto.ContainerProjectGet;
 import com.zer0s2m.fugitivedarkness.models.GitRepoModel;
-import com.zer0s2m.fugitivedarkness.provider.project.ProjectManager;
-import com.zer0s2m.fugitivedarkness.provider.project.ProjectReader;
+import com.zer0s2m.fugitivedarkness.provider.project.*;
 import com.zer0s2m.fugitivedarkness.repository.GitRepoRepository;
 import com.zer0s2m.fugitivedarkness.repository.impl.GitRepoRepositoryImpl;
 import io.netty.handler.codec.http.HttpResponseStatus;
@@ -54,6 +53,9 @@ public class ControllerApiProjectGet implements Handler<RoutingContext> {
                 .onSuccess(ar -> {
                     gitRepoRepository.closeClient();
 
+                    JsonObject object = new JsonObject();
+                    object.put("success", true);
+
                     final GitRepoModel gitRepo = gitRepoRepository.mapTo(ar).get(0);
 
                     final ProjectManager projectManager;
@@ -67,11 +69,15 @@ public class ControllerApiProjectGet implements Handler<RoutingContext> {
                                 gitRepo.getGroup(), gitRepo.getProject());
                     }
 
-                    Collection<String> titleFiles = projectManager.getAllFilesProject(projectReader);
+                    Collection<FileProject> fileProjects = projectManager.getAllFilesProject(projectReader);
 
-                    JsonObject object = new JsonObject();
-                    object.put("success", true);
-                    object.put("files", titleFiles);
+                    if (containerProjectGet.isTreeStructure()) {
+                        TreeNodeFileObject fileProjectTree = projectManager
+                                .collectTreeFilesProject(fileProjects);
+                        object.put("files", fileProjectTree.toDTO());
+                    } else {
+                        object.put("files", fileProjects);
+                    }
 
                     event.response()
                             .putHeader(

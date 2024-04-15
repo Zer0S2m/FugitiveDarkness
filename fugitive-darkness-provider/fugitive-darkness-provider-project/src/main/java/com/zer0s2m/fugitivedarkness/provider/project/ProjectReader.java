@@ -23,7 +23,7 @@ public interface ProjectReader {
      *                </ul>
      * @return The name of the file objects.
      */
-    Collection<String> read(ProjectReaderAdapterAbstract adapter);
+    Collection<FileProject> read(ProjectReaderAdapterAbstract adapter);
 
     void setProperties(Map<String, Object> properties);
 

@@ -16,12 +16,19 @@ import java.util.Collection;
 public interface ProjectManager {
 
     /**
-     * Get all the names of the files in the project.
+     * Get all the information about the file objects in the project.
      *
      * @param reader A reader for a specific type of project.
-     * @return The name of the files.
+     * @return Information about the file objects in the project.
      */
-    Collection<String> getAllFilesProject(ProjectReader reader);
+    Collection<FileProject> getAllFilesProject(ProjectReader reader);
+
+    /**
+     *
+     * @param filesProject
+     * @return
+     */
+    TreeNodeFileObject collectTreeFilesProject(Collection<FileProject> filesProject);
 
     void setAdapterReader(ProjectReaderAdapterAbstract adapterReader);
 

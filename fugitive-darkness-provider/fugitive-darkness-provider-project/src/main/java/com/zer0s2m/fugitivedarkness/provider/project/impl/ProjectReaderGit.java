@@ -1,5 +1,6 @@
 package com.zer0s2m.fugitivedarkness.provider.project.impl;
 
+import com.zer0s2m.fugitivedarkness.provider.project.FileProject;
 import com.zer0s2m.fugitivedarkness.provider.project.ProjectException;
 import com.zer0s2m.fugitivedarkness.provider.project.ProjectReader;
 import com.zer0s2m.fugitivedarkness.provider.project.ProjectReaderAdapterAbstract;
@@ -28,8 +29,8 @@ public class ProjectReaderGit implements ProjectReader {
      * @return The name of the file objects.
      */
     @Override
-    public Collection<String> read(ProjectReaderAdapterAbstract adapter) {
-        try (Stream<String> streamProjectDirectory = adapter.getStream(properties)) {
+    public Collection<FileProject> read(ProjectReaderAdapterAbstract adapter) {
+        try (Stream<FileProject> streamProjectDirectory = adapter.getStream(properties)) {
             return streamProjectDirectory.toList();
         } catch (ProjectException | IOException e) {
             logger.error(e.getMessage());

@@ -1,5 +1,6 @@
 package com.zer0s2m.fugitivedarkness.provider.project.impl;
 
+import com.zer0s2m.fugitivedarkness.provider.project.FileProject;
 import com.zer0s2m.fugitivedarkness.provider.project.ProjectException;
 import com.zer0s2m.fugitivedarkness.provider.project.ProjectReader;
 import com.zer0s2m.fugitivedarkness.provider.project.ProjectReaderAdapterAbstract;
@@ -8,6 +9,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
@@ -28,9 +30,11 @@ public class ProjectReaderLocal implements ProjectReader {
      * @return The name of the file objects.
      */
     @Override
-    public Collection<String> read(ProjectReaderAdapterAbstract adapter) {
-        try (Stream<String> streamProjectDirectory = adapter.getStream(properties)) {
-            return streamProjectDirectory.toList();
+    public Collection<FileProject> read(ProjectReaderAdapterAbstract adapter) {
+        try (Stream<FileProject> streamProjectDirectory = adapter.getStream(properties)) {
+            List<FileProject> fileProjects = new java.util.ArrayList<>(streamProjectDirectory.toList());
+            fileProjects.remove(0);
+            return fileProjects;
         } catch (ProjectException | IOException e) {
             logger.error(e.getMessage());
             throw new RuntimeException(e);

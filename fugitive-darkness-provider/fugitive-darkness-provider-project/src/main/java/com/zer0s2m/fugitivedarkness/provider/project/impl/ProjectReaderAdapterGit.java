@@ -2,10 +2,7 @@ package com.zer0s2m.fugitivedarkness.provider.project.impl;
 
 import com.zer0s2m.fugitivedarkness.provider.git.HelperGitRepo;
 import com.zer0s2m.fugitivedarkness.provider.git.SearchEngineGitUtils;
-import com.zer0s2m.fugitivedarkness.provider.project.ProjectException;
-import com.zer0s2m.fugitivedarkness.provider.project.ProjectMissingPropertiesAdapterException;
-import com.zer0s2m.fugitivedarkness.provider.project.ProjectReaderAdapter;
-import com.zer0s2m.fugitivedarkness.provider.project.ProjectReaderAdapterAbstract;
+import com.zer0s2m.fugitivedarkness.provider.project.*;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.ObjectReader;
@@ -19,9 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Stream;
 
 /**
@@ -31,20 +26,21 @@ public class ProjectReaderAdapterGit extends ProjectReaderAdapterAbstract implem
 
     Logger logger = LoggerFactory.getLogger(ProjectReaderAdapterGit.class);
 
+    private final Collection<FileProject> fileProjects = new ArrayList<>();
+
     /**
-     * Get a sequence in the form of file names for further iteration.
+     * Get the sequence in the form of information about file objects for further iteration.
      *
      * @param properties Additional information for starting the adapter.
-     * @return A sequence in the form of file names for further iteration.
+     * @return A sequence in the form of information about file objects for further iteration.
      * @throws ProjectException                         The general exception is for interacting with projects.
      * @throws ProjectMissingPropertiesAdapterException There are no required parameters to start the adapter.
      * @throws IOException                              If an IO error occurred.
      */
     @Override
-    public Stream<String> getStream(Map<String, Object> properties) throws ProjectException, IOException {
+    public Stream<FileProject> getStream(Map<String, Object> properties) throws ProjectException, IOException {
         checkProperties(properties);
 
-        final Collection<String> paths = new ArrayList<>();
         final String group = (String) properties.get("group");
         final String project = (String) properties.get("project");
 
@@ -69,13 +65,17 @@ public class ProjectReaderAdapterGit extends ProjectReaderAdapterAbstract implem
 
                     while (treeWalk.next()) {
                         AbstractTreeIterator it = treeWalk.getTree(treeIndex, AbstractTreeIterator.class);
-                        paths.add(it.getEntryPathString());
+                        findDirectoryAndPushFilesProject(it.getEntryPathString());
+                        fileProjects.add(new FileProject(
+                                it.getEntryPathString(),
+                                true,
+                                false));
                     }
                 }
             }
         }
 
-        return paths.stream();
+        return fileProjects.stream();
     }
 
     @Override
@@ -93,6 +93,53 @@ public class ProjectReaderAdapterGit extends ProjectReaderAdapterAbstract implem
             String mgs = "There are no required parameters to start the adapter " + missingProperties;
             logger.debug(mgs);
             throw new ProjectMissingPropertiesAdapterException(mgs);
+        }
+    }
+
+    private void findDirectoryAndPushFilesProject(String entryPath) {
+        List<String> entryPathSplit = new ArrayList<>(Arrays.asList(entryPath.split("/")));
+        entryPathSplit.removeLast(); // Delete file
+
+        if (!entryPathSplit.isEmpty()) {
+            if (entryPathSplit.size() == 1) {
+                final FileProject fileProject = new FileProject(
+                        String.join("/", entryPathSplit),
+                        false,
+                        true);
+
+                if (!fileProjects.contains(fileProject)) {
+                    fileProjects.add(fileProject);
+                }
+            } else {
+                // For example, if the path is as follows - test_1/test_2/test_file.example
+                StringBuilder stringBuilder = new StringBuilder();
+
+                entryPathSplit.forEach(partEntryPathSplit -> {
+                    final FileProject fileProject;
+
+                    if (!stringBuilder.isEmpty()) {
+                        fileProject = new FileProject(
+                                stringBuilder
+                                        .append(partEntryPathSplit)
+                                        .toString(),
+                                false,
+                                true);
+                    } else {
+                        fileProject = new FileProject(
+                                partEntryPathSplit,
+                                false,
+                                true);
+                    }
+
+                    if (!fileProjects.contains(fileProject)) {
+                        fileProjects.add(fileProject);
+                    }
+
+                    stringBuilder
+                            .append(partEntryPathSplit)
+                            .append("/");
+                });
+            }
         }
     }
 
