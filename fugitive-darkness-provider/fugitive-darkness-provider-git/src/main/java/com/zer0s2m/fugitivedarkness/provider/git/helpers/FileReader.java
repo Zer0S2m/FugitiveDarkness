@@ -8,8 +8,17 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+/**
+ * Utilities for working with files.
+ */
 public interface FileReader {
 
+    /**
+     * Read the file and return the lines in an ordered format.
+     *
+     * @param source The original path to the file.
+     * @return Ordered rows.
+     */
     static List<String> read(Path source) {
         List<String> lines = new ArrayList<>();
 

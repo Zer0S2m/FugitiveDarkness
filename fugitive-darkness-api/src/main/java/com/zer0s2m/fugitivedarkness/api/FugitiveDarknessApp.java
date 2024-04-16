@@ -91,7 +91,8 @@ public class FugitiveDarknessApp extends AbstractVerticle {
                                 \t\u001b[43mPUT\u001b[0m    [/api/v1/git/job/:ID]
                                 \t\u001b[44mGET\u001b[0m    [/api/v1/docx]
                                 \t\u001b[41mDELETE\u001b[0m [/api/v1/docx/:ID]
-                                \t\u001b[42mPOST\u001b[0m   [/api/v1/docx/upload]""");
+                                \t\u001b[42mPOST\u001b[0m   [/api/v1/docx/upload]
+                                \t\u001b[42mPOST\u001b[0m   [/api/v1/project/files]""");
                         logger.info("""
                                 Setting ENV:
                                 \t\u001B[45mFD_ROOT_PATH\u001b[0m      - %s
@@ -360,6 +361,17 @@ public class FugitiveDarknessApp extends AbstractVerticle {
                         .setBodyLimit(-1)
                         .setHandleFileUploads(true))
                 .handler(new ControllerApiDocxUpload())
+                .handler(new HandlerLogger.HandlerLoggerResponse());
+
+        // PROJECT
+        router
+                .post("/api/v1/project/files")
+                .handler(BodyHandler
+                        .create()
+                        .setHandleFileUploads(false))
+                .handler(ControllerApiProjectGet.GetValidation.validator(vertx))
+                .handler(new GitRepoValidationExists())
+                .handler(new ControllerApiProjectGet())
                 .handler(new HandlerLogger.HandlerLoggerResponse());
     }
 
