@@ -28,9 +28,9 @@ import static io.vertx.json.schema.common.dsl.Schemas.*;
 /**
  * The request handler for getting the file structure of the project.
  */
-public class ControllerApiProjectGet implements Handler<RoutingContext> {
+public final class ControllerApiProjectFilesGet implements Handler<RoutingContext> {
 
-    static private final Logger logger = LoggerFactory.getLogger(ControllerApiProjectGet.class);
+    static private final Logger logger = LoggerFactory.getLogger(ControllerApiProjectFilesGet.class);
 
     /**
      * Something has happened, so handle it.

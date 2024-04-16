@@ -9,7 +9,9 @@ import org.eclipse.jgit.revwalk.RevCommit;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Interface for implementing a service that handles git repositories.
@@ -152,6 +154,15 @@ public interface GitRepoManager {
      * @return The last commit.
      */
     RevCommit gLastCommitOfFile(Path source, String file);
+
+    /**
+     * Get all commits related to files.
+     *
+     * @param source The source path to the repository.
+     * @param files  Paths are relative paths to files in the form of a collection.
+     * @return File commits.
+     */
+    Map<String, Iterable<RevCommit>> gGetAllCommitsOfFiles(Path source, Collection<String> files);
 
     static GitRepoManager create() {
         return new GitRepoManagerImpl();

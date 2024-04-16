@@ -21,8 +21,7 @@ import org.slf4j.LoggerFactory;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -451,6 +450,36 @@ public class GitRepoManagerImpl implements GitRepoManager {
         } catch (IOException | GitAPIException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    /**
+     * Get all commits related to files.
+     *
+     * @param source The source path to the repository.
+     * @param files  Paths are relative paths to files in the form of a collection.
+     * @return File commits.
+     */
+    @Override
+    public Map<String, Iterable<RevCommit>> gGetAllCommitsOfFiles(Path source, Collection<String> files) {
+        final Map<String, Iterable<RevCommit>> commitsFiles = new HashMap<>();
+
+        try (final Git git = Git.open(source.toFile())) {
+            files.forEach(file -> {
+                try {
+                    Iterable<RevCommit> commits = git
+                            .log()
+                            .addPath(file)
+                            .call();
+                    commitsFiles.put(file, commits);
+                } catch (GitAPIException e) {
+                    throw new RuntimeException(e);
+                }
+            });
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        return commitsFiles;
     }
 
 }

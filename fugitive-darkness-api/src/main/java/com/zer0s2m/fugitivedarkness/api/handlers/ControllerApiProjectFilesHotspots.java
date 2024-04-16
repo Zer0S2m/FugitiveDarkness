@@ -1,9 +1,10 @@
 package com.zer0s2m.fugitivedarkness.api.handlers;
 
-import com.zer0s2m.fugitivedarkness.common.dto.ContainerLastCommitFileProject;
+import com.zer0s2m.fugitivedarkness.common.dto.ContainerProjectControlGitRepository;
 import com.zer0s2m.fugitivedarkness.models.GitRepoModel;
-import com.zer0s2m.fugitivedarkness.provider.project.FileLastCommitInfo;
+import com.zer0s2m.fugitivedarkness.provider.project.FileProject;
 import com.zer0s2m.fugitivedarkness.provider.project.ProjectManager;
+import com.zer0s2m.fugitivedarkness.provider.project.ProjectReader;
 import com.zer0s2m.fugitivedarkness.repository.GitRepoRepository;
 import com.zer0s2m.fugitivedarkness.repository.impl.GitRepoRepositoryImpl;
 import io.netty.handler.codec.http.HttpResponseStatus;
@@ -23,14 +24,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.nio.file.Path;
+import java.util.Collection;
 
 import static io.vertx.json.schema.common.dsl.Schemas.*;
 
-public final class ControllerApiProjectLastCommitFile implements Handler<RoutingContext> {
+public final class ControllerApiProjectFilesHotspots implements Handler<RoutingContext> {
 
-    static private final Logger logger = LoggerFactory.getLogger(ControllerApiProjectLastCommitFile.class);
-
-    private final ProjectManager projectManager = ProjectManager.create();
+    static private final Logger logger = LoggerFactory.getLogger(ControllerApiProjectFilesHotspots.class);
 
     /**
      * Something has happened, so handle it.
@@ -39,32 +39,49 @@ public final class ControllerApiProjectLastCommitFile implements Handler<Routing
      */
     @Override
     public void handle(RoutingContext event) {
-        logger.info("The beginning of receiving the last commit of the file");
+        logger.info("The beginning of getting hotspots");
 
-        final ContainerLastCommitFileProject commitFileProject = event
+        final ContainerProjectControlGitRepository controlGitRepository = event
                 .body()
                 .asJsonObject()
-                .mapTo(ContainerLastCommitFileProject.class);
+                .mapTo(ContainerProjectControlGitRepository.class);
 
         final GitRepoRepository gitRepoRepository = new GitRepoRepositoryImpl(event.vertx());
 
         gitRepoRepository
-                .findById(commitFileProject.gitRepositoryId())
+                .findById(controlGitRepository.gitRepositoryId())
                 .onSuccess(ar -> {
                     gitRepoRepository.closeClient();
-                    final GitRepoModel gitRepo = gitRepoRepository.mapTo(ar).get(0);
-                    final Path sourceGitRepo = Path.of(gitRepo.getSource());
 
-                    FileLastCommitInfo lastCommitInfo = projectManager.lastCommitOfFile(
-                            sourceGitRepo, commitFileProject.file());
+                    final GitRepoModel gitRepo = gitRepoRepository.mapTo(ar).get(0);
+
+                    final ProjectManager projectManager;
+                    final ProjectReader projectReader;
+                    if (gitRepo.getGroup().equals("LOCAL")) {
+                        projectManager = ProjectManager.createLocal();
+                        projectReader = ProjectReader.createLocal(gitRepo.getSource());
+                    } else {
+                        projectManager = ProjectManager.createGit();
+                        projectReader = ProjectReader.createGit(
+                                gitRepo.getGroup(), gitRepo.getProject());
+                    }
+
+                    Collection<FileProject> fileProjects = projectManager.getAllFilesProject(projectReader);
+                    // TODO: Transfer all the hard work to Jobs
+//                    projectManager.designHotspots(
+//                            Path.of(gitRepo.getSource()),
+//                            fileProjects
+//                                    .stream()
+//                                    .filter(FileProject::isFile)
+//                                    .map(FileProject::path)
+//                                    .toList()
+//                    );
 
                     JsonObject object = new JsonObject();
                     object.put("success", true);
-                    object.put("info", lastCommitInfo);
+                    object.put("hotspots", null);
 
-                    event
-                            .response()
-                            .setChunked(true)
+                    event.response()
                             .putHeader(
                                     HttpHeaders.CONTENT_LENGTH,
                                     String.valueOf(object.toString().length()))
@@ -72,7 +89,7 @@ public final class ControllerApiProjectLastCommitFile implements Handler<Routing
                             .setStatusCode(HttpResponseStatus.OK.code())
                             .write(object.toString());
 
-                    logger.info("The end of receiving the last commit of the file");
+                    logger.info("The end of getting hotspots");
 
                     event.next();
                 })
@@ -90,7 +107,7 @@ public final class ControllerApiProjectLastCommitFile implements Handler<Routing
     /**
      * TODO: Move to {@link SchemaRepository}.
      */
-    public static class LastCommitFileValidation {
+    public static class Validation {
 
         /**
          * Get validation handler for incoming body.
@@ -103,8 +120,7 @@ public final class ControllerApiProjectLastCommitFile implements Handler<Routing
                     .create(SchemaParser.createDraft7SchemaParser(
                             SchemaRouter.create(vertx, new SchemaRouterOptions())))
                     .body(Bodies.json(objectSchema()
-                            .requiredProperty("gitRepositoryId", intSchema())
-                            .requiredProperty("file", stringSchema())))
+                            .requiredProperty("gitRepositoryId", intSchema())))
                     .build();
         }
 

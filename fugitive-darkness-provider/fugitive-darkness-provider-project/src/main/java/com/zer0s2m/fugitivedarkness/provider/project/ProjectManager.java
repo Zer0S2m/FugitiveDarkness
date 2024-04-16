@@ -24,7 +24,14 @@ public interface ProjectManager {
      */
     Collection<FileProject> getAllFilesProject(ProjectReader reader);
 
-    void designHotspots();
+    /**
+     * Get system design hotspots - the largest number of commits in files.
+     *
+     * @param sourceGitRepository The source path to the repository.
+     * @param files               Relative file paths.
+     * @return Information about the number of commits in the files.
+     */
+    Collection<FileHotspotProject> designHotspots(Path sourceGitRepository, Collection<String> files);
 
     /**
      * Get information from the last commit in a specific file.

@@ -11,6 +11,7 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.StreamSupport;
 
 public class ProjectManagerImpl implements ProjectManager {
 
@@ -27,9 +28,30 @@ public class ProjectManagerImpl implements ProjectManager {
         return reader.read(getAdapterReader());
     }
 
+    /**
+     * Get system design hotspots - the largest number of commits in files.
+     *
+     * @param sourceGitRepository The source path to the repository.
+     * @param files               Relative file paths.
+     * @return Information about the number of commits in the files.
+     */
     @Override
-    public void designHotspots() {
-        // TODO
+    public Collection<FileHotspotProject> designHotspots(Path sourceGitRepository, Collection<String> files) {
+        Collection<FileHotspotProject> fileHotspotProjects = new ArrayList<>();
+        GitRepoManager gitRepoManager = GitRepoManager.create();
+
+        Map<String, Iterable<RevCommit>> commitsFiles = gitRepoManager.gGetAllCommitsOfFiles(
+                sourceGitRepository, files);
+
+        commitsFiles.forEach((file, commitsIterable) -> {
+            long countCommits = StreamSupport.stream(commitsIterable.spliterator(), false).count();
+            fileHotspotProjects.add(new FileHotspotProject(
+                    file,
+                    countCommits
+            ));
+        });
+
+        return fileHotspotProjects;
     }
 
     /**
