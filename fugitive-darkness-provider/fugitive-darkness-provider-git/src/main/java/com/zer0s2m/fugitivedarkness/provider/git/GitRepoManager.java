@@ -4,6 +4,7 @@ import com.zer0s2m.fugitivedarkness.common.Environment;
 import com.zer0s2m.fugitivedarkness.provider.git.impl.GitRepoManagerImpl;
 import org.eclipse.jgit.api.CloneCommand;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.revwalk.RevCommit;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -142,6 +143,15 @@ public interface GitRepoManager {
      * @return Search result in git repository.
      */
     List<ContainerInfoSearchGitRepo> searchByGrepVirtualThreads_jgit(GitRepoFilterSearch filterSearch);
+
+    /**
+     * Get the latest commit in a specific file.
+     *
+     * @param source The source path to the repository.
+     * @param file   The path to the file where the last commit will be searched.
+     * @return The last commit.
+     */
+    RevCommit gLastCommitOfFile(Path source, String file);
 
     static GitRepoManager create() {
         return new GitRepoManagerImpl();

@@ -4,6 +4,7 @@ import com.zer0s2m.fugitivedarkness.provider.project.impl.ProjectManagerImpl;
 import com.zer0s2m.fugitivedarkness.provider.project.impl.ProjectReaderAdapterGit;
 import com.zer0s2m.fugitivedarkness.provider.project.impl.ProjectReaderAdapterLocal;
 
+import java.nio.file.Path;
 import java.util.Collection;
 
 /**
@@ -23,15 +24,37 @@ public interface ProjectManager {
      */
     Collection<FileProject> getAllFilesProject(ProjectReader reader);
 
+    void designHotspots();
+
     /**
+     * Get information from the last commit in a specific file.
      *
-     * @param filesProject
-     * @return
+     * @param sourceGitRepository The source path to the repository.
+     * @param file                The path to the file where the last commit will be searched.
+     * @return Information from the last commit.
+     */
+    FileLastCommitInfo lastCommitOfFile(Path sourceGitRepository, String file);
+
+    /**
+     * Assemble the file structure as a tree structure.
+     *
+     * @param filesProject The project files are in the form of a collection.
+     * @return The tree structure of the project files.
      */
     TreeNodeFileObject collectTreeFilesProject(Collection<FileProject> filesProject);
 
+    /**
+     * Install the adapter for the git repository reader.
+     *
+     * @param adapterReader Adapter for the git repository reader.
+     */
     void setAdapterReader(ProjectReaderAdapterAbstract adapterReader);
 
+    /**
+     * Get an adapter for the git repository reader.
+     *
+     * @return Adapter for the git repository reader.
+     */
     ProjectReaderAdapterAbstract getAdapterReader();
 
     static ProjectManager create() {

@@ -1,7 +1,14 @@
 package com.zer0s2m.fugitivedarkness.provider.project.impl;
 
+import com.zer0s2m.fugitivedarkness.provider.git.GitRepoManager;
 import com.zer0s2m.fugitivedarkness.provider.project.*;
+import org.eclipse.jgit.revwalk.RevCommit;
 
+import java.nio.file.Path;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -21,16 +28,84 @@ public class ProjectManagerImpl implements ProjectManager {
     }
 
     @Override
+    public void designHotspots() {
+        // TODO
+    }
+
+    /**
+     * Get information from the last commit in a specific file.
+     *
+     * @param sourceGitRepository The source path to the repository.
+     * @param file                The path to the file where the last commit will be searched.
+     * @return Information from the last commit.
+     */
+    @Override
+    public FileLastCommitInfo lastCommitOfFile(Path sourceGitRepository, String file) {
+        GitRepoManager gitRepoManager = GitRepoManager.create();
+
+        RevCommit commit = gitRepoManager.gLastCommitOfFile(
+                sourceGitRepository, file);
+
+        return infoCommitOfFile(commit);
+    }
+
+    /**
+     * Collect information from the commit.
+     *
+     * @param commit The commit.
+     * @return Information from the commit.
+     */
+    private FileLastCommitInfo infoCommitOfFile(RevCommit commit) {
+        String justTheAuthorNoTime = commit
+                .getAuthorIdent()
+                .toExternalString()
+                .split(">")[0] + ">";
+        String[] justTheAuthorNoTimeSplit = justTheAuthorNoTime.split(" ");
+        ZoneId zoneId = commit.getAuthorIdent().getTimeZone().toZoneId();
+        Instant commitInstant = Instant.ofEpochSecond(commit.getCommitTime());
+        ZonedDateTime authorDateTime = ZonedDateTime.ofInstant(commitInstant, zoneId);
+        String gitDateTimeFormatString = "EEE MMM dd HH:mm:ss yyyy Z";
+        String formattedDate = authorDateTime.format(DateTimeFormatter.ofPattern(gitDateTimeFormatString));
+        String tabbedCommitMessage =
+                String.join("", commit
+                        .getFullMessage()
+                        .split("\\r?\\n"));
+
+        return new FileLastCommitInfo(
+                commit.getName(),
+                justTheAuthorNoTimeSplit[0],
+                justTheAuthorNoTimeSplit[1],
+                formattedDate,
+                tabbedCommitMessage);
+    }
+
+    /**
+     * Assemble the file structure as a tree structure.
+     *
+     * @param filesProject The project files are in the form of a collection.
+     * @return The tree structure of the project files.
+     */
+    @Override
     public TreeNodeFileObject collectTreeFilesProject(Collection<FileProject> filesProject) {
         ProjectManagerTreeNodeFileObject nodeFileObject = new ProjectManagerTreeNodeFileObject();
         return nodeFileObject.iter(filesProject);
     }
 
+    /**
+     * Install the adapter for the git repository reader.
+     *
+     * @param adapterReader Adapter for the git repository reader.
+     */
     @Override
     public void setAdapterReader(ProjectReaderAdapterAbstract adapterReader) {
         this.adapterReader = adapterReader;
     }
 
+    /**
+     * Get an adapter for the git repository reader.
+     *
+     * @return Adapter for the git repository reader.
+     */
     @Override
     public ProjectReaderAdapterAbstract getAdapterReader() {
         return adapterReader;

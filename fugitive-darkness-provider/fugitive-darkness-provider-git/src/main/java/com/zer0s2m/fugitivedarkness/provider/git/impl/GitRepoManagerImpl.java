@@ -13,6 +13,7 @@ import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.ObjectLoader;
 import org.eclipse.jgit.lib.ObjectReader;
 import org.eclipse.jgit.lib.Repository;
+import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.treewalk.TreeWalk;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -141,6 +142,8 @@ public class GitRepoManagerImpl implements GitRepoManager {
      */
     @Override
     public List<ContainerInfoFileContent> gShowFile(String group, String project, String file) throws IOException {
+        // TODO: Get the content of a file in a local project
+
         final Path source = HelperGitRepo.getSourceGitRepository(group, project);
 
         try (final Repository repository = Git.open(source.toFile())
@@ -426,6 +429,27 @@ public class GitRepoManagerImpl implements GitRepoManager {
             commandGrep.setContextAfter(filterSearch.getContextAfter());
         } else {
             commandGrep.setContext(filterSearch.getContext());
+        }
+    }
+
+    /**
+     * Get the latest commit in a specific file.
+     *
+     * @param source The source path to the repository.
+     * @param file   The path to the file where the last commit will be searched.
+     * @return The last commit.
+     */
+    @Override
+    public RevCommit gLastCommitOfFile(Path source, String file) {
+        try (final Git git = Git.open(source.toFile())) {
+            return git
+                    .log()
+                    .addPath(file)
+                    .call()
+                    .iterator()
+                    .next();
+        } catch (IOException | GitAPIException e) {
+            throw new RuntimeException(e);
         }
     }
 

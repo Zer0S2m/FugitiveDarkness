@@ -42,7 +42,7 @@ public class ProjectReaderAdapterLocal extends ProjectReaderAdapterAbstract impl
                 ))
                 .map(fileProject -> fileProject.copy(
                         fileProject.path().replace(
-                                source.toString() + "/",
+                                source + "/",
                                 "")
                 ));
     }
