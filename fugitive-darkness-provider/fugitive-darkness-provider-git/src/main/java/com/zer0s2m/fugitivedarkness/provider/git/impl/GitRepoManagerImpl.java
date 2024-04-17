@@ -27,6 +27,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.StreamSupport;
 
 /**
  * Service for interacting with git repositories
@@ -485,8 +486,18 @@ public class GitRepoManagerImpl implements GitRepoManager {
      */
     @Override
     public Collection<RevCommit> gAllCommitIfFile(Path source, String file) {
-        // TODO
-        return null;
+        try (final Git git = Git.open(source.toFile())) {
+            return StreamSupport.stream(git
+                                    .log()
+                                    .addPath(file)
+                                    .call()
+                                    .spliterator(),
+                            false
+                    )
+                    .toList();
+        } catch (IOException | GitAPIException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**

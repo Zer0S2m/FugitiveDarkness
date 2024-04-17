@@ -13,6 +13,18 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.StreamSupport;
 
+/**
+ * A class for project support in the form of:
+ * <ul>
+ *     <li>Git repositories.</li>
+ *     <li>Local projects</li>
+ * </ul>
+ * Getting project statistics:
+ * <ul>
+ *     <li>Information about commits in a specific file.</li>
+ *     <li>Design hotspots.</li>
+ * </ul>
+ */
 public class ProjectManagerImpl implements ProjectManager {
 
     private ProjectReaderAdapterAbstract adapterReader;
@@ -82,6 +94,26 @@ public class ProjectManagerImpl implements ProjectManager {
 
         return infoCommitOfFile(gitRepoManager.gFirstCommitOfFile(
                 sourceGitRepository, file));
+    }
+
+    /**
+     * Get information from the all commits in a specific file.
+     *
+     * @param sourceGitRepository The source path to the repository.
+     * @param file                The path to the file where the all commits will be searched.
+     * @return Information from the all commits.
+     */
+    @Override
+    public Collection<FileCommitInfo> allCommitOfFile(Path sourceGitRepository, String file) {
+        GitRepoManager gitRepoManager = GitRepoManager.create();
+
+        Collection<RevCommit> revCommits = gitRepoManager.gAllCommitIfFile(
+                sourceGitRepository, file);
+        Collection<FileCommitInfo> fileCommitInfos = new ArrayList<>();
+
+        revCommits.forEach(revCommit -> fileCommitInfos.add(infoCommitOfFile(revCommit)));
+
+        return fileCommitInfos;
     }
 
     /**

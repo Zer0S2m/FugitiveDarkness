@@ -13,6 +13,11 @@ import java.util.Collection;
  *     <li>Git repositories.</li>
  *     <li>Local projects</li>
  * </ul>
+ * Getting project statistics:
+ * <ul>
+ *     <li>Information about commits in a specific file.</li>
+ *     <li>Design hotspots.</li>
+ * </ul>
  */
 public interface ProjectManager {
 
@@ -50,6 +55,15 @@ public interface ProjectManager {
      * @return Information from the first commit.
      */
     FileCommitInfo firstCommitOfFile(Path sourceGitRepository, String file);
+
+    /**
+     * Get information from the all commits in a specific file.
+     *
+     * @param sourceGitRepository The source path to the repository.
+     * @param file                The path to the file where the all commits will be searched.
+     * @return Information from the all commits.
+     */
+    Collection<FileCommitInfo> allCommitOfFile(Path sourceGitRepository, String file);
 
     /**
      * Assemble the file structure as a tree structure.

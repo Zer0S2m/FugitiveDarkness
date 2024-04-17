@@ -95,6 +95,7 @@ public class FugitiveDarknessApp extends AbstractVerticle {
                                 \t\u001b[42mPOST\u001b[0m   [/api/v1/project/files]
                                 \t\u001b[42mPOST\u001b[0m   [/api/v1/project/files/last-commit]
                                 \t\u001b[42mPOST\u001b[0m   [/api/v1/project/files/first-commit]
+                                \t\u001b[42mPOST\u001b[0m   [/api/v1/project/files/all-commit]
                                 \t\u001b[42mPOST\u001b[0m   [/api/v1/project/files/hotspots]""");
                         logger.info("""
                                 Setting ENV:
@@ -381,18 +382,27 @@ public class FugitiveDarknessApp extends AbstractVerticle {
                 .handler(BodyHandler
                         .create()
                         .setHandleFileUploads(false))
-                .handler(ControllerApiProjectLastCommitFile.LastCommitFileValidation.validator(vertx))
+                .handler(ControllerApiProjectFilesLastCommitFile.LastCommitFileValidation.validator(vertx))
                 .handler(new GitRepoValidationExists())
-                .handler(new ControllerApiProjectLastCommitFile())
+                .handler(new ControllerApiProjectFilesLastCommitFile())
                 .handler(new HandlerLogger.HandlerLoggerResponse());
         router
                 .post("/api/v1/project/files/first-commit")
                 .handler(BodyHandler
                         .create()
                         .setHandleFileUploads(false))
-                .handler(ControllerApiProjectFirstCommitFile.FirstCommitFileValidation.validator(vertx))
+                .handler(ControllerApiProjectFilesFirstCommitFile.FirstCommitFileValidation.validator(vertx))
                 .handler(new GitRepoValidationExists())
-                .handler(new ControllerApiProjectFirstCommitFile())
+                .handler(new ControllerApiProjectFilesFirstCommitFile())
+                .handler(new HandlerLogger.HandlerLoggerResponse());
+        router
+                .post("/api/v1/project/files/all-commit")
+                .handler(BodyHandler
+                        .create()
+                        .setHandleFileUploads(false))
+                .handler(ControllerApiProjectFilesAllCommitFile.AllCommitFileValidation.validator(vertx))
+                .handler(new GitRepoValidationExists())
+                .handler(new ControllerApiProjectFilesAllCommitFile())
                 .handler(new HandlerLogger.HandlerLoggerResponse());
         router
                 .post("/api/v1/project/files/hotspots")

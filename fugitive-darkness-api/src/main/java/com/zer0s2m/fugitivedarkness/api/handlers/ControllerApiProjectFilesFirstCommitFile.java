@@ -26,9 +26,9 @@ import java.nio.file.Path;
 
 import static io.vertx.json.schema.common.dsl.Schemas.*;
 
-public class ControllerApiProjectFirstCommitFile implements Handler<RoutingContext> {
+public class ControllerApiProjectFilesFirstCommitFile implements Handler<RoutingContext> {
 
-    static private final Logger logger = LoggerFactory.getLogger(ControllerApiProjectFirstCommitFile.class);
+    static private final Logger logger = LoggerFactory.getLogger(ControllerApiProjectFilesFirstCommitFile.class);
 
     private final ProjectManager projectManager = ProjectManager.create();
 
