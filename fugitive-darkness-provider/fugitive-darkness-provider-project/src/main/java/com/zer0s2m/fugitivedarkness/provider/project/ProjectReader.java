@@ -25,6 +25,11 @@ public interface ProjectReader {
      */
     Collection<FileProject> read(ProjectReaderAdapterAbstract adapter);
 
+    /**
+     * Set additional information to start the adapter.
+     *
+     * @param properties Additional information.
+     */
     void setProperties(Map<String, Object> properties);
 
     /**

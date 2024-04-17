@@ -1,8 +1,6 @@
 package com.zer0s2m.fugitivedarkness.provider.project;
 
-import com.zer0s2m.fugitivedarkness.provider.project.impl.ProjectManagerImpl;
-import com.zer0s2m.fugitivedarkness.provider.project.impl.ProjectReaderAdapterGit;
-import com.zer0s2m.fugitivedarkness.provider.project.impl.ProjectReaderAdapterLocal;
+import com.zer0s2m.fugitivedarkness.provider.project.impl.*;
 
 import java.nio.file.Path;
 import java.util.Collection;
@@ -17,6 +15,7 @@ import java.util.Collection;
  * <ul>
  *     <li>Information about commits in a specific file.</li>
  *     <li>Design hotspots.</li>
+ *     <li>The number of lines of code in certain file objects.</li>
  * </ul>
  */
 public interface ProjectManager {
@@ -66,6 +65,20 @@ public interface ProjectManager {
     Collection<FileCommitInfo> allCommitOfFile(Path sourceGitRepository, String file);
 
     /**
+     * Get information about the number of rows in a file object.
+     *
+     * @param filters A filter to run a specific row counting script.
+     *                <ul>
+     *                <li>Counting rows in a directory.</li>
+     *                <li>Counting the lines in the file.</li>
+     *                </ul>
+     * @param reader  A reader for counting the number of lines in a file object.
+     * @return Information about the number of lines in the file object.
+     */
+    Collection<FileProjectCountLine> countLinesCodeFile(
+            ProjectCountLineFilesFilters filters, ProjectCountLineFilesReader reader);
+
+    /**
      * Assemble the file structure as a tree structure.
      *
      * @param filesProject The project files are in the form of a collection.
@@ -87,6 +100,20 @@ public interface ProjectManager {
      */
     ProjectReaderAdapterAbstract getAdapterReader();
 
+    /**
+     * Install an adapter to collect statistics from git repositories.
+     *
+     * @param adapterCountFiles An adapter for collecting statistics from git repositories.
+     */
+    void setAdapterCountFiles(ProjectCountLineFilesReaderAdapterAbstract adapterCountFiles);
+
+    /**
+     * Install an adapter to collect statistics from local projects.
+     *
+     * @return An adapter for collecting statistics from git repositories.
+     */
+    ProjectCountLineFilesReaderAdapterAbstract getAdapterCountFiles();
+
     static ProjectManager create() {
         return new ProjectManagerImpl();
     }
@@ -99,6 +126,7 @@ public interface ProjectManager {
     static ProjectManager createGit() {
         ProjectManager projectManager = create();
         projectManager.setAdapterReader(new ProjectReaderAdapterGit());
+        projectManager.setAdapterCountFiles(new ProjectCountLineFilesReaderAdapterGit());
         return projectManager;
     }
 
@@ -110,6 +138,7 @@ public interface ProjectManager {
     static ProjectManager createLocal() {
         ProjectManager projectManager = create();
         projectManager.setAdapterReader(new ProjectReaderAdapterLocal());
+        projectManager.setAdapterCountFiles(new ProjectCountLineFilesReaderAdapterLocal());
         return projectManager;
     }
 

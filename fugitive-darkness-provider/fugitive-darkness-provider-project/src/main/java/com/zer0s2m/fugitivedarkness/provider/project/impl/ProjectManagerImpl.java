@@ -23,11 +23,14 @@ import java.util.stream.StreamSupport;
  * <ul>
  *     <li>Information about commits in a specific file.</li>
  *     <li>Design hotspots.</li>
+ *     <li>The number of lines of code in certain file objects.</li>
  * </ul>
  */
 public class ProjectManagerImpl implements ProjectManager {
 
-    private ProjectReaderAdapterAbstract adapterReader;
+    private ProjectReaderAdapterAbstract projectReaderAdapterAbstract;
+
+    private ProjectCountLineFilesReaderAdapterAbstract projectCountFilesReaderAdapterAbstract;
 
     /**
      * Get all the information about the file objects in the project.
@@ -117,6 +120,23 @@ public class ProjectManagerImpl implements ProjectManager {
     }
 
     /**
+     * Get information about the number of rows in a file object.
+     *
+     * @param filters A filter to run a specific row counting script.
+     *                <ul>
+     *                <li>Counting rows in a directory.</li>
+     *                <li>Counting the lines in the file.</li>
+     *                </ul>
+     * @param reader  A reader for counting the number of lines in a file object.
+     * @return Information about the number of lines in the file object.
+     */
+    @Override
+    public Collection<FileProjectCountLine> countLinesCodeFile(
+            ProjectCountLineFilesFilters filters, ProjectCountLineFilesReader reader) {
+        return reader.read(getAdapterCountFiles());
+    }
+
+    /**
      * Collect information from the commit.
      *
      * @param commit The commit.
@@ -167,7 +187,7 @@ public class ProjectManagerImpl implements ProjectManager {
      */
     @Override
     public void setAdapterReader(ProjectReaderAdapterAbstract adapterReader) {
-        this.adapterReader = adapterReader;
+        this.projectReaderAdapterAbstract = adapterReader;
     }
 
     /**
@@ -177,7 +197,27 @@ public class ProjectManagerImpl implements ProjectManager {
      */
     @Override
     public ProjectReaderAdapterAbstract getAdapterReader() {
-        return adapterReader;
+        return projectReaderAdapterAbstract;
+    }
+
+    /**
+     * Install an adapter to collect statistics from git repositories.
+     *
+     * @param adapterCountFiles An adapter for collecting statistics from git repositories.
+     */
+    @Override
+    public void setAdapterCountFiles(ProjectCountLineFilesReaderAdapterAbstract adapterCountFiles) {
+        this.projectCountFilesReaderAdapterAbstract = adapterCountFiles;
+    }
+
+    /**
+     * Install an adapter to collect statistics from local projects.
+     *
+     * @return An adapter for collecting statistics from git repositories.
+     */
+    @Override
+    public ProjectCountLineFilesReaderAdapterAbstract getAdapterCountFiles() {
+        return projectCountFilesReaderAdapterAbstract;
     }
 
     /**
