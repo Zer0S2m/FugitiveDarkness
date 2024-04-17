@@ -62,13 +62,26 @@ public class ProjectManagerImpl implements ProjectManager {
      * @return Information from the last commit.
      */
     @Override
-    public FileLastCommitInfo lastCommitOfFile(Path sourceGitRepository, String file) {
+    public FileCommitInfo lastCommitOfFile(Path sourceGitRepository, String file) {
         GitRepoManager gitRepoManager = GitRepoManager.create();
 
-        RevCommit commit = gitRepoManager.gLastCommitOfFile(
-                sourceGitRepository, file);
+        return infoCommitOfFile(gitRepoManager.gLastCommitOfFile(
+                sourceGitRepository, file));
+    }
 
-        return infoCommitOfFile(commit);
+    /**
+     * Get information from the first commit in a specific file.
+     *
+     * @param sourceGitRepository The source path to the repository.
+     * @param file                The path to the file where the first commit will be searched.
+     * @return Information from the first commit.
+     */
+    @Override
+    public FileCommitInfo firstCommitOfFile(Path sourceGitRepository, String file) {
+        GitRepoManager gitRepoManager = GitRepoManager.create();
+
+        return infoCommitOfFile(gitRepoManager.gFirstCommitOfFile(
+                sourceGitRepository, file));
     }
 
     /**
@@ -77,7 +90,7 @@ public class ProjectManagerImpl implements ProjectManager {
      * @param commit The commit.
      * @return Information from the commit.
      */
-    private FileLastCommitInfo infoCommitOfFile(RevCommit commit) {
+    private FileCommitInfo infoCommitOfFile(RevCommit commit) {
         String justTheAuthorNoTime = commit
                 .getAuthorIdent()
                 .toExternalString()
@@ -93,10 +106,12 @@ public class ProjectManagerImpl implements ProjectManager {
                         .getFullMessage()
                         .split("\\r?\\n"));
 
-        return new FileLastCommitInfo(
+        return new FileCommitInfo(
                 commit.getName(),
                 justTheAuthorNoTimeSplit[0],
-                justTheAuthorNoTimeSplit[1],
+                justTheAuthorNoTimeSplit[1]
+                        .replace("<", "")
+                        .replace(">", ""),
                 formattedDate,
                 tabbedCommitMessage);
     }
@@ -133,6 +148,9 @@ public class ProjectManagerImpl implements ProjectManager {
         return adapterReader;
     }
 
+    /**
+     * An assistant for converting relative file paths into a project tree structure.
+     */
     private static class ProjectManagerTreeNodeFileObject {
 
         private final AtomicInteger levelTree = new AtomicInteger(0);

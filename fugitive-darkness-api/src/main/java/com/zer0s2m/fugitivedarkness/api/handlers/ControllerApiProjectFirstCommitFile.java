@@ -26,9 +26,9 @@ import java.nio.file.Path;
 
 import static io.vertx.json.schema.common.dsl.Schemas.*;
 
-public final class ControllerApiProjectLastCommitFile implements Handler<RoutingContext> {
+public class ControllerApiProjectFirstCommitFile implements Handler<RoutingContext> {
 
-    static private final Logger logger = LoggerFactory.getLogger(ControllerApiProjectLastCommitFile.class);
+    static private final Logger logger = LoggerFactory.getLogger(ControllerApiProjectFirstCommitFile.class);
 
     private final ProjectManager projectManager = ProjectManager.create();
 
@@ -39,7 +39,7 @@ public final class ControllerApiProjectLastCommitFile implements Handler<Routing
      */
     @Override
     public void handle(RoutingContext event) {
-        logger.info("The beginning of receiving the last commit of the file");
+        logger.info("The beginning of receiving the first commit of the file");
 
         final ContainerControlCommitFileProject commitFileProject = event
                 .body()
@@ -55,12 +55,12 @@ public final class ControllerApiProjectLastCommitFile implements Handler<Routing
                     final GitRepoModel gitRepo = gitRepoRepository.mapTo(ar).get(0);
                     final Path sourceGitRepo = Path.of(gitRepo.getSource());
 
-                    FileCommitInfo lastCommitInfo = projectManager.lastCommitOfFile(
+                    FileCommitInfo firstCommitInfo = projectManager.firstCommitOfFile(
                             sourceGitRepo, commitFileProject.file());
 
                     JsonObject object = new JsonObject();
                     object.put("success", true);
-                    object.put("info", lastCommitInfo);
+                    object.put("info", firstCommitInfo);
 
                     event
                             .response()
@@ -72,7 +72,7 @@ public final class ControllerApiProjectLastCommitFile implements Handler<Routing
                             .setStatusCode(HttpResponseStatus.OK.code())
                             .write(object.toString());
 
-                    logger.info("The end of receiving the last commit of the file");
+                    logger.info("The end of receiving the first commit of the file");
 
                     event.next();
                 })
@@ -90,7 +90,7 @@ public final class ControllerApiProjectLastCommitFile implements Handler<Routing
     /**
      * TODO: Move to {@link SchemaRepository}.
      */
-    public static class LastCommitFileValidation {
+    public static class FirstCommitFileValidation {
 
         /**
          * Get validation handler for incoming body.

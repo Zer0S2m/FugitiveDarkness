@@ -156,6 +156,24 @@ public interface GitRepoManager {
     RevCommit gLastCommitOfFile(Path source, String file);
 
     /**
+     * Get the first commit in a specific file.
+     *
+     * @param source The source path to the repository.
+     * @param file   The path to the file where the last commit will be searched.
+     * @return The first commit.
+     */
+    RevCommit gFirstCommitOfFile(Path source, String file);
+
+    /**
+     * Get the all commits in a specific file.
+     *
+     * @param source The source path to the repository.
+     * @param file   The path to the file where the all commits will be searched.
+     * @return The all commits.
+     */
+    Collection<RevCommit> gAllCommitIfFile(Path source, String file);
+
+    /**
      * Get all commits related to files.
      *
      * @param source The source path to the repository.

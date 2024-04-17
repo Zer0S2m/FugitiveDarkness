@@ -40,7 +40,16 @@ public interface ProjectManager {
      * @param file                The path to the file where the last commit will be searched.
      * @return Information from the last commit.
      */
-    FileLastCommitInfo lastCommitOfFile(Path sourceGitRepository, String file);
+    FileCommitInfo lastCommitOfFile(Path sourceGitRepository, String file);
+
+    /**
+     * Get information from the first commit in a specific file.
+     *
+     * @param sourceGitRepository The source path to the repository.
+     * @param file                The path to the file where the first commit will be searched.
+     * @return Information from the first commit.
+     */
+    FileCommitInfo firstCommitOfFile(Path sourceGitRepository, String file);
 
     /**
      * Assemble the file structure as a tree structure.

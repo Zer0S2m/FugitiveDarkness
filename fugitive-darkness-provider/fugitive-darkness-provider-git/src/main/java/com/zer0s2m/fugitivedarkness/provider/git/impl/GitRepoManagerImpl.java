@@ -9,12 +9,12 @@ import com.zer0s2m.fugitivedarkness.provider.git.SearchEngineGitUtils;
 import org.eclipse.jgit.api.CloneCommand;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
-import org.eclipse.jgit.lib.ObjectId;
-import org.eclipse.jgit.lib.ObjectLoader;
-import org.eclipse.jgit.lib.ObjectReader;
-import org.eclipse.jgit.lib.Repository;
+import org.eclipse.jgit.lib.*;
 import org.eclipse.jgit.revwalk.RevCommit;
+import org.eclipse.jgit.revwalk.RevSort;
+import org.eclipse.jgit.revwalk.RevWalk;
 import org.eclipse.jgit.treewalk.TreeWalk;
+import org.eclipse.jgit.treewalk.filter.PathFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -450,6 +450,43 @@ public class GitRepoManagerImpl implements GitRepoManager {
         } catch (IOException | GitAPIException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    /**
+     * Get the first commit in a specific file.
+     *
+     * @param source The source path to the repository.
+     * @param file   The path to the file where the last commit will be searched.
+     * @return The first commit.
+     */
+    @Override
+    public RevCommit gFirstCommitOfFile(Path source, String file) {
+        try (final Repository repository = Git
+                .open(source.toFile())
+                .getRepository()) {
+            try (RevWalk revWalk = new RevWalk(repository)) {
+                revWalk.markStart(revWalk.parseCommit(repository.resolve(Constants.HEAD)));
+                revWalk.setTreeFilter(PathFilter.create(file));
+                revWalk.sort(RevSort.COMMIT_TIME_DESC);
+                revWalk.sort(RevSort.REVERSE, true);
+                return revWalk.next();
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Get the all commits in a specific file.
+     *
+     * @param source The source path to the repository.
+     * @param file   The path to the file where the all commits will be searched.
+     * @return The all commits.
+     */
+    @Override
+    public Collection<RevCommit> gAllCommitIfFile(Path source, String file) {
+        // TODO
+        return null;
     }
 
     /**
