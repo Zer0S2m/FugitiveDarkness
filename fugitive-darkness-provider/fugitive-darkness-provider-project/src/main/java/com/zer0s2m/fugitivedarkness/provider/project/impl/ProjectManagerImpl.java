@@ -4,6 +4,7 @@ import com.zer0s2m.fugitivedarkness.provider.git.GitRepoManager;
 import com.zer0s2m.fugitivedarkness.provider.project.*;
 import org.eclipse.jgit.revwalk.RevCommit;
 
+import java.io.IOException;
 import java.nio.file.Path;
 import java.time.Instant;
 import java.time.ZoneId;
@@ -132,8 +133,9 @@ public class ProjectManagerImpl implements ProjectManager {
      */
     @Override
     public Collection<FileProjectCountLine> countLinesCodeFile(
-            ProjectCountLineFilesFilters filters, ProjectCountLineFilesReader reader) {
-        return reader.read(getAdapterCountFiles());
+            ProjectCountLineFilesFilters filters, ProjectCountLineFilesReader reader)
+            throws ProjectException, IOException {
+        return reader.read(getAdapterCountFiles(), filters.getTypeFileObject());
     }
 
     /**

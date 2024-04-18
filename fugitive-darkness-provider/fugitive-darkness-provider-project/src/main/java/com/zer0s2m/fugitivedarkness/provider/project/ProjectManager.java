@@ -2,6 +2,7 @@ package com.zer0s2m.fugitivedarkness.provider.project;
 
 import com.zer0s2m.fugitivedarkness.provider.project.impl.*;
 
+import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Collection;
 
@@ -76,7 +77,7 @@ public interface ProjectManager {
      * @return Information about the number of lines in the file object.
      */
     Collection<FileProjectCountLine> countLinesCodeFile(
-            ProjectCountLineFilesFilters filters, ProjectCountLineFilesReader reader);
+            ProjectCountLineFilesFilters filters, ProjectCountLineFilesReader reader) throws ProjectException, IOException;
 
     /**
      * Assemble the file structure as a tree structure.

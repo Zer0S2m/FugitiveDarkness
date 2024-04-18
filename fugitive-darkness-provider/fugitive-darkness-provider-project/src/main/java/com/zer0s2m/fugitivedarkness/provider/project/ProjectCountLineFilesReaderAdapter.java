@@ -24,4 +24,18 @@ public interface ProjectCountLineFilesReaderAdapter {
      */
     Reader getReader(Map<String, Object> properties) throws ProjectException, IOException;
 
+    /**
+     * Get readers to crawl files.
+     *
+     * @param properties Additional information for starting the adapter.
+     * @param typeFileObject Type of file object.
+     * @return Reader.
+     * @throws ProjectException                         The general exception is for interacting with projects.
+     * @throws ProjectMissingPropertiesAdapterException There are no required parameters to start the adapter.
+     * @throws IOException                              If an IO error occurred.
+     * @throws FileNotFoundException                    No file was found.
+     */
+    Iterable<ContainerInfoReader> getReader(Map<String, Object> properties, TypeFileObject typeFileObject)
+            throws ProjectException, IOException;
+
 }

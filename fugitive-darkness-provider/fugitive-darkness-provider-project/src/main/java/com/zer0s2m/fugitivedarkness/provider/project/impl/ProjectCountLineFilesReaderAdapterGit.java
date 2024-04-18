@@ -2,16 +2,19 @@ package com.zer0s2m.fugitivedarkness.provider.project.impl;
 
 import com.zer0s2m.fugitivedarkness.provider.git.HelperGitRepo;
 import com.zer0s2m.fugitivedarkness.provider.git.SearchEngineGitUtils;
-import com.zer0s2m.fugitivedarkness.provider.project.ProjectCountLineFilesReaderAdapter;
-import com.zer0s2m.fugitivedarkness.provider.project.ProjectCountLineFilesReaderAdapterAbstract;
-import com.zer0s2m.fugitivedarkness.provider.project.ProjectException;
-import com.zer0s2m.fugitivedarkness.provider.project.ProjectMissingPropertiesAdapterException;
+import com.zer0s2m.fugitivedarkness.provider.project.*;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.ObjectLoader;
 import org.eclipse.jgit.lib.ObjectReader;
 import org.eclipse.jgit.lib.Repository;
+import org.eclipse.jgit.revwalk.RevCommit;
+import org.eclipse.jgit.revwalk.RevTree;
+import org.eclipse.jgit.revwalk.RevWalk;
+import org.eclipse.jgit.treewalk.AbstractTreeIterator;
+import org.eclipse.jgit.treewalk.CanonicalTreeParser;
 import org.eclipse.jgit.treewalk.TreeWalk;
+import org.eclipse.jgit.treewalk.filter.PathFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -64,6 +67,68 @@ public class ProjectCountLineFilesReaderAdapterGit extends ProjectCountLineFiles
                 }
             }
         }
+    }
+
+    /**
+     * Get readers to crawl files.
+     *
+     * @param properties     Additional information for starting the adapter.
+     * @param typeFileObject Type of file object.
+     * @return Reader.
+     * @throws ProjectException                         The general exception is for interacting with projects.
+     * @throws ProjectMissingPropertiesAdapterException There are no required parameters to start the adapter.
+     * @throws IOException                              If an IO error occurred.
+     * @throws FileNotFoundException                    No file was found.
+     */
+    @Override
+    public Iterable<ContainerInfoReader> getReader(Map<String, Object> properties, TypeFileObject typeFileObject)
+            throws ProjectException, IOException {
+        checkProperties(properties);
+
+        final Collection<ContainerInfoReader> readers = new ArrayList<>();
+
+        final String group = (String) properties.get("group");
+        final String project = (String) properties.get("project");
+        final String file = (String) properties.get("file");
+
+        final Path source = HelperGitRepo.getSourceGitRepository(group, project);
+
+        try (final Repository repository = Git.open(source.toFile())
+                .checkout()
+                .getRepository()) {
+            final ObjectId lastCommit = SearchEngineGitUtils.getRevision(repository);
+            RevTree tree;
+            RevCommit commit;
+            try (RevWalk revWalk = new RevWalk(repository)) {
+                commit = revWalk.parseCommit(lastCommit);
+                tree = commit.getTree();
+            }
+
+            try (final ObjectReader objectReader = repository.newObjectReader()) {
+                try (TreeWalk treeWalk = new TreeWalk(repository)) {
+                    CanonicalTreeParser treeParser = new CanonicalTreeParser();
+                    treeParser.reset(repository.newObjectReader(), commit.getTree());
+                    int treeIndex = treeWalk.addTree(treeParser);
+
+                    treeWalk.addTree(tree);
+                    treeWalk.setRecursive(true);
+                    treeWalk.setFilter(PathFilter.create(file));
+
+                    while (treeWalk.next()) {
+                        AbstractTreeIterator it = treeWalk.getTree(treeIndex, AbstractTreeIterator.class);
+                        ObjectId objectId = it.getEntryObjectId();
+                        ObjectLoader objectLoader = objectReader.open(objectId);
+
+                        readers.add(new ContainerInfoReader(
+                                it.getEntryPathString(),
+                                new InputStreamReader(objectLoader.openStream())
+                        ));
+                    }
+                }
+            }
+        }
+
+        return readers;
     }
 
     /**

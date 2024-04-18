@@ -1,11 +1,7 @@
 package com.zer0s2m.fugitivedarkness.provider.project.impl;
 
-import com.zer0s2m.fugitivedarkness.provider.project.FileProjectCountLine;
-import com.zer0s2m.fugitivedarkness.provider.project.ProjectCountLineFilesReader;
-import com.zer0s2m.fugitivedarkness.provider.project.ProjectCountLineFilesReaderAdapterAbstract;
-import com.zer0s2m.fugitivedarkness.provider.project.ProjectException;
+import com.zer0s2m.fugitivedarkness.provider.project.*;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.ArrayList;
@@ -26,23 +22,34 @@ public class ProjectCountLineFilesReaderGit implements ProjectCountLineFilesRead
      * @return Number of lines of code in the file
      */
     @Override
-    public Collection<FileProjectCountLine> read(ProjectCountLineFilesReaderAdapterAbstract adapter) {
+    public Collection<FileProjectCountLine> read(
+            ProjectCountLineFilesReaderAdapterAbstract adapter, TypeFileObject typeFileObject)
+            throws ProjectException, IOException {
         Collection<FileProjectCountLine> fileProjectCountLines = new ArrayList<>();
 
-        try (final Reader reader = adapter.getReader(properties)) {
-            long countLines = 0;
-            try (final BufferedReader buf = new BufferedReader(reader)) {
-                while (buf.readLine() != null) {
-                    countLines++;
+        if (typeFileObject.equals(TypeFileObject.FILE)) {
+            try (final Reader reader = adapter.getReader(properties)) {
+                fileProjectCountLines.add(new ProjectCountLineFilesCallable()
+                        .setReader(reader)
+                        .setFile((String) properties.get("file"))
+                        .call());
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        } else if (typeFileObject.equals(TypeFileObject.DIRECTORY)) {
+            for (ContainerInfoReader infoReader : adapter.getReader(properties, typeFileObject)) {
+                try (Reader reader = infoReader.reader()) {
+                    fileProjectCountLines.add(new ProjectCountLineFilesCallable()
+                            .setReader(reader)
+                            .setFile(infoReader.path())
+                            .call());
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
                 }
             }
-            fileProjectCountLines.add(new FileProjectCountLine(
-                    (String) properties.get("file"),
-                    countLines));
-            return fileProjectCountLines;
-        } catch (ProjectException | IOException e) {
-            throw new RuntimeException(e);
         }
+
+        return fileProjectCountLines;
     }
 
     /**

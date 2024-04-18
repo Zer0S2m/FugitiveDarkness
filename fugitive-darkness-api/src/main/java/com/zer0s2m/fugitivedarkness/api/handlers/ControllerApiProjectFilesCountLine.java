@@ -21,6 +21,7 @@ import io.vertx.json.schema.SchemaRouterOptions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.util.Collection;
 
 import static io.vertx.json.schema.common.dsl.Schemas.*;
@@ -65,8 +66,13 @@ public final class ControllerApiProjectFilesCountLine implements Handler<Routing
                                 .createGit(gitRepo.getGroup(), gitRepo.getProject(), projectFileCountLine.file());
                     }
 
-                    Collection<FileProjectCountLine> projectCountLines = projectManager.countLinesCodeFile(
-                            projectCountLineFilesFilters, projectCountLineFilesReader);
+                    Collection<FileProjectCountLine> projectCountLines;
+                    try {
+                        projectCountLines = projectManager.countLinesCodeFile(
+                                projectCountLineFilesFilters, projectCountLineFilesReader);
+                    } catch (ProjectException | IOException e) {
+                        throw new RuntimeException(e);
+                    }
 
                     JsonObject object = new JsonObject();
                     object.put("success", true);
@@ -117,7 +123,7 @@ public final class ControllerApiProjectFilesCountLine implements Handler<Routing
                             .requiredProperty("file", stringSchema())
                             .requiredProperty("type", enumSchema(
                                     TypeFileObject.FILE.name(),
-                                    TypeFileObject.FOLDER.name()))))
+                                    TypeFileObject.DIRECTORY.name()))))
                     .build();
         }
 

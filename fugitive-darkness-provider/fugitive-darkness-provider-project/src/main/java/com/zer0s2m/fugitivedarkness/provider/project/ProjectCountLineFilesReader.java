@@ -3,6 +3,7 @@ package com.zer0s2m.fugitivedarkness.provider.project;
 import com.zer0s2m.fugitivedarkness.provider.project.impl.ProjectCountLineFilesReaderGit;
 import com.zer0s2m.fugitivedarkness.provider.project.impl.ProjectCountLineFilesReaderLocal;
 
+import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -18,7 +19,8 @@ public interface ProjectCountLineFilesReader {
      * @param adapter An adapter for getting a file reader.
      * @return Number of lines of code in the file
      */
-    Collection<FileProjectCountLine> read(ProjectCountLineFilesReaderAdapterAbstract adapter);
+    Collection<FileProjectCountLine> read(
+            ProjectCountLineFilesReaderAdapterAbstract adapter, TypeFileObject typeFileObject) throws ProjectException, IOException;
 
     /**
      * Set additional information to start the adapter.
