@@ -97,7 +97,11 @@ public class FugitiveDarknessApp extends AbstractVerticle {
                                 \t\u001b[42mPOST\u001b[0m   [/api/v1/project/files/first-commit]
                                 \t\u001b[42mPOST\u001b[0m   [/api/v1/project/files/all-commit]
                                 \t\u001b[42mPOST\u001b[0m   [/api/v1/project/files/lines-code]
-                                \t\u001b[42mPOST\u001b[0m   [/api/v1/project/files/hotspots]""");
+                                \t\u001b[42mPOST\u001b[0m   [/api/v1/project/files/hotspots]
+                                \t\u001b[44mGET\u001b[0m    [/api/v1/project/files/comment]
+                                \t\u001b[42mPOST\u001b[0m   [/api/v1/project/files/comment]
+                                \t\u001b[43mPUT\u001b[0m    [/api/v1/project/files/comment/:ID]
+                                \t\u001b[41mDELETE\u001b[0m [/api/v1/project/files/comment/:ID]""");
                         logger.info("""
                                 Setting ENV:
                                 \t\u001B[45mFD_ROOT_PATH\u001b[0m      - %s
