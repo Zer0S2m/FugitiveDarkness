@@ -9,24 +9,25 @@ import com.zer0s2m.fugitivedarkness.provider.git.SearchEngineGitUtils;
 import org.eclipse.jgit.api.CloneCommand;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
-import org.eclipse.jgit.lib.ObjectId;
-import org.eclipse.jgit.lib.ObjectLoader;
-import org.eclipse.jgit.lib.ObjectReader;
-import org.eclipse.jgit.lib.Repository;
+import org.eclipse.jgit.lib.*;
+import org.eclipse.jgit.revwalk.RevCommit;
+import org.eclipse.jgit.revwalk.RevSort;
+import org.eclipse.jgit.revwalk.RevWalk;
 import org.eclipse.jgit.treewalk.TreeWalk;
+import org.eclipse.jgit.treewalk.filter.PathFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.StreamSupport;
 
 /**
  * Service for interacting with git repositories
@@ -141,6 +142,8 @@ public class GitRepoManagerImpl implements GitRepoManager {
      */
     @Override
     public List<ContainerInfoFileContent> gShowFile(String group, String project, String file) throws IOException {
+        // TODO: Get the content of a file in a local project
+
         final Path source = HelperGitRepo.getSourceGitRepository(group, project);
 
         try (final Repository repository = Git.open(source.toFile())
@@ -427,6 +430,104 @@ public class GitRepoManagerImpl implements GitRepoManager {
         } else {
             commandGrep.setContext(filterSearch.getContext());
         }
+    }
+
+    /**
+     * Get the latest commit in a specific file.
+     *
+     * @param source The source path to the repository.
+     * @param file   The path to the file where the last commit will be searched.
+     * @return The last commit.
+     */
+    @Override
+    public RevCommit gLastCommitOfFile(Path source, String file) {
+        try (final Git git = Git.open(source.toFile())) {
+            return git
+                    .log()
+                    .addPath(file)
+                    .call()
+                    .iterator()
+                    .next();
+        } catch (IOException | GitAPIException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Get the first commit in a specific file.
+     *
+     * @param source The source path to the repository.
+     * @param file   The path to the file where the last commit will be searched.
+     * @return The first commit.
+     */
+    @Override
+    public RevCommit gFirstCommitOfFile(Path source, String file) {
+        try (final Repository repository = Git
+                .open(source.toFile())
+                .getRepository()) {
+            try (RevWalk revWalk = new RevWalk(repository)) {
+                revWalk.markStart(revWalk.parseCommit(repository.resolve(Constants.HEAD)));
+                revWalk.setTreeFilter(PathFilter.create(file));
+                revWalk.sort(RevSort.COMMIT_TIME_DESC);
+                revWalk.sort(RevSort.REVERSE, true);
+                return revWalk.next();
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Get the all commits in a specific file.
+     *
+     * @param source The source path to the repository.
+     * @param file   The path to the file where the all commits will be searched.
+     * @return The all commits.
+     */
+    @Override
+    public Collection<RevCommit> gAllCommitIfFile(Path source, String file) {
+        try (final Git git = Git.open(source.toFile())) {
+            return StreamSupport.stream(git
+                                    .log()
+                                    .addPath(file)
+                                    .call()
+                                    .spliterator(),
+                            false
+                    )
+                    .toList();
+        } catch (IOException | GitAPIException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Get all commits related to files.
+     *
+     * @param source The source path to the repository.
+     * @param files  Paths are relative paths to files in the form of a collection.
+     * @return File commits.
+     */
+    @Override
+    public Map<String, Iterable<RevCommit>> gGetAllCommitsOfFiles(Path source, Collection<String> files) {
+        final Map<String, Iterable<RevCommit>> commitsFiles = new HashMap<>();
+
+        try (final Git git = Git.open(source.toFile())) {
+            files.forEach(file -> {
+                try {
+                    Iterable<RevCommit> commits = git
+                            .log()
+                            .addPath(file)
+                            .call();
+                    commitsFiles.put(file, commits);
+                } catch (GitAPIException e) {
+                    throw new RuntimeException(e);
+                }
+            });
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        return commitsFiles;
     }
 
 }

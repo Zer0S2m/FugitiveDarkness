@@ -42,11 +42,18 @@ public class ProjectReaderAdapterLocal extends ProjectReaderAdapterAbstract impl
                 ))
                 .map(fileProject -> fileProject.copy(
                         fileProject.path().replace(
-                                source.toString() + "/",
+                                source + "/",
                                 "")
                 ));
     }
 
+    /**
+     * Check all available information to start the adapter and issue an exception
+     * if the necessary information is not provided.
+     *
+     * @param properties Additional information.
+     * @throws ProjectMissingPropertiesAdapterException There are no required parameters to start the adapter.
+     */
     @Override
     protected void checkProperties(Map<String, Object> properties) throws ProjectMissingPropertiesAdapterException {
         if (!properties.containsKey("source")) {

@@ -2,7 +2,7 @@ package com.zer0s2m.fugitivedarkness.provider.project;
 
 import java.util.Map;
 
-public abstract class ProjectReaderAdapterAbstract implements ProjectReaderAdapter {
+public abstract class ProjectCountLineFilesReaderAdapterAbstract implements ProjectCountLineFilesReaderAdapter {
 
     /**
      * Check all available information to start the adapter and issue an exception

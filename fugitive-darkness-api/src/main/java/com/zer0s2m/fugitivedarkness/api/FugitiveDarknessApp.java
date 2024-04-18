@@ -92,7 +92,12 @@ public class FugitiveDarknessApp extends AbstractVerticle {
                                 \t\u001b[44mGET\u001b[0m    [/api/v1/docx]
                                 \t\u001b[41mDELETE\u001b[0m [/api/v1/docx/:ID]
                                 \t\u001b[42mPOST\u001b[0m   [/api/v1/docx/upload]
-                                \t\u001b[42mPOST\u001b[0m   [/api/v1/project/files]""");
+                                \t\u001b[42mPOST\u001b[0m   [/api/v1/project/files]
+                                \t\u001b[42mPOST\u001b[0m   [/api/v1/project/files/last-commit]
+                                \t\u001b[42mPOST\u001b[0m   [/api/v1/project/files/first-commit]
+                                \t\u001b[42mPOST\u001b[0m   [/api/v1/project/files/all-commit]
+                                \t\u001b[42mPOST\u001b[0m   [/api/v1/project/files/lines-code]
+                                \t\u001b[42mPOST\u001b[0m   [/api/v1/project/files/hotspots]""");
                         logger.info("""
                                 Setting ENV:
                                 \t\u001B[45mFD_ROOT_PATH\u001b[0m      - %s
@@ -369,9 +374,54 @@ public class FugitiveDarknessApp extends AbstractVerticle {
                 .handler(BodyHandler
                         .create()
                         .setHandleFileUploads(false))
-                .handler(ControllerApiProjectGet.GetValidation.validator(vertx))
+                .handler(ControllerApiProjectFilesGet.GetValidation.validator(vertx))
                 .handler(new GitRepoValidationExists())
-                .handler(new ControllerApiProjectGet())
+                .handler(new ControllerApiProjectFilesGet())
+                .handler(new HandlerLogger.HandlerLoggerResponse());
+        router
+                .post("/api/v1/project/files/last-commit")
+                .handler(BodyHandler
+                        .create()
+                        .setHandleFileUploads(false))
+                .handler(ControllerApiProjectFilesLastCommitFile.LastCommitFileValidation.validator(vertx))
+                .handler(new GitRepoValidationExists())
+                .handler(new ControllerApiProjectFilesLastCommitFile())
+                .handler(new HandlerLogger.HandlerLoggerResponse());
+        router
+                .post("/api/v1/project/files/first-commit")
+                .handler(BodyHandler
+                        .create()
+                        .setHandleFileUploads(false))
+                .handler(ControllerApiProjectFilesFirstCommitFile.FirstCommitFileValidation.validator(vertx))
+                .handler(new GitRepoValidationExists())
+                .handler(new ControllerApiProjectFilesFirstCommitFile())
+                .handler(new HandlerLogger.HandlerLoggerResponse());
+        router
+                .post("/api/v1/project/files/all-commit")
+                .handler(BodyHandler
+                        .create()
+                        .setHandleFileUploads(false))
+                .handler(ControllerApiProjectFilesAllCommitFile.AllCommitFileValidation.validator(vertx))
+                .handler(new GitRepoValidationExists())
+                .handler(new ControllerApiProjectFilesAllCommitFile())
+                .handler(new HandlerLogger.HandlerLoggerResponse());
+        router
+                .post("/api/v1/project/files/lines-code")
+                .handler(BodyHandler
+                        .create()
+                        .setHandleFileUploads(false))
+                .handler(ControllerApiProjectFilesCountLine.FilesCountLineValidation.validator(vertx))
+                .handler(new GitRepoValidationExists())
+                .handler(new ControllerApiProjectFilesCountLine())
+                .handler(new HandlerLogger.HandlerLoggerResponse());
+        router
+                .post("/api/v1/project/files/hotspots")
+                .handler(BodyHandler
+                        .create()
+                        .setHandleFileUploads(false))
+                .handler(ControllerApiProjectFilesHotspots.Validation.validator(vertx))
+                .handler(new GitRepoValidationExists())
+                .handler(new ControllerApiProjectFilesHotspots())
                 .handler(new HandlerLogger.HandlerLoggerResponse());
     }
 

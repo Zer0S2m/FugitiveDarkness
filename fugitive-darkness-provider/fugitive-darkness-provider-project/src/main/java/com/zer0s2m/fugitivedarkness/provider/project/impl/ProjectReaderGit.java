@@ -38,6 +38,11 @@ public class ProjectReaderGit implements ProjectReader {
         }
     }
 
+    /**
+     * Set additional information to start the adapter.
+     *
+     * @param properties Additional information.
+     */
     @Override
     public void setProperties(Map<String, Object> properties) {
         this.properties = properties;

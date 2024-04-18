@@ -78,6 +78,13 @@ public class ProjectReaderAdapterGit extends ProjectReaderAdapterAbstract implem
         return fileProjects.stream();
     }
 
+    /**
+     * Check all available information to start the adapter and issue an exception
+     * if the necessary information is not provided.
+     *
+     * @param properties Additional information.
+     * @throws ProjectMissingPropertiesAdapterException There are no required parameters to start the adapter.
+     */
     @Override
     protected void checkProperties(Map<String, Object> properties) throws ProjectMissingPropertiesAdapterException {
         Collection<String> missingProperties = new ArrayList<>();

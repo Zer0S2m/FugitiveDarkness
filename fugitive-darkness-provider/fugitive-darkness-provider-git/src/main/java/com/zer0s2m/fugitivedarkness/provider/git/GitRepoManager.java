@@ -4,11 +4,14 @@ import com.zer0s2m.fugitivedarkness.common.Environment;
 import com.zer0s2m.fugitivedarkness.provider.git.impl.GitRepoManagerImpl;
 import org.eclipse.jgit.api.CloneCommand;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.revwalk.RevCommit;
 
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Interface for implementing a service that handles git repositories.
@@ -142,6 +145,42 @@ public interface GitRepoManager {
      * @return Search result in git repository.
      */
     List<ContainerInfoSearchGitRepo> searchByGrepVirtualThreads_jgit(GitRepoFilterSearch filterSearch);
+
+    /**
+     * Get the latest commit in a specific file.
+     *
+     * @param source The source path to the repository.
+     * @param file   The path to the file where the last commit will be searched.
+     * @return The last commit.
+     */
+    RevCommit gLastCommitOfFile(Path source, String file);
+
+    /**
+     * Get the first commit in a specific file.
+     *
+     * @param source The source path to the repository.
+     * @param file   The path to the file where the last commit will be searched.
+     * @return The first commit.
+     */
+    RevCommit gFirstCommitOfFile(Path source, String file);
+
+    /**
+     * Get the all commits in a specific file.
+     *
+     * @param source The source path to the repository.
+     * @param file   The path to the file where the all commits will be searched.
+     * @return The all commits.
+     */
+    Collection<RevCommit> gAllCommitIfFile(Path source, String file);
+
+    /**
+     * Get all commits related to files.
+     *
+     * @param source The source path to the repository.
+     * @param files  Paths are relative paths to files in the form of a collection.
+     * @return File commits.
+     */
+    Map<String, Iterable<RevCommit>> gGetAllCommitsOfFiles(Path source, Collection<String> files);
 
     static GitRepoManager create() {
         return new GitRepoManagerImpl();

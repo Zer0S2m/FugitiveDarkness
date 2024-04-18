@@ -1,6 +1,6 @@
 package com.zer0s2m.fugitivedarkness.api.handlers;
 
-import com.zer0s2m.fugitivedarkness.common.dto.ContainerProjectGet;
+import com.zer0s2m.fugitivedarkness.common.dto.ContainerProjectFileCountLine;
 import com.zer0s2m.fugitivedarkness.models.GitRepoModel;
 import com.zer0s2m.fugitivedarkness.provider.project.*;
 import com.zer0s2m.fugitivedarkness.repository.GitRepoRepository;
@@ -21,16 +21,14 @@ import io.vertx.json.schema.SchemaRouterOptions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.util.Collection;
 
 import static io.vertx.json.schema.common.dsl.Schemas.*;
 
-/**
- * The request handler for getting the file structure of the project.
- */
-public class ControllerApiProjectGet implements Handler<RoutingContext> {
+public final class ControllerApiProjectFilesCountLine implements Handler<RoutingContext> {
 
-    static private final Logger logger = LoggerFactory.getLogger(ControllerApiProjectGet.class);
+    static private final Logger logger = LoggerFactory.getLogger(ControllerApiProjectFilesCountLine.class);
 
     /**
      * Something has happened, so handle it.
@@ -39,47 +37,50 @@ public class ControllerApiProjectGet implements Handler<RoutingContext> {
      */
     @Override
     public void handle(RoutingContext event) {
-        logger.info("The beginning of receiving the project");
+        logger.info("The beginning of counting the number of lines in the file object");
 
-        final ContainerProjectGet containerProjectGet = event
+        final ContainerProjectFileCountLine projectFileCountLine = event
                 .body()
                 .asJsonObject()
-                .mapTo(ContainerProjectGet.class);
+                .mapTo(ContainerProjectFileCountLine.class);
 
         final GitRepoRepository gitRepoRepository = new GitRepoRepositoryImpl(event.vertx());
 
         gitRepoRepository
-                .findById(containerProjectGet.gitRepositoryId())
+                .findById(projectFileCountLine.gitRepositoryId())
                 .onSuccess(ar -> {
                     gitRepoRepository.closeClient();
+                    final GitRepoModel gitRepo = gitRepoRepository.mapTo(ar).get(0);
+
+                    final ProjectCountLineFilesFilters projectCountLineFilesFilters = ProjectCountLineFilesFilters
+                            .create(projectFileCountLine.file(), TypeFileObject.valueOf(projectFileCountLine.type()));
+                    final ProjectManager projectManager;
+                    final ProjectCountLineFilesReader projectCountLineFilesReader;
+                    if (gitRepo.getGroup().equals("LOCAL")) {
+                        projectManager = ProjectManager.createLocal();
+                        projectCountLineFilesReader = ProjectCountLineFilesReader
+                                .createLocal(gitRepo.getSource(), projectFileCountLine.file());
+                    } else {
+                        projectManager = ProjectManager.createGit();
+                        projectCountLineFilesReader = ProjectCountLineFilesReader
+                                .createGit(gitRepo.getGroup(), gitRepo.getProject(), projectFileCountLine.file());
+                    }
+
+                    Collection<FileProjectCountLine> projectCountLines;
+                    try {
+                        projectCountLines = projectManager.countLinesCodeFile(
+                                projectCountLineFilesFilters, projectCountLineFilesReader);
+                    } catch (ProjectException | IOException e) {
+                        throw new RuntimeException(e);
+                    }
 
                     JsonObject object = new JsonObject();
                     object.put("success", true);
+                    object.put("codeLines", projectCountLines);
 
-                    final GitRepoModel gitRepo = gitRepoRepository.mapTo(ar).get(0);
-
-                    final ProjectManager projectManager;
-                    final ProjectReader projectReader;
-                    if (gitRepo.getGroup().equals("LOCAL")) {
-                        projectManager = ProjectManager.createLocal();
-                        projectReader = ProjectReader.createLocal(gitRepo.getSource());
-                    } else {
-                        projectManager = ProjectManager.createGit();
-                        projectReader = ProjectReader.createGit(
-                                gitRepo.getGroup(), gitRepo.getProject());
-                    }
-
-                    Collection<FileProject> fileProjects = projectManager.getAllFilesProject(projectReader);
-
-                    if (containerProjectGet.isTreeStructure()) {
-                        TreeNodeFileObject fileProjectTree = projectManager
-                                .collectTreeFilesProject(fileProjects);
-                        object.put("files", fileProjectTree.toDTO());
-                    } else {
-                        object.put("files", fileProjects);
-                    }
-
-                    event.response()
+                    event
+                            .response()
+                            .setChunked(true)
                             .putHeader(
                                     HttpHeaders.CONTENT_LENGTH,
                                     String.valueOf(object.toString().length()))
@@ -87,7 +88,7 @@ public class ControllerApiProjectGet implements Handler<RoutingContext> {
                             .setStatusCode(HttpResponseStatus.OK.code())
                             .write(object.toString());
 
-                    logger.info("The end of receiving the project");
+                    logger.info("The end of the count is the number of lines in the file object");
 
                     event.next();
                 })
@@ -105,7 +106,7 @@ public class ControllerApiProjectGet implements Handler<RoutingContext> {
     /**
      * TODO: Move to {@link SchemaRepository}.
      */
-    public static class GetValidation {
+    public static class FilesCountLineValidation {
 
         /**
          * Get validation handler for incoming body.
@@ -119,7 +120,10 @@ public class ControllerApiProjectGet implements Handler<RoutingContext> {
                             SchemaRouter.create(vertx, new SchemaRouterOptions())))
                     .body(Bodies.json(objectSchema()
                             .requiredProperty("gitRepositoryId", intSchema())
-                            .requiredProperty("isTreeStructure", booleanSchema())))
+                            .requiredProperty("file", stringSchema())
+                            .requiredProperty("type", enumSchema(
+                                    TypeFileObject.FILE.name(),
+                                    TypeFileObject.DIRECTORY.name()))))
                     .build();
         }
 
