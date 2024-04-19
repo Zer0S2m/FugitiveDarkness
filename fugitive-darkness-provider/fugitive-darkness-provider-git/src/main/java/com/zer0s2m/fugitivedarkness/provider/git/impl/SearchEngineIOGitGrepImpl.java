@@ -68,7 +68,7 @@ class SearchEngineIOGitGrepImpl extends SearchEngineIOGitGrepAbstract implements
             files = SearchEngineIOGitWalkingDirectory
                     .walkDirectory(
                             Path.of(
-                                    getDirectory().toString() + getAreaFile()),
+                                    getDirectory().toString(), getAreaFile()),
                             getMaxDepth(),
                             getIncludeExtensionFilesForSearchGrep(),
                             getExcludeExtensionFilesForSearchGrep(),
@@ -78,7 +78,7 @@ class SearchEngineIOGitGrepImpl extends SearchEngineIOGitGrepAbstract implements
         } else if (getAreaIsFile()) {
             files = new HashSet<>();
             files.add(Path.of(
-                    getDirectory().toString() + getAreaFile()));
+                    getDirectory().toString(), getAreaFile()));
         } else {
             files = SearchEngineIOGitWalkingDirectory
                     .walkDirectory(
@@ -159,7 +159,11 @@ class SearchEngineIOGitGrepImpl extends SearchEngineIOGitGrepAbstract implements
         final int countFiles = SearchEngineIOGitWalkingDirectory.COUNT_FILES.get();
         final long totalProcessingTimeFile = StateEngineIOGitStatistics.TOTAL_PROCESSING_FILE.get();
         StateEngineIOGitStatistics.TOTAL_PROCESSING_FILE.set(0);
-        return countFiles / totalProcessingTimeFile;
+        if (totalProcessingTimeFile > 0) {
+            return countFiles / totalProcessingTimeFile;
+        } else {
+            return 0;
+        }
     }
 
     private String getCurrentBranch() {

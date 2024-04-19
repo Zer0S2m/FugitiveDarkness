@@ -1,5 +1,6 @@
 package com.zer0s2m.fugitivedarkness.provider.project;
 
+import com.zer0s2m.fugitivedarkness.provider.git.ContainerGitRepoMeta;
 import com.zer0s2m.fugitivedarkness.provider.project.impl.ProjectTodoFiltersImpl;
 
 /**
@@ -63,6 +64,34 @@ public interface ProjectTodoFilters {
      */
     boolean getIsUnpackingGitRepo();
 
+    /**
+     * Set an indication that the project is local.
+     *
+     * @param isLocalGitRepo Indicates that the project is local.
+     */
+    void setIsLocalGitRepo(boolean isLocalGitRepo);
+
+    /**
+     * Get an indication that the project is local.
+     *
+     * @return Indicates that the project is local.
+     */
+    boolean getIsLocalGitRepo();
+
+    /**
+     * Install additional information about the git project.
+     *
+     * @param containerGitRepoMeta Additional information about the git project.
+     */
+    void setContainerGitRepoMeta(ContainerGitRepoMeta containerGitRepoMeta);
+
+    /**
+     * Get additional information about the git project.
+     *
+     * @return Additional information about the git project.
+     */
+    ContainerGitRepoMeta getContainerGitRepoMeta();
+
     static ProjectTodoFilters create() {
         return new ProjectTodoFiltersImpl();
     }
@@ -71,13 +100,17 @@ public interface ProjectTodoFilters {
             String file,
             boolean isFile,
             boolean isDirectory,
-            boolean isUnpackingGitRepo) {
+            boolean isUnpackingGitRepo,
+            boolean isLocalGitRepo,
+            ContainerGitRepoMeta containerGitRepoMeta) {
         final ProjectTodoFilters filters = create();
 
         filters.setFile(file);
         filters.setIsFile(isFile);
         filters.setIsDirectory(isDirectory);
         filters.setIsUnpackingGitRepo(isUnpackingGitRepo);
+        filters.setIsLocalGitRepo(isLocalGitRepo);
+        filters.setContainerGitRepoMeta(containerGitRepoMeta);
 
         return filters;
     }

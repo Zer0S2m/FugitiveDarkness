@@ -233,7 +233,11 @@ class SearchEngineJGitGrepImpl extends SearchEngineJGitGrepAbstract implements S
     public long getAverageFileProcessingTime() {
         final long totalProcessingTimeFile = StateEngineIOGitStatistics.TOTAL_PROCESSING_FILE.get();
         StateEngineIOGitStatistics.TOTAL_PROCESSING_FILE.set(0);
-        return countFiles.get() / totalProcessingTimeFile;
+        if (totalProcessingTimeFile > 0) {
+            return countFiles.get() / totalProcessingTimeFile;
+        } else {
+            return 0;
+        }
     }
 
 }

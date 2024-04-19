@@ -1,5 +1,6 @@
 package com.zer0s2m.fugitivedarkness.provider.project.impl;
 
+import com.zer0s2m.fugitivedarkness.provider.git.ContainerGitRepoMeta;
 import com.zer0s2m.fugitivedarkness.provider.project.ProjectTodoFilters;
 
 /**
@@ -14,6 +15,10 @@ public class ProjectTodoFiltersImpl implements ProjectTodoFilters {
     private boolean isDirectory;
 
     private boolean isUnpackingGitRepo;
+
+    private boolean isLocalGitRepo;
+
+    private ContainerGitRepoMeta containerGitRepoMeta;
 
     /**
      * Set the path to the file object.
@@ -93,6 +98,46 @@ public class ProjectTodoFiltersImpl implements ProjectTodoFilters {
     @Override
     public boolean getIsUnpackingGitRepo() {
         return isUnpackingGitRepo;
+    }
+
+    /**
+     * Set an indication that the project is local.
+     *
+     * @param isLocalGitRepo Indicates that the project is local.
+     */
+    @Override
+    public void setIsLocalGitRepo(boolean isLocalGitRepo) {
+        this.isLocalGitRepo = isLocalGitRepo;
+    }
+
+    /**
+     * Get an indication that the project is local.
+     *
+     * @return Indicates that the project is local.
+     */
+    @Override
+    public boolean getIsLocalGitRepo() {
+        return isLocalGitRepo;
+    }
+
+    /**
+     * Install additional information about the git project.
+     *
+     * @param containerGitRepoMeta Additional information about the git project.
+     */
+    @Override
+    public void setContainerGitRepoMeta(ContainerGitRepoMeta containerGitRepoMeta) {
+        this.containerGitRepoMeta = containerGitRepoMeta;
+    }
+
+    /**
+     * Get additional information about the git project.
+     *
+     * @return Additional information about the git project.
+     */
+    @Override
+    public ContainerGitRepoMeta getContainerGitRepoMeta() {
+        return containerGitRepoMeta;
     }
 
 }

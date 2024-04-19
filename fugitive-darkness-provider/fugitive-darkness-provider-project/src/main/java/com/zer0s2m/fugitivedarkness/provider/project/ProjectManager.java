@@ -1,10 +1,12 @@
 package com.zer0s2m.fugitivedarkness.provider.project;
 
+import com.zer0s2m.fugitivedarkness.provider.git.ContainerInfoSearchFileGitRepo;
 import com.zer0s2m.fugitivedarkness.provider.project.impl.*;
 
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * An interface for implementing a class for project maintenance in the form of:
@@ -81,7 +83,14 @@ public interface ProjectManager {
             ProjectCountLineFilesFilters filters, ProjectCountLineFilesReader reader)
             throws ProjectException, IOException;
 
-    void findTodo(Path sourceGitRepository, ProjectTodoFilters filters);
+    /**
+     * Get all matches of the todos pattern in the git repository or in a local project.
+     *
+     * @param sourceGitRepository The original path to the project.
+     * @param filters             Additional filters for launching the search engine.
+     * @return The search result.
+     */
+    List<ContainerInfoSearchFileGitRepo> findTodo(Path sourceGitRepository, ProjectTodoFilters filters);
 
     /**
      * Assemble the file structure as a tree structure.
