@@ -97,7 +97,11 @@ public class FugitiveDarknessApp extends AbstractVerticle {
                                 \t\u001b[42mPOST\u001b[0m   [/api/v1/project/files/first-commit]
                                 \t\u001b[42mPOST\u001b[0m   [/api/v1/project/files/all-commit]
                                 \t\u001b[42mPOST\u001b[0m   [/api/v1/project/files/lines-code]
-                                \t\u001b[42mPOST\u001b[0m   [/api/v1/project/files/hotspots]""");
+                                \t\u001b[42mPOST\u001b[0m   [/api/v1/project/files/hotspots]
+                                \t\u001b[44mGET\u001b[0m    [/api/v1/project/files/comment]
+                                \t\u001b[42mPOST\u001b[0m   [/api/v1/project/files/comment]
+                                \t\u001b[43mPUT\u001b[0m    [/api/v1/project/files/comment/:ID]
+                                \t\u001b[41mDELETE\u001b[0m [/api/v1/project/files/comment/:ID]""");
                         logger.info("""
                                 Setting ENV:
                                 \t\u001B[45mFD_ROOT_PATH\u001b[0m      - %s
@@ -422,6 +426,34 @@ public class FugitiveDarknessApp extends AbstractVerticle {
                 .handler(ControllerApiProjectFilesHotspots.Validation.validator(vertx))
                 .handler(new GitRepoValidationExists())
                 .handler(new ControllerApiProjectFilesHotspots())
+                .handler(new HandlerLogger.HandlerLoggerResponse());
+        router
+                .get("/api/v1/project/files/comment")
+                .handler(new ControllerApiProjectCommentFileGet())
+                .handler(new HandlerLogger.HandlerLoggerResponse());
+        router
+                .post("/api/v1/project/files/comment")
+                .handler(BodyHandler
+                        .create()
+                        .setHandleFileUploads(false))
+                .handler(ControllerApiProjectCommentFileCreate.ProjectCommentFileValidation.validator(vertx))
+                .handler(new GitRepoValidationExists())
+                .handler(new ControllerApiProjectCommentFileCreate())
+                .handler(new HandlerLogger.HandlerLoggerResponse());
+        router
+                .put("/api/v1/project/files/comment/:ID")
+                .handler(BodyHandler
+                        .create()
+                        .setHandleFileUploads(false))
+                .handler(ControllerApiProjectCommentFileEdit.ProjectCommentFileValidation.validator(vertx))
+                .handler(new ProjectCommentValidationExists())
+                .handler(new ControllerApiProjectCommentFileEdit())
+                .handler(new HandlerLogger.HandlerLoggerResponse());
+        router
+                .delete("/api/v1/project/files/comment/:ID")
+                .handler(ControllerApiValidation.ValidationControlID.validator(vertx))
+                .handler(new ProjectCommentValidationExists())
+                .handler(new ControllerApiProjectCommentFileDelete())
                 .handler(new HandlerLogger.HandlerLoggerResponse());
     }
 
