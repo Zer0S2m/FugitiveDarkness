@@ -98,6 +98,7 @@ public class FugitiveDarknessApp extends AbstractVerticle {
                                 \t\u001b[42mPOST\u001b[0m   [/api/v1/project/files/all-commit]
                                 \t\u001b[42mPOST\u001b[0m   [/api/v1/project/files/lines-code]
                                 \t\u001b[42mPOST\u001b[0m   [/api/v1/project/files/hotspots]
+                                \t\u001b[42mPOST\u001b[0m   [/api/v1/project/files/todo]
                                 \t\u001b[44mGET\u001b[0m    [/api/v1/project/files/comment]
                                 \t\u001b[42mPOST\u001b[0m   [/api/v1/project/files/comment]
                                 \t\u001b[43mPUT\u001b[0m    [/api/v1/project/files/comment/:ID]
@@ -426,6 +427,15 @@ public class FugitiveDarknessApp extends AbstractVerticle {
                 .handler(ControllerApiProjectFilesHotspots.Validation.validator(vertx))
                 .handler(new GitRepoValidationExists())
                 .handler(new ControllerApiProjectFilesHotspots())
+                .handler(new HandlerLogger.HandlerLoggerResponse());
+        router
+                .post("/api/v1/project/files/todo")
+                .handler(BodyHandler
+                        .create()
+                        .setHandleFileUploads(false))
+                .handler(ControllerApiProjectFilesTodo.FilesTodoValidation.validator(vertx))
+                .handler(new GitRepoValidationExists())
+                .handler(new ControllerApiProjectFilesTodo())
                 .handler(new HandlerLogger.HandlerLoggerResponse());
         router
                 .get("/api/v1/project/files/comment")

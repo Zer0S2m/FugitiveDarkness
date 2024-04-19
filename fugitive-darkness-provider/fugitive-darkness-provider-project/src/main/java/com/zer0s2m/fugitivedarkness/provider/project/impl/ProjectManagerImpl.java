@@ -1,5 +1,8 @@
 package com.zer0s2m.fugitivedarkness.provider.project.impl;
 
+import com.zer0s2m.fugitivedarkness.provider.git.ContainerInfoSearchFileGitRepo;
+import com.zer0s2m.fugitivedarkness.provider.git.ContainerInfoSearchGitRepo;
+import com.zer0s2m.fugitivedarkness.provider.git.GitRepoFilterSearch;
 import com.zer0s2m.fugitivedarkness.provider.git.GitRepoManager;
 import com.zer0s2m.fugitivedarkness.provider.project.*;
 import org.eclipse.jgit.revwalk.RevCommit;
@@ -25,6 +28,7 @@ import java.util.stream.StreamSupport;
  *     <li>Information about commits in a specific file.</li>
  *     <li>Design hotspots.</li>
  *     <li>The number of lines of code in certain file objects.</li>
+ *     <li>The number of todos.</li>
  * </ul>
  */
 public class ProjectManagerImpl implements ProjectManager {
@@ -32,6 +36,8 @@ public class ProjectManagerImpl implements ProjectManager {
     private ProjectReaderAdapterAbstract projectReaderAdapterAbstract;
 
     private ProjectCountLineFilesReaderAdapterAbstract projectCountFilesReaderAdapterAbstract;
+
+    static final String REGEX_FIND_TODO = "(T|d)(O|o)(D|d)(O|o)";
 
     /**
      * Get all the information about the file objects in the project.
@@ -136,6 +142,40 @@ public class ProjectManagerImpl implements ProjectManager {
             ProjectCountLineFilesFilters filters, ProjectCountLineFilesReader reader)
             throws ProjectException, IOException {
         return reader.read(getAdapterCountFiles(), filters.getTypeFileObject());
+    }
+
+    /**
+     * Get all matches of the todos pattern in the git repository or in a local project.
+     *
+     * @param sourceGitRepository The original path to the project.
+     * @param filters             Additional filters for launching the search engine.
+     * @return The search result.
+     */
+    @Override
+    public List<ContainerInfoSearchFileGitRepo> findTodo(Path sourceGitRepository, ProjectTodoFilters filters) {
+        GitRepoManager gitRepoManager = GitRepoManager.create();
+
+        GitRepoFilterSearch gitRepoFilterSearch = GitRepoFilterSearch
+                .create()
+                .setPattern(REGEX_FIND_TODO)
+                .setIsSearchOnlyInArea(true)
+                .addGitRepo(sourceGitRepository)
+                .setAreaIsDirectory(filters.getIsDirectory())
+                .setAreaIsFile(filters.getIsFile())
+                .setAreaFile(filters.getFile())
+                .addGitMeta(sourceGitRepository, filters.getContainerGitRepoMeta());
+
+        final List<ContainerInfoSearchGitRepo> resultSearch;
+
+        if (filters.getIsLocalGitRepo()) {
+            resultSearch = gitRepoManager.searchByGrep_io(gitRepoFilterSearch);
+        } else if (filters.getIsUnpackingGitRepo()) {
+            resultSearch = gitRepoManager.searchByGrep_io(gitRepoFilterSearch);
+        } else {
+            resultSearch = gitRepoManager.searchByGrep_jgit(gitRepoFilterSearch);
+        }
+
+        return resultSearch.get(0).found();
     }
 
     /**

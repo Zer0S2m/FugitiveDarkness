@@ -4,6 +4,8 @@
 
 ### Added
 
+- Improving the search engine:
+    - Set the search areas - file or directory.
 - Scheduled tasks:
     - Functionality for creating scheduled tasks.
     - Rules for running scheduled tasks.
@@ -12,6 +14,11 @@
 ### Security
 
 - The postgresql package has been updated - CVE-2024-1597
+
+### Fixed
+
+- When collecting search statistics in the search engine, sometimes it occurs that the speed of search execution 
+  is almost zero and an arithmetic error occurs (cannot be divided by zero)
 
 ## [0.0.7] 2024-04-10
 
