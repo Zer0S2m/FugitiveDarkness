@@ -61,15 +61,36 @@ class SearchEngineIOGitGrepImpl extends SearchEngineIOGitGrepAbstract implements
         }
 
         final List<ContainerInfoSearchFileGitRepo> containerInfoSearchFileGitRepos = new ArrayList<>();
-        final Set<Path> files = SearchEngineIOGitWalkingDirectory
-                .walkDirectory(
-                        getDirectory(),
-                        getMaxDepth(),
-                        getIncludeExtensionFilesForSearchGrep(),
-                        getExcludeExtensionFilesForSearchGrep(),
-                        getPatternForIncludeFile(),
-                        getPatternForExcludeFile(),
-                        blobs);
+
+
+        final Set<Path> files;
+        if (getAreaIsDirectory()) {
+            files = SearchEngineIOGitWalkingDirectory
+                    .walkDirectory(
+                            Path.of(
+                                    getDirectory().toString() + getAreaFile()),
+                            getMaxDepth(),
+                            getIncludeExtensionFilesForSearchGrep(),
+                            getExcludeExtensionFilesForSearchGrep(),
+                            getPatternForIncludeFile(),
+                            getPatternForExcludeFile(),
+                            blobs);
+        } else if (getAreaIsFile()) {
+            files = new HashSet<>();
+            files.add(Path.of(
+                    getDirectory().toString() + getAreaFile()));
+        } else {
+            files = SearchEngineIOGitWalkingDirectory
+                    .walkDirectory(
+                            getDirectory(),
+                            getMaxDepth(),
+                            getIncludeExtensionFilesForSearchGrep(),
+                            getExcludeExtensionFilesForSearchGrep(),
+                            getPatternForIncludeFile(),
+                            getPatternForExcludeFile(),
+                            blobs);
+        }
+
         final List<SearchInFileMatchFilterCallableAbstract<ContainerInfoSearchFileGitRepo>> searchIOFileCallables =
                 collectVirtualThreads(files);
 

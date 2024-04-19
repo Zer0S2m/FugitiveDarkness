@@ -69,6 +69,8 @@ public abstract class SearchEngineGrepAbstract implements SearchEngineGrep {
      */
     private int contextAfter = -1;
 
+    private String areaFile = null;
+
     /**
      * @param pattern              A pattern for finding matches in files.
      * @param source               Source path to the git repository.
@@ -346,6 +348,26 @@ public abstract class SearchEngineGrepAbstract implements SearchEngineGrep {
     @Override
     public int getContextAfter() {
         return contextAfter;
+    }
+
+    /**
+     * Set the search area to a file or directory.
+     *
+     * @param areaFile The search area is a file or directory.
+     */
+    @Override
+    public void setAreaFile(String areaFile) {
+        this.areaFile = areaFile;
+    }
+
+    /**
+     * Get the search area to a file or directory.
+     *
+     * @return The search area is a file or directory.
+     */
+    @Override
+    public String getAreaFile() {
+        return areaFile;
     }
 
 }

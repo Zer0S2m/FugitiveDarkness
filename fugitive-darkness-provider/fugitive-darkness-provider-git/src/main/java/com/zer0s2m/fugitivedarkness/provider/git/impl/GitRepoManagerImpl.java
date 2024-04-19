@@ -229,6 +229,7 @@ public class GitRepoManagerImpl implements GitRepoManager {
 
                         logger.info("""
                                         Statistics       [{}]
+                                        \tType engine                                     [JGIT]
                                         \tExecution time                                  [{}]
                                         \tAverage file processing time                    [{}]
                                         \tThe number of files in the project              [{}]
@@ -282,6 +283,7 @@ public class GitRepoManagerImpl implements GitRepoManager {
 
                         logger.info("""
                                         Statistics       [{}]
+                                        \tType engine                                     [IO]
                                         \tExecution time                                  [{}]
                                         \tAverage file processing time                    [{}]
                                         \tThe number of files in the project              [{}]
@@ -356,11 +358,15 @@ public class GitRepoManagerImpl implements GitRepoManager {
             Path source,
             ContainerGitRepoMeta gitRepo) throws IOException, SearchEngineGitSetMaxCountException,
             SearchEngineGitSetMaxDepthException, SearchEngineGitSetContextException {
-        final SearchEngineGrep commandGrep = new SearchEngineJGitGrepImpl(
+        final SearchEngineJGitGrep commandGrep = new SearchEngineJGitGrepImpl(
                 filterSearch.getPattern(),
                 source,
                 gitRepo
         );
+
+        if (filterSearch.getIsSearchOnlyInArea() && filterSearch.getAreaFile() != null) {
+            commandGrep.setAreaFile(filterSearch.getAreaFile());
+        }
 
         searchEngineGitGrepCollectFilter(filterSearch, commandGrep);
 
@@ -383,11 +389,17 @@ public class GitRepoManagerImpl implements GitRepoManager {
             Path source,
             ContainerGitRepoMeta gitRepo) throws SearchEngineGitSetMaxDepthException,
             SearchEngineGitSetContextException, SearchEngineGitSetMaxCountException {
-        final SearchEngineGrep commandGrep = new SearchEngineIOGitGrepImpl(
+        final SearchEngineIOGitGrep commandGrep = new SearchEngineIOGitGrepImpl(
                 filterSearch.getPattern(),
                 source,
                 gitRepo
         );
+
+        if (filterSearch.getIsSearchOnlyInArea() && filterSearch.getAreaFile() != null) {
+            commandGrep.setAreaFile(filterSearch.getAreaFile());
+            commandGrep.setAreaIsFile(filterSearch.getAreaIsFile());
+            commandGrep.setAreaIsDirectory(filterSearch.getAreaIsDirectory());
+        }
 
         searchEngineGitGrepCollectFilter(filterSearch, commandGrep);
 

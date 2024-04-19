@@ -17,6 +17,7 @@ import java.util.Collection;
  *     <li>Information about commits in a specific file.</li>
  *     <li>Design hotspots.</li>
  *     <li>The number of lines of code in certain file objects.</li>
+ *     <li>The number of todos.</li>
  * </ul>
  */
 public interface ProjectManager {
@@ -77,7 +78,10 @@ public interface ProjectManager {
      * @return Information about the number of lines in the file object.
      */
     Collection<FileProjectCountLine> countLinesCodeFile(
-            ProjectCountLineFilesFilters filters, ProjectCountLineFilesReader reader) throws ProjectException, IOException;
+            ProjectCountLineFilesFilters filters, ProjectCountLineFilesReader reader)
+            throws ProjectException, IOException;
+
+    void findTodo(Path sourceGitRepository, ProjectTodoFilters filters);
 
     /**
      * Assemble the file structure as a tree structure.

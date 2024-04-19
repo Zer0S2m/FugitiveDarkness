@@ -12,6 +12,7 @@ import org.eclipse.jgit.revwalk.RevWalk;
 import org.eclipse.jgit.treewalk.AbstractTreeIterator;
 import org.eclipse.jgit.treewalk.CanonicalTreeParser;
 import org.eclipse.jgit.treewalk.TreeWalk;
+import org.eclipse.jgit.treewalk.filter.PathFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -122,6 +123,9 @@ class SearchEngineJGitGrepImpl extends SearchEngineJGitGrepAbstract implements S
 
                 int treeIndex = treeWalk.addTree(treeParser);
                 treeWalk.setRecursive(true);
+                if (getAreaFile() != null) {
+                    treeWalk.setFilter(PathFilter.create(getAreaFile()));
+                }
 
                 while (treeWalk.next()) {
                     countFiles.set(countFiles.get() + 1);

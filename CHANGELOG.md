@@ -4,6 +4,8 @@
 
 ### Added
 
+- Improving the search engine:
+    - Set the search areas - file or directory.
 - Scheduled tasks:
     - Functionality for creating scheduled tasks.
     - Rules for running scheduled tasks.

@@ -30,6 +30,14 @@ public class GitRepoFilterSearchImpl implements GitRepoFilterSearch {
 
     private int context = -1;
 
+    private boolean isSearchOnlyInArea = false;
+
+    private String areaFile = null;
+
+    private boolean areaIsFile = false;
+
+    private boolean areaIsDirectory = false;
+
     private final Map<Path, ContainerGitRepoMeta> meta = new HashMap<>();
 
     private final Set<String> includeExtensionFiles = new HashSet<>();
@@ -361,6 +369,90 @@ public class GitRepoFilterSearchImpl implements GitRepoFilterSearch {
     @Override
     public int getContextAfter() {
         return contextAfter;
+    }
+
+    /**
+     * Set a sign that what should be searched for only in a certain area
+     *
+     * @param isSearchOnlyInArea Search only in a certain area.
+     */
+    @Override
+    public GitRepoFilterSearch setIsSearchOnlyInArea(boolean isSearchOnlyInArea) {
+        this.isSearchOnlyInArea = isSearchOnlyInArea;
+        return this;
+    }
+
+    /**
+     * Get a sign that you need to look for something only in a certain area
+     *
+     * @return Search only in a certain area.
+     */
+    @Override
+    public boolean getIsSearchOnlyInArea() {
+        return isSearchOnlyInArea;
+    }
+
+    /**
+     * Set the search area to a file or directory.
+     *
+     * @param areaFile The search area is a file or directory.
+     */
+    @Override
+    public GitRepoFilterSearch setAreaFile(String areaFile) {
+        this.areaFile = areaFile;
+        return this;
+    }
+
+    /**
+     * Get the search area to a file or directory.
+     *
+     * @return The search area is a file or directory.
+     */
+    @Override
+    public String getAreaFile() {
+        return areaFile;
+    }
+
+    /**
+     * Set the indication that the search area is a file.
+     *
+     * @param areaIsFile Indicates that the search area is a file.
+     */
+    @Override
+    public GitRepoFilterSearch setAreaIsFile(boolean areaIsFile) {
+        this.areaIsFile = areaIsFile;
+        return this;
+    }
+
+    /**
+     * Get the indication that the search area is a file.
+     *
+     * @return Indicates that the search area is a file.
+     */
+    @Override
+    public boolean getAreaIsFile() {
+        return areaIsFile;
+    }
+
+    /**
+     * Get the indication that the search area is a file.
+     *
+     * @param areaIsDirectory Indicates that the search area is a directory.
+     */
+    @Override
+    public GitRepoFilterSearch setAreaIsDirectory(boolean areaIsDirectory) {
+        this.areaIsDirectory = areaIsDirectory;
+        return this;
+    }
+
+    /**
+     * Get the indication that the search area is a file.
+     *
+     * @return Indicates that the search area is a directory.
+     */
+    @Override
+    public boolean getAreaIsDirectory() {
+        return areaIsDirectory;
     }
 
     /**

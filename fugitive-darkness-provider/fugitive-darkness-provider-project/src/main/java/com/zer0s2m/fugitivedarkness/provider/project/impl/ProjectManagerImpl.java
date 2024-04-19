@@ -25,6 +25,7 @@ import java.util.stream.StreamSupport;
  *     <li>Information about commits in a specific file.</li>
  *     <li>Design hotspots.</li>
  *     <li>The number of lines of code in certain file objects.</li>
+ *     <li>The number of todos.</li>
  * </ul>
  */
 public class ProjectManagerImpl implements ProjectManager {
@@ -136,6 +137,11 @@ public class ProjectManagerImpl implements ProjectManager {
             ProjectCountLineFilesFilters filters, ProjectCountLineFilesReader reader)
             throws ProjectException, IOException {
         return reader.read(getAdapterCountFiles(), filters.getTypeFileObject());
+    }
+
+    @Override
+    public void findTodo(Path sourceGitRepository, ProjectTodoFilters filters) {
+        // TODO
     }
 
     /**
