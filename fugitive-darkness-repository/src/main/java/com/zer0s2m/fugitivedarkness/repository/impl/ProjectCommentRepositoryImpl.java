@@ -6,6 +6,7 @@ import io.vertx.core.Future;
 import io.vertx.core.Vertx;
 import io.vertx.sqlclient.Row;
 import io.vertx.sqlclient.RowSet;
+import io.vertx.sqlclient.Tuple;
 
 import java.util.List;
 import java.util.stream.StreamSupport;
@@ -36,7 +37,16 @@ public class ProjectCommentRepositoryImpl extends RepositoryImpl implements Proj
      */
     @Override
     public Future<RowSet<Row>> findAll() {
-        return null;
+        return sqlClient(vertx)
+                .query("""
+                        SELECT "project_comments"."id",
+                               "project_comments"."text",
+                               "project_comments"."created_at",
+                               "project_comments"."file",
+                               "project_comments"."git_repository_id"
+                        FROM "project_comments";
+                        """)
+                .execute();
     }
 
     /**
@@ -47,7 +57,13 @@ public class ProjectCommentRepositoryImpl extends RepositoryImpl implements Proj
      */
     @Override
     public Future<RowSet<Row>> save(ProjectComment entity) {
-        return null;
+        return sqlClient(vertx)
+                .preparedQuery("""
+                            INSERT INTO "project_comments" (text, file, git_repository_id)
+                            VALUES ($1, $2, $3)
+                            RETURNING *
+                        """)
+                .execute(Tuple.of(entity.getText(), entity.getFile(), entity.getGitRepositoryId()));
     }
 
     /**
@@ -72,6 +88,58 @@ public class ProjectCommentRepositoryImpl extends RepositoryImpl implements Proj
     @Override
     public boolean mapToExistsColumn(RowSet<Row> rows) {
         return super.mapToExistsColumn(rows);
+    }
+
+    /**
+     * Delete project comment to find a match by ID.
+     * @param id ID project comment.
+     * @return Result.
+     */
+    @Override
+    public Future<RowSet<Row>> deleteById(long id) {
+        return sqlClient(vertx)
+                .preparedQuery("""
+                        DELETE
+                        FROM "project_comments"
+                        WHERE "project_comments".id = $1
+                        """)
+                .execute(Tuple.of(id));
+    }
+
+    /**
+     * Check entry for existence by ID.
+     *
+     * @param id ID project comment.
+     * @return Result.
+     */
+    @Override
+    public Future<RowSet<Row>> existsById(long id) {
+        return sqlClient(vertx)
+                .preparedQuery("""
+                        SELECT EXISTS(SELECT id
+                                      FROM "project_comments"
+                                      WHERE "project_comments"."id" = $1)
+                        """)
+                .execute(Tuple.of(id));
+    }
+
+    /**
+     * Update comment project text by ID.
+     *
+     * @param id ID matcher note.
+     * @param text New meaning.
+     * @return Result.
+     */
+    @Override
+    public Future<RowSet<Row>> updateTextById(long id, String text) {
+        return sqlClient(vertx)
+                .preparedQuery("""
+                        UPDATE "project_comments"
+                        SET text = $1
+                        WHERE "project_comments".id = $2
+                        RETURNING *
+                        """)
+                .execute(Tuple.of(text, id));
     }
 
 }

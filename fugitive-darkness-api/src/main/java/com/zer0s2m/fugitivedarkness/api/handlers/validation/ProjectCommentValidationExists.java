@@ -1,19 +1,16 @@
-package com.zer0s2m.fugitivedarkness.api.handlers;
+package com.zer0s2m.fugitivedarkness.api.handlers.validation;
 
+import com.zer0s2m.fugitivedarkness.api.exception.NotFoundException;
 import com.zer0s2m.fugitivedarkness.repository.ProjectCommentRepository;
 import com.zer0s2m.fugitivedarkness.repository.impl.ProjectCommentRepositoryImpl;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.vertx.core.Handler;
 import io.vertx.ext.web.RoutingContext;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
- * A request handler for deleting a comment on a file object in the project.
+ * Request handler for validation for the existence of a comment on a file object in the project.
  */
-public final class ControllerApiProjectCommentFileDelete implements Handler<RoutingContext> {
-
-    static private final Logger logger = LoggerFactory.getLogger(ControllerApiProjectCommentFileDelete.class);
+public final class ProjectCommentValidationExists implements Handler<RoutingContext> {
 
     /**
      * Something has happened, so handle it.
@@ -22,28 +19,24 @@ public final class ControllerApiProjectCommentFileDelete implements Handler<Rout
      */
     @Override
     public void handle(RoutingContext event) {
-        logger.info("Start deleting a comment of a file object in the project");
-
         final ProjectCommentRepository projectCommentRepository = new ProjectCommentRepositoryImpl(event.vertx());
-        final long idProjectComment = Long.parseLong(event.pathParam("ID"));
+        final long idDocxFile = Long.parseLong(event.pathParam("ID"));
 
         projectCommentRepository
-                .deleteById(idProjectComment)
+                .existsById(idDocxFile)
                 .onSuccess(ar -> {
                     projectCommentRepository.closeClient();
 
-                    event
-                            .response()
-                            .setStatusCode(HttpResponseStatus.NO_CONTENT.code());
-
-                    logger.info("End deleting a comment of a file object in the project");
-
-                    event.next();
+                    if (!projectCommentRepository.mapToExistsColumn(ar)) {
+                        event.fail(
+                                HttpResponseStatus.NOT_FOUND.code(),
+                                new NotFoundException("The comment to the file object was not found"));
+                    } else {
+                        event.next();
+                    }
                 })
                 .onFailure(error -> {
                     projectCommentRepository.closeClient();
-
-                    logger.error("Failure (DB): " + error.fillInStackTrace());
 
                     event
                             .response()

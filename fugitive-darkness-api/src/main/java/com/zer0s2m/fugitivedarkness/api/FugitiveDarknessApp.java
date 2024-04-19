@@ -427,6 +427,34 @@ public class FugitiveDarknessApp extends AbstractVerticle {
                 .handler(new GitRepoValidationExists())
                 .handler(new ControllerApiProjectFilesHotspots())
                 .handler(new HandlerLogger.HandlerLoggerResponse());
+        router
+                .get("/api/v1/project/files/comment")
+                .handler(new ControllerApiProjectCommentFileGet())
+                .handler(new HandlerLogger.HandlerLoggerResponse());
+        router
+                .post("/api/v1/project/files/comment")
+                .handler(BodyHandler
+                        .create()
+                        .setHandleFileUploads(false))
+                .handler(ControllerApiProjectCommentFileCreate.ProjectCommentFileValidation.validator(vertx))
+                .handler(new GitRepoValidationExists())
+                .handler(new ControllerApiProjectCommentFileCreate())
+                .handler(new HandlerLogger.HandlerLoggerResponse());
+        router
+                .put("/api/v1/project/files/comment/:ID")
+                .handler(BodyHandler
+                        .create()
+                        .setHandleFileUploads(false))
+                .handler(ControllerApiProjectCommentFileEdit.ProjectCommentFileValidation.validator(vertx))
+                .handler(new ProjectCommentValidationExists())
+                .handler(new ControllerApiProjectCommentFileEdit())
+                .handler(new HandlerLogger.HandlerLoggerResponse());
+        router
+                .delete("/api/v1/project/files/comment/:ID")
+                .handler(ControllerApiValidation.ValidationControlID.validator(vertx))
+                .handler(new ProjectCommentValidationExists())
+                .handler(new ControllerApiProjectCommentFileDelete())
+                .handler(new HandlerLogger.HandlerLoggerResponse());
     }
 
     /**

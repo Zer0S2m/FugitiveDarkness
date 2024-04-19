@@ -27,4 +27,16 @@ public class ProjectComment {
         this.gitRepositoryId = gitRepositoryId;
     }
 
+    public String getText() {
+        return text;
+    }
+
+    public String getFile() {
+        return file;
+    }
+
+    public long getGitRepositoryId() {
+        return gitRepositoryId;
+    }
+
 }
