@@ -106,7 +106,10 @@ public class FugitiveDarknessApp extends AbstractVerticle {
                                 \t\u001b[44mGET\u001b[0m    [/api/v1/project/files/tag]
                                 \t\u001b[42mPOST\u001b[0m   [/api/v1/project/files/tag]
                                 \t\u001b[43mPUT\u001b[0m    [/api/v1/project/files/tag/:ID]
-                                \t\u001b[41mDELETE\u001b[0m [/api/v1/project/files/tag/:ID]""");
+                                \t\u001b[41mDELETE\u001b[0m [/api/v1/project/files/tag/:ID]
+                                \t\u001b[44mGET\u001b[0m    [/api/v1/project/files/tag/set]
+                                \t\u001b[42mPOST\u001b[0m   [/api/v1/project/files/tag/set]
+                                \t\u001b[41mDELETE\u001b[0m [/api/v1/project/files/tag/set]""");
                         logger.info("""
                                 Setting ENV:
                                 \t\u001B[45mFD_ROOT_PATH\u001b[0m      - %s
@@ -468,6 +471,28 @@ public class FugitiveDarknessApp extends AbstractVerticle {
                 .handler(ControllerApiValidation.ValidationControlID.validator(vertx))
                 .handler(new ProjectCommentValidationExists())
                 .handler(new ControllerApiProjectCommentFileDelete())
+                .handler(new HandlerLogger.HandlerLoggerResponse());
+        router
+                .get("/api/v1/project/files/tag/set")
+                .handler(new ControllerApiProjectFilesTagSetGet())
+                .handler(new HandlerLogger.HandlerLoggerResponse());
+        router
+                .post("/api/v1/project/files/tag/set")
+                .handler(BodyHandler
+                        .create()
+                        .setHandleFileUploads(false))
+                .handler(ControllerApiProjectFilesTagSet.ProjectFilesTagSetValidation.validator(vertx))
+                .handler(new ProjectFileTagValidationBodyExists())
+                .handler(new ControllerApiProjectFilesTagSet())
+                .handler(new HandlerLogger.HandlerLoggerResponse());
+        router
+                .delete("/api/v1/project/files/tag/set")
+                .handler(BodyHandler
+                        .create()
+                        .setHandleFileUploads(false))
+                .handler(ControllerApiProjectFilesTagUnset.ProjectFilesTagUnsetValidation.validator(vertx))
+                .handler(new ProjectFileTagValidationBodyExists())
+                .handler(new ControllerApiProjectFilesTagUnset())
                 .handler(new HandlerLogger.HandlerLoggerResponse());
         router
                 .get("/api/v1/project/files/tag")

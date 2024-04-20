@@ -5,13 +5,14 @@ import com.zer0s2m.fugitivedarkness.repository.ProjectFileTagRepository;
 import com.zer0s2m.fugitivedarkness.repository.impl.ProjectFileTagRepositoryImpl;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.vertx.core.Handler;
+import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.RoutingContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public final class ProjectFileTagValidationExists implements Handler<RoutingContext> {
+public final class ProjectFileTagValidationBodyExists implements Handler<RoutingContext> {
 
-    static private final Logger logger = LoggerFactory.getLogger(ProjectFileTagValidationExists.class);
+    static private final Logger logger = LoggerFactory.getLogger(ProjectFileTagValidationBodyExists.class);
 
     /**
      * Something has happened, so handle it.
@@ -21,10 +22,14 @@ public final class ProjectFileTagValidationExists implements Handler<RoutingCont
     @Override
     public void handle(RoutingContext event) {
         final ProjectFileTagRepository projectFileTagRepository = new ProjectFileTagRepositoryImpl(event.vertx());
-        final long idProjectFileId = Long.parseLong(event.pathParam("ID"));
+        final JsonObject requestBody = event
+                .body()
+                .asJsonObject();
+
+        final long tagId = requestBody.getLong("tagId");
 
         projectFileTagRepository
-                .existsById(idProjectFileId)
+                .existsById(tagId)
                 .onSuccess(ar -> {
                     projectFileTagRepository.closeClient();
 
