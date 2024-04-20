@@ -1,5 +1,6 @@
-package com.zer0s2m.fugitivedarkness.api.handlers;
+package com.zer0s2m.fugitivedarkness.api.handlers.validation;
 
+import com.zer0s2m.fugitivedarkness.api.exception.NotFoundException;
 import com.zer0s2m.fugitivedarkness.repository.ProjectFileTagRepository;
 import com.zer0s2m.fugitivedarkness.repository.impl.ProjectFileTagRepositoryImpl;
 import io.netty.handler.codec.http.HttpResponseStatus;
@@ -8,12 +9,9 @@ import io.vertx.ext.web.RoutingContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * The request handler for deleting tags to file objects in the project.
- */
-public final class ControllerApiProjectFilesTagDelete implements Handler<RoutingContext> {
+public final class ProjectFileTagValidationExists implements Handler<RoutingContext> {
 
-    static private final Logger logger = LoggerFactory.getLogger(ControllerApiProjectFilesTagDelete.class);
+    static private final Logger logger = LoggerFactory.getLogger(ProjectFileTagValidationExists.class);
 
     /**
      * Something has happened, so handle it.
@@ -22,28 +20,24 @@ public final class ControllerApiProjectFilesTagDelete implements Handler<Routing
      */
     @Override
     public void handle(RoutingContext event) {
-        logger.info("Starting to delete a tag for file objects in a project");
-
-        final long idProjectTag = Long.parseLong(event.pathParam("ID"));
         final ProjectFileTagRepository projectFileTagRepository = new ProjectFileTagRepositoryImpl(event.vertx());
+        final long idDocxFile = Long.parseLong(event.pathParam("ID"));
 
         projectFileTagRepository
-                .deleteById(idProjectTag)
+                .existsById(idDocxFile)
                 .onSuccess(ar -> {
                     projectFileTagRepository.closeClient();
 
-                    event
-                            .response()
-                            .setStatusCode(HttpResponseStatus.NO_CONTENT.code());
-
-                    logger.info("End of tag delete for file objects in the project");
-
-                    event.next();
+                    if (!projectFileTagRepository.mapToExistsColumn(ar)) {
+                        event.fail(
+                                HttpResponseStatus.NOT_FOUND.code(),
+                                new NotFoundException("The tag to the file object was not found"));
+                    } else {
+                        event.next();
+                    }
                 })
                 .onFailure(error -> {
                     projectFileTagRepository.closeClient();
-
-                    logger.error("Failure (DB): " + error.fillInStackTrace());
 
                     event
                             .response()

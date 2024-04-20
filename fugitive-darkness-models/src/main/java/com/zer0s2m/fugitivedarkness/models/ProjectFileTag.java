@@ -24,4 +24,12 @@ public class ProjectFileTag {
         this.gitRepositoryId = gitRepositoryId;
     }
 
+    public String getTitle() {
+        return title;
+    }
+
+    public long getGitRepositoryId() {
+        return gitRepositoryId;
+    }
+
 }

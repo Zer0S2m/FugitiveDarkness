@@ -23,4 +23,13 @@ public interface ProjectFileTagRepository extends Repository<RowSet<Row>, Projec
      */
     Future<RowSet<Row>> existsById(long id);
 
+    /**
+     * Update tag project title by ID.
+     *
+     * @param id ID project tag.
+     * @param title New meaning.
+     * @return Result.
+     */
+    Future<RowSet<Row>> updateTitleById(long id, String title);
+
 }

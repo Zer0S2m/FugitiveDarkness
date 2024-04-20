@@ -6,6 +6,7 @@ import io.vertx.core.Future;
 import io.vertx.core.Vertx;
 import io.vertx.sqlclient.Row;
 import io.vertx.sqlclient.RowSet;
+import io.vertx.sqlclient.Tuple;
 
 import java.util.List;
 import java.util.stream.StreamSupport;
@@ -26,7 +27,13 @@ public class ProjectFileTagRepositoryImpl extends RepositoryImpl implements Proj
      */
     @Override
     public Future<RowSet<Row>> deleteById(long id) {
-        return null;
+        return sqlClient(vertx)
+                .preparedQuery("""
+                        DELETE
+                        FROM "project_file_tags"
+                        WHERE "project_file_tags".id = $1
+                        """)
+                .execute(Tuple.of(id));
     }
 
     /**
@@ -37,7 +44,32 @@ public class ProjectFileTagRepositoryImpl extends RepositoryImpl implements Proj
      */
     @Override
     public Future<RowSet<Row>> existsById(long id) {
-        return null;
+        return sqlClient(vertx)
+                .preparedQuery("""
+                        SELECT EXISTS(SELECT id
+                                      FROM "project_file_tags"
+                                      WHERE "project_file_tags"."id" = $1)
+                        """)
+                .execute(Tuple.of(id));
+    }
+
+    /**
+     * Update tag project title by ID.
+     *
+     * @param id ID project tag.
+     * @param title New meaning.
+     * @return Result.
+     */
+    @Override
+    public Future<RowSet<Row>> updateTitleById(long id, String title) {
+        return sqlClient(vertx)
+                .preparedQuery("""
+                        UPDATE "project_file_tags"
+                        SET title = $1
+                        WHERE "project_file_tags".id = $2
+                        RETURNING *
+                        """)
+                .execute(Tuple.of(title, id));
     }
 
     /**
@@ -58,7 +90,15 @@ public class ProjectFileTagRepositoryImpl extends RepositoryImpl implements Proj
      */
     @Override
     public Future<RowSet<Row>> findAll() {
-        return null;
+        return sqlClient(vertx)
+                .query("""
+                        SELECT "project_file_tags"."id",
+                               "project_file_tags"."created_at",
+                               "project_file_tags"."title",
+                               "project_file_tags"."git_repository_id"
+                        FROM "project_file_tags";
+                        """)
+                .execute();
     }
 
     /**
@@ -69,7 +109,13 @@ public class ProjectFileTagRepositoryImpl extends RepositoryImpl implements Proj
      */
     @Override
     public Future<RowSet<Row>> save(ProjectFileTag entity) {
-        return null;
+        return sqlClient(vertx)
+                .preparedQuery("""
+                            INSERT INTO "project_file_tags" (title, git_repository_id)
+                            VALUES ($1, $2)
+                            RETURNING *
+                        """)
+                .execute(Tuple.of(entity.getTitle(), entity.getGitRepositoryId()));
     }
 
     /**
