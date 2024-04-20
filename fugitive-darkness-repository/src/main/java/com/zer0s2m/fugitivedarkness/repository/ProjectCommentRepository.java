@@ -9,6 +9,7 @@ public interface ProjectCommentRepository extends Repository<RowSet<Row>, Projec
 
     /**
      * Delete project comment to find a match by ID.
+     *
      * @param id ID project comment.
      * @return Result.
      */
@@ -25,7 +26,7 @@ public interface ProjectCommentRepository extends Repository<RowSet<Row>, Projec
     /**
      * Update comment project text by ID.
      *
-     * @param id ID matcher note.
+     * @param id   ID comment project.
      * @param text New meaning.
      * @return Result.
      */
