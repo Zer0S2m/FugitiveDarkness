@@ -6,8 +6,10 @@ import io.vertx.core.Future;
 import io.vertx.core.Vertx;
 import io.vertx.sqlclient.Row;
 import io.vertx.sqlclient.RowSet;
+import io.vertx.sqlclient.Tuple;
 
 import java.util.List;
+import java.util.stream.StreamSupport;
 
 public class ProjectFileColorRepositoryImpl extends RepositoryImpl implements ProjectFileColorRepository {
 
@@ -25,7 +27,13 @@ public class ProjectFileColorRepositoryImpl extends RepositoryImpl implements Pr
      */
     @Override
     public Future<RowSet<Row>> deleteById(long id) {
-        return null;
+        return sqlClient(vertx)
+                .preparedQuery("""
+                        DELETE
+                        FROM "project_file_colors"
+                        WHERE "project_file_colors".id = $1
+                        """)
+                .execute(Tuple.of(id));
     }
 
     /**
@@ -36,7 +44,13 @@ public class ProjectFileColorRepositoryImpl extends RepositoryImpl implements Pr
      */
     @Override
     public Future<RowSet<Row>> existsById(long id) {
-        return null;
+        return sqlClient(vertx)
+                .preparedQuery("""
+                        SELECT EXISTS(SELECT id
+                                      FROM "project_file_colors"
+                                      WHERE "project_file_colors"."id" = $1)
+                        """)
+                .execute(Tuple.of(id));
     }
 
     /**
@@ -48,7 +62,14 @@ public class ProjectFileColorRepositoryImpl extends RepositoryImpl implements Pr
      */
     @Override
     public Future<RowSet<Row>> updateColorById(long id, String color) {
-        return null;
+        return sqlClient(vertx)
+                .preparedQuery("""
+                        UPDATE "project_file_colors"
+                        SET color = $1
+                        WHERE "project_file_colors".id = $2
+                        RETURNING *
+                        """)
+                .execute(Tuple.of(color, id));
     }
 
     /**
@@ -69,7 +90,15 @@ public class ProjectFileColorRepositoryImpl extends RepositoryImpl implements Pr
      */
     @Override
     public Future<RowSet<Row>> findAll() {
-        return null;
+        return sqlClient(vertx)
+                .query("""
+                        SELECT "project_file_colors"."id",
+                               "project_file_colors"."created_at",
+                               "project_file_colors"."color",
+                               "project_file_colors"."git_repository_id"
+                        FROM "project_file_colors";
+                        """)
+                .execute();
     }
 
     /**
@@ -80,7 +109,13 @@ public class ProjectFileColorRepositoryImpl extends RepositoryImpl implements Pr
      */
     @Override
     public Future<RowSet<Row>> save(ProjectFileColor entity) {
-        return null;
+        return sqlClient(vertx)
+                .preparedQuery("""
+                            INSERT INTO "project_file_colors" (color, git_repository_id)
+                            VALUES ($1, $2)
+                            RETURNING *
+                        """)
+                .execute(Tuple.of(entity.getColor(), entity.getGitRepositoryId()));
     }
 
     /**
@@ -91,7 +126,9 @@ public class ProjectFileColorRepositoryImpl extends RepositoryImpl implements Pr
      */
     @Override
     public List<ProjectFileColor> mapTo(RowSet<Row> rows) {
-        return null;
+        return StreamSupport.stream(rows.spliterator(), false)
+                .map(row -> row.toJson().mapTo(ProjectFileColor.class))
+                .toList();
     }
 
     /**

@@ -109,7 +109,11 @@ public class FugitiveDarknessApp extends AbstractVerticle {
                                 \t\u001b[41mDELETE\u001b[0m [/api/v1/project/files/tag/:ID]
                                 \t\u001b[44mGET\u001b[0m    [/api/v1/project/files/tag/set]
                                 \t\u001b[42mPOST\u001b[0m   [/api/v1/project/files/tag/set]
-                                \t\u001b[41mDELETE\u001b[0m [/api/v1/project/files/tag/set]""");
+                                \t\u001b[41mDELETE\u001b[0m [/api/v1/project/files/tag/set]
+                                \t\u001b[44mGET\u001b[0m    [/api/v1/project/files/color]
+                                \t\u001b[42mPOST\u001b[0m   [/api/v1/project/files/color]
+                                \t\u001b[43mPUT\u001b[0m    [/api/v1/project/files/color/:ID]
+                                \t\u001b[41mDELETE\u001b[0m [/api/v1/project/files/color/:ID]""");
                         logger.info("""
                                 Setting ENV:
                                 \t\u001B[45mFD_ROOT_PATH\u001b[0m      - %s
@@ -521,6 +525,35 @@ public class FugitiveDarknessApp extends AbstractVerticle {
                 .handler(ControllerApiValidation.ValidationControlID.validator(vertx))
                 .handler(new ProjectFileTagValidationExists())
                 .handler(new ControllerApiProjectFilesTagDelete())
+                .handler(new HandlerLogger.HandlerLoggerResponse());
+        router
+                .get("/api/v1/project/files/color")
+                .handler(new ControllerApiProjectFilesColorGet())
+                .handler(new HandlerLogger.HandlerLoggerResponse());
+        router
+                .post("/api/v1/project/files/color")
+                .handler(BodyHandler
+                        .create()
+                        .setHandleFileUploads(false))
+                .handler(ControllerApiProjectFilesColorCreate.ProjectFilesColorValidation.validator(vertx))
+                .handler(new GitRepoValidationExists())
+                .handler(new ControllerApiProjectFilesColorCreate())
+                .handler(new HandlerLogger.HandlerLoggerResponse());
+        router
+                .put("/api/v1/project/files/color/:ID")
+                .handler(BodyHandler
+                        .create()
+                        .setHandleFileUploads(false))
+                .handler(ControllerApiProjectFilesColorEdit.ProjectFilesColorValidation.validator(vertx))
+                .handler(ControllerApiValidation.ValidationControlID.validator(vertx))
+                .handler(new ProjectFileColorValidationExists())
+                .handler(new ControllerApiProjectFilesColorEdit())
+                .handler(new HandlerLogger.HandlerLoggerResponse());
+        router
+                .delete("/api/v1/project/files/color/:ID")
+                .handler(ControllerApiValidation.ValidationControlID.validator(vertx))
+                .handler(new ProjectFileColorValidationExists())
+                .handler(new ControllerApiProjectFilesColorDelete())
                 .handler(new HandlerLogger.HandlerLoggerResponse());
     }
 

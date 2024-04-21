@@ -1,5 +1,6 @@
-package com.zer0s2m.fugitivedarkness.api.handlers;
+package com.zer0s2m.fugitivedarkness.api.handlers.validation;
 
+import com.zer0s2m.fugitivedarkness.api.exception.NotFoundException;
 import com.zer0s2m.fugitivedarkness.repository.ProjectFileColorRepository;
 import com.zer0s2m.fugitivedarkness.repository.impl.ProjectFileColorRepositoryImpl;
 import io.netty.handler.codec.http.HttpResponseStatus;
@@ -8,12 +9,9 @@ import io.vertx.ext.web.RoutingContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * The request handler for deleting the color palette of a file in the project.
- */
-public final class ControllerApiProjectFilesColorDelete implements Handler<RoutingContext> {
+public final class ProjectFileColorValidationExists implements Handler<RoutingContext> {
 
-    static private final Logger logger = LoggerFactory.getLogger(ControllerApiProjectFilesColorDelete.class);
+    static private final Logger logger = LoggerFactory.getLogger(ProjectFileColorValidationExists.class);
 
     /**
      * Something has happened, so handle it.
@@ -22,29 +20,25 @@ public final class ControllerApiProjectFilesColorDelete implements Handler<Routi
      */
     @Override
     public void handle(RoutingContext event) {
-        logger.info("Start deleting the color palette for files in the project");
-
         final ProjectFileColorRepository projectFileColorRepository =
                 new ProjectFileColorRepositoryImpl(event.vertx());
-        final long idProjectColor = Long.parseLong(event.pathParam("ID"));
+        final long idProjectColorId = Long.parseLong(event.pathParam("ID"));
 
         projectFileColorRepository
-                .deleteById(idProjectColor)
+                .existsById(idProjectColorId)
                 .onSuccess(ar -> {
                     projectFileColorRepository.closeClient();
 
-                    event
-                            .response()
-                            .setStatusCode(HttpResponseStatus.NO_CONTENT.code());
-
-                    logger.info("End deleting the color palette for files in the project");
-
-                    event.next();
+                    if (!projectFileColorRepository.mapToExistsColumn(ar)) {
+                        event.fail(
+                                HttpResponseStatus.NOT_FOUND.code(),
+                                new NotFoundException("The color to the file object was not found"));
+                    } else {
+                        event.next();
+                    }
                 })
                 .onFailure(error -> {
                     projectFileColorRepository.closeClient();
-
-                    logger.error("Failure (DB): " + error.fillInStackTrace());
 
                     event
                             .response()
