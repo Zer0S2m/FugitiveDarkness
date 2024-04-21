@@ -92,6 +92,7 @@ public class ProjectCommentRepositoryImpl extends RepositoryImpl implements Proj
 
     /**
      * Delete project comment to find a match by ID.
+     *
      * @param id ID project comment.
      * @return Result.
      */
@@ -126,7 +127,7 @@ public class ProjectCommentRepositoryImpl extends RepositoryImpl implements Proj
     /**
      * Update comment project text by ID.
      *
-     * @param id ID matcher note.
+     * @param id   ID comment project.
      * @param text New meaning.
      * @return Result.
      */
