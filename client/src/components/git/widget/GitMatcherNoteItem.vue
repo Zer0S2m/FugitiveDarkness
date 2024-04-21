@@ -48,10 +48,10 @@ import IconDelete from '@/assets/icon-delete.svg';
 import { type IMatchNote } from '@/types/matcherNote';
 import Code from '@/components/common/Code.vue';
 import { type ComputedRef, computed } from 'vue';
-import { useMatcherNoteState } from '@/stores/useMatcherNoteState';
+import { useGitMatcherNoteState } from '@/stores/useGitMatcherNoteState';
 import { useVfm } from 'vue-final-modal';
 
-const useMatcherNoteStore = useMatcherNoteState();
+const useGitMatcherNoteStore = useGitMatcherNoteState();
 const useVfmStore = useVfm();
 
 // code line -> matcher note
@@ -81,17 +81,17 @@ const language = computed((): string => {
 });
 
 const onDeleteMatcherNote = async (id: number): Promise<void> => {
-  await useMatcherNoteStore.deleteMatcherNote(id);
+  await useGitMatcherNoteStore.deleteMatcherNote(id);
 };
 
 const onEditMatcherNote = (id: number): void => {
   const currentNote: IMatchNote | undefined = props.notes.find((note) => note.id === id);
 
   if (currentNote !== undefined) {
-    useMatcherNoteStore.setActiveDataIsCreate(false);
-    useMatcherNoteStore.setActiveDataIsEdit(true);
-    useMatcherNoteStore.setActiveDataCurrentId(id);
-    useMatcherNoteStore.setActiveDataForCreateOrEdit({
+    useGitMatcherNoteStore.setActiveDataIsCreate(false);
+    useGitMatcherNoteStore.setActiveDataIsEdit(true);
+    useGitMatcherNoteStore.setActiveDataCurrentId(id);
+    useGitMatcherNoteStore.setActiveDataForCreateOrEdit({
       value: currentNote.value,
       file: currentNote.file,
       line: currentNote.line,

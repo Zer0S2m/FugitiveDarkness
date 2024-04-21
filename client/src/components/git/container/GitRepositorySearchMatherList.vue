@@ -12,7 +12,7 @@
 
 <script setup lang="ts">
 import { type ISearchFoundByGrepGitRepository } from '@/types/gitRepository';
-import GitRepositorySearchMatherItem from '@/components/git/GitRepositorySearchMatherItem.vue';
+import GitRepositorySearchMatherItem from '@/components/git/widget/GitRepositorySearchMatherItem.vue';
 
 defineProps<{
   matchers: ISearchFoundByGrepGitRepository[];

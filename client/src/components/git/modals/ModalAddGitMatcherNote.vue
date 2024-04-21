@@ -6,7 +6,7 @@
   >
     <h3 class="modal-title">
       {{
-        useMatcherNoteStore.activeDataForCreateOrEdit.isCreate
+        useGitMatcherNoteStore.activeDataForCreateOrEdit.isCreate
           ? 'Add a note to a match'
           : 'Edit a note to a match'
       }}
@@ -38,11 +38,11 @@
 <script setup lang="ts">
 import { useVfm, VueFinalModal } from 'vue-final-modal';
 import type { ICreateMatcherNote } from '@/types/matcherNote';
-import { useMatcherNoteState } from '@/stores/useMatcherNoteState';
+import { useGitMatcherNoteState } from '@/stores/useGitMatcherNoteState';
 import type { Ref } from 'vue';
 import { ref, watch } from 'vue';
 
-const useMatcherNoteStore = useMatcherNoteState();
+const useGitMatcherNoteStore = useGitMatcherNoteState();
 const useVfmStore = useVfm();
 const readyDataForm: Ref<ICreateMatcherNote> = ref({
   value: '',
@@ -60,7 +60,7 @@ const isCreateMatcherNote: Ref<boolean> = ref(true);
 const isEditMatcherNote: Ref<boolean> = ref(false);
 
 watch(
-  () => useMatcherNoteStore.activeDataForCreateOrEdit.data,
+  () => useGitMatcherNoteStore.activeDataForCreateOrEdit.data,
   (newValue: ICreateMatcherNote) => {
     rawDataForm.value = {
       value: newValue.value
@@ -69,13 +69,13 @@ watch(
   }
 );
 watch(
-  () => useMatcherNoteStore.activeDataForCreateOrEdit.isCreate,
+  () => useGitMatcherNoteStore.activeDataForCreateOrEdit.isCreate,
   (newValue: boolean) => {
     isCreateMatcherNote.value = newValue;
   }
 );
 watch(
-  () => useMatcherNoteStore.activeDataForCreateOrEdit.isEdit,
+  () => useGitMatcherNoteStore.activeDataForCreateOrEdit.isEdit,
   (newValue: boolean) => {
     isEditMatcherNote.value = newValue;
   }
@@ -83,7 +83,7 @@ watch(
 
 const onClickForm = async (): Promise<void> => {
   await useVfmStore.close('modalAddMatcherNote');
-  useMatcherNoteStore.setActiveDataForCreateOrEdit({
+  useGitMatcherNoteStore.setActiveDataForCreateOrEdit({
     value: rawDataForm.value.value,
     file: readyDataForm.value.file,
     line: readyDataForm.value.line,
@@ -97,16 +97,18 @@ const onClickForm = async (): Promise<void> => {
     await onClickEditNote();
   }
 
-  useMatcherNoteStore.resetActiveDataForCreateOrEdit();
+  useGitMatcherNoteStore.resetActiveDataForCreateOrEdit();
 };
 
 const onClickAddNote = async (): Promise<void> => {
-  await useMatcherNoteStore.createMatcherNote(useMatcherNoteStore.activeDataForCreateOrEdit.data);
+  await useGitMatcherNoteStore.createMatcherNote(
+    useGitMatcherNoteStore.activeDataForCreateOrEdit.data
+  );
 };
 
 const onClickEditNote = async (): Promise<void> => {
-  await useMatcherNoteStore.editMatcherNote(
-    useMatcherNoteStore.activeDataForCreateOrEdit.currentId,
+  await useGitMatcherNoteStore.editMatcherNote(
+    useGitMatcherNoteStore.activeDataForCreateOrEdit.currentId,
     {
       value: rawDataForm.value.value
     }

@@ -8,7 +8,7 @@
 
 <script setup lang="ts">
 import { type ISearchByGrepGitRepository } from '@/types/gitRepository';
-import GitRepositorySearchItem from '@/components/git/GitRepositorySearchItem.vue';
+import GitRepositorySearchItem from '@/components/git/widget/GitRepositorySearchItem.vue';
 
 defineProps<{
   items: ISearchByGrepGitRepository[];

@@ -1,9 +1,9 @@
 import { createRouter, createWebHistory } from 'vue-router';
-import SearchView from '@/views/SearchView.vue';
-import GitProvidersView from '@/views/GitProvidersView.vue';
-import GitShowFile from '@/views/GitShowFile.vue';
-import RepositoriesView from '@/views/GitRepositoriesView.vue';
-import MatcherNotesView from '@/views/MatcherNotesView.vue';
+import GitSearchView from '@/views/git/GitSearchView.vue';
+import GitProvidersView from '@/views/git/GitProvidersView.vue';
+import GitShowFile from '@/views/git/GitShowFile.vue';
+import GitRepositoriesView from '@/views/git/GitRepositoriesView.vue';
+import GitMatcherNotesView from '@/views/git/GitMatcherNotesView.vue';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -11,12 +11,12 @@ const router = createRouter({
     {
       path: '/git-search',
       name: 'git-search',
-      component: () => SearchView
+      component: () => GitSearchView
     },
     {
       path: '/git-repositories',
       name: 'git-repositories',
-      component: () => RepositoriesView
+      component: () => GitRepositoriesView
     },
     {
       path: '/git-providers',
@@ -31,7 +31,7 @@ const router = createRouter({
     {
       path: '/matcher-notes',
       name: 'matcher-notes',
-      component: () => MatcherNotesView
+      component: () => GitMatcherNotesView
     }
   ]
 });

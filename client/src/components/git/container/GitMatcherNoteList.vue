@@ -11,7 +11,7 @@
         v-for="matcherNoteItemFile in matcherNote.notesByFile.entries()"
         :key="matcherNoteItemFile[0] + '-' + matcherNote.gitRepoTitle"
       >
-        <MatcherNoteItem
+        <GitMatcherNoteItem
           :title-file="matcherNoteItemFile[0]"
           :notes="matcherNoteItemFile[1]"
         />
@@ -25,7 +25,7 @@ import type { IMatchNote } from '@/types/matcherNote';
 import { computed, type ComputedRef } from 'vue';
 import type { IGitRepository } from '@/types/gitRepository';
 import { useGitRepositoryState } from '@/stores/useGitRepositoryState';
-import MatcherNoteItem from '@/components/matcherNote/MatcherNoteItem.vue';
+import GitMatcherNoteItem from '@/components/git/widget/GitMatcherNoteItem.vue';
 
 const useGitRepositoryStore = useGitRepositoryState();
 

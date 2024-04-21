@@ -10,7 +10,7 @@
         v-for="item in items"
         :key="item.id"
       >
-        <SavedFiltersGitItem :item="item" />
+        <GitSavedFiltersItem :item="item" />
       </li>
     </ul>
   </div>
@@ -18,7 +18,7 @@
 
 <script setup lang="ts">
 import type { IGitFilterSearch } from '@/types/gitFilterSearch';
-import SavedFiltersGitItem from '@/components/git/SavedFiltersGitItem.vue';
+import GitSavedFiltersItem from '@/components/git/widget/GitSavedFiltersItem.vue';
 import { useGitRepositoryState } from '@/stores/useGitRepositoryState';
 
 const useGitRepositoryStore = useGitRepositoryState();

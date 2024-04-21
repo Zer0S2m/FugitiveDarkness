@@ -3,13 +3,13 @@
     <h2 class="title-container">Notes on matches</h2>
     <div
       class="matcher-found--wrapper"
-      v-if="!(useMatcherNoteStore.isLoading && useGitRepositoryStore.isLoading)"
+      v-if="!(useGitMatcherNoteStore.isLoading && useGitRepositoryStore.isLoading)"
     >
-      <MatcherNoteList :items="useMatcherNoteStore.matcherNotes" />
+      <MatcherNoteList :items="useGitMatcherNoteStore.matcherNotes" />
     </div>
     <div
       class="loader-block"
-      v-if="useMatcherNoteStore.isLoading || useGitRepositoryStore.isLoading"
+      v-if="useGitMatcherNoteStore.isLoading || useGitRepositoryStore.isLoading"
     >
       <HalfCircleSpinner
         :animation-duration="1000"
@@ -22,17 +22,17 @@
 
 <script setup lang="ts">
 import { HalfCircleSpinner } from 'epic-spinners';
-import { useMatcherNoteState } from '@/stores/useMatcherNoteState';
+import { useGitMatcherNoteState } from '@/stores/useGitMatcherNoteState';
 import { onMounted } from 'vue';
-import MatcherNoteList from '@/components/matcherNote/MatcherNoteList.vue';
+import MatcherNoteList from '@/components/git/container/GitMatcherNoteList.vue';
 import { useGitRepositoryState } from '@/stores/useGitRepositoryState';
 
-const useMatcherNoteStore = useMatcherNoteState();
+const useGitMatcherNoteStore = useGitMatcherNoteState();
 const useGitRepositoryStore = useGitRepositoryState();
 
 onMounted(async () => {
   await useGitRepositoryStore.loadGitRepositories();
-  await useMatcherNoteStore.loadMatcherNotes();
+  await useGitMatcherNoteStore.loadMatcherNotes();
 });
 </script>
 

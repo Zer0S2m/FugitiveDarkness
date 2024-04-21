@@ -105,7 +105,7 @@
 
 <script setup lang="ts">
 import { HalfCircleSpinner } from 'epic-spinners';
-import GitRepositoryList from '@/components/git/GitRepositoryList.vue';
+import GitRepositoryList from '@/components/git/container/GitRepositoryList.vue';
 import { useGitProviderState } from '@/stores/useGitProviderState';
 import { useGitRepositoryState } from '@/stores/useGitRepositoryState';
 import { useModal } from 'vue-final-modal';
@@ -114,7 +114,7 @@ import { type IGitRepository, type IInstallGitRepository } from '@/types/gitRepo
 import { GitProviderType } from '@/enums/gitProvider';
 import IconGithub from '@/assets/github-mark.svg';
 import IconGitlab from '@/assets/gitlab-mark.svg';
-import GitRepositoryInProviderList from '@/components/git/GitRepositoryInProviderList.vue';
+import GitRepositoryInProviderList from '@/components/git/container/GitRepositoryInProviderList.vue';
 import { computed } from 'vue';
 import AddGitItemButton from '@/components/common/AddGitItemButton.vue';
 import { getLinkForTargetProvider } from '@/utils/gitProviders';

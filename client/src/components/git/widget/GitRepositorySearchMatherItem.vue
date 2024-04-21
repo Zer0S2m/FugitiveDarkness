@@ -84,7 +84,7 @@ import type {
   ISearchFoundByGrepGitRepository
 } from '@/types/gitRepository';
 import { useGitRepositoryState } from '@/stores/useGitRepositoryState';
-import { useMatcherNoteState } from '@/stores/useMatcherNoteState';
+import { useGitMatcherNoteState } from '@/stores/useGitMatcherNoteState';
 import Highlightjs from '@lib/highlightjs';
 import { computed, onMounted, ref, type Ref } from 'vue';
 import { lineSlice } from '@/utils/stringFormat';
@@ -92,7 +92,7 @@ import router from '@/router';
 import { useVfm } from 'vue-final-modal';
 
 const useGitRepositoryStore = useGitRepositoryState();
-const useMatcherNoteStore = useMatcherNoteState();
+const useGitMatcherNoteStore = useGitMatcherNoteState();
 const useVfmStore = useVfm();
 const activeLineNumberForCreateMatcherNote: Ref<number[]> = ref([]);
 const lineNumberToLineString: Map<number, string> = new Map<number, string>();
@@ -268,9 +268,9 @@ const onClickCreateNote = (lineNumber: number): void => {
     );
 
   if (repository !== undefined && lineStr !== undefined) {
-    useMatcherNoteStore.setActiveDataIsCreate(true);
-    useMatcherNoteStore.setActiveDataIsEdit(false);
-    useMatcherNoteStore.setActiveDataForCreateOrEdit({
+    useGitMatcherNoteStore.setActiveDataIsCreate(true);
+    useGitMatcherNoteStore.setActiveDataIsEdit(false);
+    useGitMatcherNoteStore.setActiveDataForCreateOrEdit({
       value: '',
       file: props.matcher.filename,
       line: lineStr,

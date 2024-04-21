@@ -22,7 +22,7 @@
 <script setup lang="ts">
 import { useGitProviderState } from '@/stores/useGitProviderState';
 import { HalfCircleSpinner } from 'epic-spinners';
-import GitProviderList from '@/components/git/GitProviderList.vue';
+import GitProviderList from '@/components/git/container/GitProviderList.vue';
 import { useModal } from 'vue-final-modal';
 import ModalAddGitProvider from '@/components/git/modals/ModalAddGitProvider.vue';
 import type { IInstallGitProvider } from '@/types/gitProvider';

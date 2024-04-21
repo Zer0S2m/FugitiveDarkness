@@ -19,7 +19,7 @@
 <script setup lang="ts">
 import ContainerCardList from '@/components/common/ContainerCardList.vue';
 import type { IGitRepositoryInProvider } from '@/types/gitProvider';
-import GitRepositoryInProviderItem from '@/components/git/GitRepositoryInProviderItem.vue';
+import GitRepositoryInProviderItem from '@/components/git/widget/GitRepositoryInProviderItem.vue';
 import type { IError } from '@/types/api';
 
 defineProps<{ items: IGitRepositoryInProvider[]; error: IError | null }>();

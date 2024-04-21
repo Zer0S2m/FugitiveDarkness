@@ -12,7 +12,7 @@
           color="var(--color-secondary)"
         />
       </div>
-      <SavedFiltersGitList
+      <GitSavedFiltersList
         class="saved-filters--block"
         v-if="useGitFilterSearchStore.isLoad"
         :items="useGitFilterSearchStore.gitGitFiltersSearch"
@@ -24,7 +24,7 @@
 <script setup lang="ts">
 import { onMounted } from 'vue';
 import { useGitFilterSearchState } from '@/stores/useGitFilterSearchState';
-import SavedFiltersGitList from '@/components/git/SavedFiltersGitList.vue';
+import GitSavedFiltersList from '@/components/git/container/GitSavedFiltersList.vue';
 import { HalfCircleSpinner } from 'epic-spinners';
 
 const useGitFilterSearchStore = useGitFilterSearchState();

@@ -5,7 +5,7 @@ import api from '@/services/api';
 import { type AxiosResponse } from 'axios';
 import { type IResponseCreateMatcherNote } from '@/types/matcherNote';
 
-export const useMatcherNoteState = defineStore('matcherNote', () => {
+export const useGitMatcherNoteState = defineStore('matcherNote', () => {
   const isLoading: Ref<boolean> = ref(true);
   const isLoadData: Ref<boolean> = ref(false);
   const matcherNotes: Ref<IMatchNote[]> = ref([]);

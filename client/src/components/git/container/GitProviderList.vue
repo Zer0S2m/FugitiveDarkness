@@ -14,7 +14,7 @@
 <script setup lang="ts">
 import type { IGitProvider } from '@/types/gitProvider';
 import ContainerCardList from '@/components/common/ContainerCardList.vue';
-import GitProviderItem from '@/components/git/GitProviderItem.vue';
+import GitProviderItem from '@/components/git/widget/GitProviderItem.vue';
 import AddGitItemButton from '@/components/common/AddGitItemButton.vue';
 
 defineProps<{ items: IGitProvider[] }>();

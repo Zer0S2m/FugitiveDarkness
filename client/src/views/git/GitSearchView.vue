@@ -39,7 +39,7 @@ import FilterSearchGitRepository from '@/components/filters/FilterSearchGitRepos
 import InputSearchGitRepository from '@/components/filters/InputSearchGitRepository.vue';
 import ButtonSearchGitRepository from '@/components/filters/ButtonSearchGitRepository.vue';
 import { useGitRepositoryState } from '@/stores/useGitRepositoryState';
-import GitRepositorySearchList from '@/components/git/GitRepositorySearchList.vue';
+import GitRepositorySearchList from '@/components/git/container/GitRepositorySearchList.vue';
 import { HalfCircleSpinner } from 'epic-spinners';
 import router from '@/router';
 import { useRoute } from 'vue-router';

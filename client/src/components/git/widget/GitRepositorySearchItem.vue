@@ -26,7 +26,7 @@
 
 <script setup lang="ts">
 import { type ISearchByGrepGitRepository } from '@/types/gitRepository';
-import GitRepositorySearchMatherList from '@/components/git/GitRepositorySearchMatherList.vue';
+import GitRepositorySearchMatherList from '@/components/git/container/GitRepositorySearchMatherList.vue';
 import { useGitRepositoryState } from '@/stores/useGitRepositoryState';
 import { computed, ref, type Ref } from 'vue';
 import { ShowLinesResultSearch } from '@/enums/resultSearch';

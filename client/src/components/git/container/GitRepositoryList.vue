@@ -9,14 +9,8 @@
 
 <script setup lang="ts">
 import type { IGitRepository } from '@/types/gitRepository';
-import GitRepositoryItem from '@/components/git/GitRepositoryItem.vue';
+import GitRepositoryItem from '@/components/git/widget/GitRepositoryItem.vue';
 import ContainerCardList from '@/components/common/ContainerCardList.vue';
 
 defineProps<{ items: IGitRepository[] }>();
 </script>
-
-<style scoped>
-.git-item__add {
-  margin: 4px;
-}
-</style>
