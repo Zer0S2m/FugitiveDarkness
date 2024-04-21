@@ -113,7 +113,9 @@ public class FugitiveDarknessApp extends AbstractVerticle {
                                 \t\u001b[44mGET\u001b[0m    [/api/v1/project/files/color]
                                 \t\u001b[42mPOST\u001b[0m   [/api/v1/project/files/color]
                                 \t\u001b[43mPUT\u001b[0m    [/api/v1/project/files/color/:ID]
-                                \t\u001b[41mDELETE\u001b[0m [/api/v1/project/files/color/:ID]""");
+                                \t\u001b[41mDELETE\u001b[0m [/api/v1/project/files/color/:ID]
+                                \t\u001b[42mPOST\u001b[0m   [/api/v1/project/files/color/set]
+                                \t\u001b[41mDELETE\u001b[0m [/api/v1/project/files/color/set]""");
                         logger.info("""
                                 Setting ENV:
                                 \t\u001B[45mFD_ROOT_PATH\u001b[0m      - %s
@@ -525,6 +527,28 @@ public class FugitiveDarknessApp extends AbstractVerticle {
                 .handler(ControllerApiValidation.ValidationControlID.validator(vertx))
                 .handler(new ProjectFileTagValidationExists())
                 .handler(new ControllerApiProjectFilesTagDelete())
+                .handler(new HandlerLogger.HandlerLoggerResponse());
+        router
+                .get("/api/v1/project/files/color/set")
+                .handler(new ControllerApiProjectFilesColorSetGet())
+                .handler(new HandlerLogger.HandlerLoggerResponse());
+        router
+                .post("/api/v1/project/files/color/set")
+                .handler(BodyHandler
+                        .create()
+                        .setHandleFileUploads(false))
+                .handler(ControllerApiProjectFilesColorSet.ProjectFilesColorSetValidation.validator(vertx))
+                .handler(new ProjectFileColorValidationBodyExists())
+                .handler(new ControllerApiProjectFilesColorSet())
+                .handler(new HandlerLogger.HandlerLoggerResponse());
+        router
+                .delete("/api/v1/project/files/color/set")
+                .handler(BodyHandler
+                        .create()
+                        .setHandleFileUploads(false))
+                .handler(ControllerApiProjectFilesColorUnset.ProjectFilesColorUnsetValidation.validator(vertx))
+                .handler(new ProjectFileColorValidationBodyExists())
+                .handler(new ControllerApiProjectFilesColorUnset())
                 .handler(new HandlerLogger.HandlerLoggerResponse());
         router
                 .get("/api/v1/project/files/color")
