@@ -91,7 +91,31 @@ public class FugitiveDarknessApp extends AbstractVerticle {
                                 \t\u001b[43mPUT\u001b[0m    [/api/v1/git/job/:ID]
                                 \t\u001b[44mGET\u001b[0m    [/api/v1/docx]
                                 \t\u001b[41mDELETE\u001b[0m [/api/v1/docx/:ID]
-                                \t\u001b[42mPOST\u001b[0m   [/api/v1/docx/upload]""");
+                                \t\u001b[42mPOST\u001b[0m   [/api/v1/docx/upload]
+                                \t\u001b[42mPOST\u001b[0m   [/api/v1/project/files]
+                                \t\u001b[42mPOST\u001b[0m   [/api/v1/project/files/last-commit]
+                                \t\u001b[42mPOST\u001b[0m   [/api/v1/project/files/first-commit]
+                                \t\u001b[42mPOST\u001b[0m   [/api/v1/project/files/all-commit]
+                                \t\u001b[42mPOST\u001b[0m   [/api/v1/project/files/lines-code]
+                                \t\u001b[42mPOST\u001b[0m   [/api/v1/project/files/hotspots]
+                                \t\u001b[42mPOST\u001b[0m   [/api/v1/project/files/todo]
+                                \t\u001b[44mGET\u001b[0m    [/api/v1/project/files/comment]
+                                \t\u001b[42mPOST\u001b[0m   [/api/v1/project/files/comment]
+                                \t\u001b[43mPUT\u001b[0m    [/api/v1/project/files/comment/:ID]
+                                \t\u001b[41mDELETE\u001b[0m [/api/v1/project/files/comment/:ID]
+                                \t\u001b[44mGET\u001b[0m    [/api/v1/project/files/tag]
+                                \t\u001b[42mPOST\u001b[0m   [/api/v1/project/files/tag]
+                                \t\u001b[43mPUT\u001b[0m    [/api/v1/project/files/tag/:ID]
+                                \t\u001b[41mDELETE\u001b[0m [/api/v1/project/files/tag/:ID]
+                                \t\u001b[44mGET\u001b[0m    [/api/v1/project/files/tag/set]
+                                \t\u001b[42mPOST\u001b[0m   [/api/v1/project/files/tag/set]
+                                \t\u001b[41mDELETE\u001b[0m [/api/v1/project/files/tag/set]
+                                \t\u001b[44mGET\u001b[0m    [/api/v1/project/files/color]
+                                \t\u001b[42mPOST\u001b[0m   [/api/v1/project/files/color]
+                                \t\u001b[43mPUT\u001b[0m    [/api/v1/project/files/color/:ID]
+                                \t\u001b[41mDELETE\u001b[0m [/api/v1/project/files/color/:ID]
+                                \t\u001b[42mPOST\u001b[0m   [/api/v1/project/files/color/set]
+                                \t\u001b[41mDELETE\u001b[0m [/api/v1/project/files/color/set]""");
                         logger.info("""
                                 Setting ENV:
                                 \t\u001B[45mFD_ROOT_PATH\u001b[0m      - %s
@@ -360,6 +384,200 @@ public class FugitiveDarknessApp extends AbstractVerticle {
                         .setBodyLimit(-1)
                         .setHandleFileUploads(true))
                 .handler(new ControllerApiDocxUpload())
+                .handler(new HandlerLogger.HandlerLoggerResponse());
+
+        // PROJECT
+        router
+                .post("/api/v1/project/files")
+                .handler(BodyHandler
+                        .create()
+                        .setHandleFileUploads(false))
+                .handler(ControllerApiProjectFilesGet.GetValidation.validator(vertx))
+                .handler(new GitRepoValidationExists())
+                .handler(new ControllerApiProjectFilesGet())
+                .handler(new HandlerLogger.HandlerLoggerResponse());
+        router
+                .post("/api/v1/project/files/last-commit")
+                .handler(BodyHandler
+                        .create()
+                        .setHandleFileUploads(false))
+                .handler(ControllerApiProjectFilesLastCommitFile.LastCommitFileValidation.validator(vertx))
+                .handler(new GitRepoValidationExists())
+                .handler(new ControllerApiProjectFilesLastCommitFile())
+                .handler(new HandlerLogger.HandlerLoggerResponse());
+        router
+                .post("/api/v1/project/files/first-commit")
+                .handler(BodyHandler
+                        .create()
+                        .setHandleFileUploads(false))
+                .handler(ControllerApiProjectFilesFirstCommitFile.FirstCommitFileValidation.validator(vertx))
+                .handler(new GitRepoValidationExists())
+                .handler(new ControllerApiProjectFilesFirstCommitFile())
+                .handler(new HandlerLogger.HandlerLoggerResponse());
+        router
+                .post("/api/v1/project/files/all-commit")
+                .handler(BodyHandler
+                        .create()
+                        .setHandleFileUploads(false))
+                .handler(ControllerApiProjectFilesAllCommitFile.AllCommitFileValidation.validator(vertx))
+                .handler(new GitRepoValidationExists())
+                .handler(new ControllerApiProjectFilesAllCommitFile())
+                .handler(new HandlerLogger.HandlerLoggerResponse());
+        router
+                .post("/api/v1/project/files/lines-code")
+                .handler(BodyHandler
+                        .create()
+                        .setHandleFileUploads(false))
+                .handler(ControllerApiProjectFilesCountLine.FilesCountLineValidation.validator(vertx))
+                .handler(new GitRepoValidationExists())
+                .handler(new ControllerApiProjectFilesCountLine())
+                .handler(new HandlerLogger.HandlerLoggerResponse());
+        router
+                .post("/api/v1/project/files/hotspots")
+                .handler(BodyHandler
+                        .create()
+                        .setHandleFileUploads(false))
+                .handler(ControllerApiProjectFilesHotspots.Validation.validator(vertx))
+                .handler(new GitRepoValidationExists())
+                .handler(new ControllerApiProjectFilesHotspots())
+                .handler(new HandlerLogger.HandlerLoggerResponse());
+        router
+                .post("/api/v1/project/files/todo")
+                .handler(BodyHandler
+                        .create()
+                        .setHandleFileUploads(false))
+                .handler(ControllerApiProjectFilesTodo.FilesTodoValidation.validator(vertx))
+                .handler(new GitRepoValidationExists())
+                .handler(new ControllerApiProjectFilesTodo())
+                .handler(new HandlerLogger.HandlerLoggerResponse());
+        router
+                .get("/api/v1/project/files/comment")
+                .handler(new ControllerApiProjectCommentFileGet())
+                .handler(new HandlerLogger.HandlerLoggerResponse());
+        router
+                .post("/api/v1/project/files/comment")
+                .handler(BodyHandler
+                        .create()
+                        .setHandleFileUploads(false))
+                .handler(ControllerApiProjectCommentFileCreate.ProjectCommentFileValidation.validator(vertx))
+                .handler(new GitRepoValidationExists())
+                .handler(new ControllerApiProjectCommentFileCreate())
+                .handler(new HandlerLogger.HandlerLoggerResponse());
+        router
+                .put("/api/v1/project/files/comment/:ID")
+                .handler(BodyHandler
+                        .create()
+                        .setHandleFileUploads(false))
+                .handler(ControllerApiProjectCommentFileEdit.ProjectCommentFileValidation.validator(vertx))
+                .handler(new ProjectCommentValidationExists())
+                .handler(new ControllerApiProjectCommentFileEdit())
+                .handler(new HandlerLogger.HandlerLoggerResponse());
+        router
+                .delete("/api/v1/project/files/comment/:ID")
+                .handler(ControllerApiValidation.ValidationControlID.validator(vertx))
+                .handler(new ProjectCommentValidationExists())
+                .handler(new ControllerApiProjectCommentFileDelete())
+                .handler(new HandlerLogger.HandlerLoggerResponse());
+        router
+                .get("/api/v1/project/files/tag/set")
+                .handler(new ControllerApiProjectFilesTagSetGet())
+                .handler(new HandlerLogger.HandlerLoggerResponse());
+        router
+                .post("/api/v1/project/files/tag/set")
+                .handler(BodyHandler
+                        .create()
+                        .setHandleFileUploads(false))
+                .handler(ControllerApiProjectFilesTagSet.ProjectFilesTagSetValidation.validator(vertx))
+                .handler(new ProjectFileTagValidationBodyExists())
+                .handler(new ControllerApiProjectFilesTagSet())
+                .handler(new HandlerLogger.HandlerLoggerResponse());
+        router
+                .delete("/api/v1/project/files/tag/set")
+                .handler(BodyHandler
+                        .create()
+                        .setHandleFileUploads(false))
+                .handler(ControllerApiProjectFilesTagUnset.ProjectFilesTagUnsetValidation.validator(vertx))
+                .handler(new ProjectFileTagValidationBodyExists())
+                .handler(new ControllerApiProjectFilesTagUnset())
+                .handler(new HandlerLogger.HandlerLoggerResponse());
+        router
+                .get("/api/v1/project/files/tag")
+                .handler(new ControllerApiProjectFilesTagGet())
+                .handler(new HandlerLogger.HandlerLoggerResponse());
+        router
+                .post("/api/v1/project/files/tag")
+                .handler(BodyHandler
+                        .create()
+                        .setHandleFileUploads(false))
+                .handler(ControllerApiProjectFilesTagCreate.ProjectFilesTagValidation.validator(vertx))
+                .handler(new GitRepoValidationExists())
+                .handler(new ControllerApiProjectFilesTagCreate())
+                .handler(new HandlerLogger.HandlerLoggerResponse());
+        router
+                .put("/api/v1/project/files/tag/:ID")
+                .handler(BodyHandler
+                        .create()
+                        .setHandleFileUploads(false))
+                .handler(ControllerApiProjectFilesTagEdit.ProjectFilesTagValidation.validator(vertx))
+                .handler(new ProjectFileTagValidationExists())
+                .handler(new ControllerApiProjectFilesTagEdit())
+                .handler(new HandlerLogger.HandlerLoggerResponse());
+        router
+                .delete("/api/v1/project/files/tag/:ID")
+                .handler(ControllerApiValidation.ValidationControlID.validator(vertx))
+                .handler(new ProjectFileTagValidationExists())
+                .handler(new ControllerApiProjectFilesTagDelete())
+                .handler(new HandlerLogger.HandlerLoggerResponse());
+        router
+                .get("/api/v1/project/files/color/set")
+                .handler(new ControllerApiProjectFilesColorSetGet())
+                .handler(new HandlerLogger.HandlerLoggerResponse());
+        router
+                .post("/api/v1/project/files/color/set")
+                .handler(BodyHandler
+                        .create()
+                        .setHandleFileUploads(false))
+                .handler(ControllerApiProjectFilesColorSet.ProjectFilesColorSetValidation.validator(vertx))
+                .handler(new ProjectFileColorValidationBodyExists())
+                .handler(new ControllerApiProjectFilesColorSet())
+                .handler(new HandlerLogger.HandlerLoggerResponse());
+        router
+                .delete("/api/v1/project/files/color/set")
+                .handler(BodyHandler
+                        .create()
+                        .setHandleFileUploads(false))
+                .handler(ControllerApiProjectFilesColorUnset.ProjectFilesColorUnsetValidation.validator(vertx))
+                .handler(new ProjectFileColorValidationBodyExists())
+                .handler(new ControllerApiProjectFilesColorUnset())
+                .handler(new HandlerLogger.HandlerLoggerResponse());
+        router
+                .get("/api/v1/project/files/color")
+                .handler(new ControllerApiProjectFilesColorGet())
+                .handler(new HandlerLogger.HandlerLoggerResponse());
+        router
+                .post("/api/v1/project/files/color")
+                .handler(BodyHandler
+                        .create()
+                        .setHandleFileUploads(false))
+                .handler(ControllerApiProjectFilesColorCreate.ProjectFilesColorValidation.validator(vertx))
+                .handler(new GitRepoValidationExists())
+                .handler(new ControllerApiProjectFilesColorCreate())
+                .handler(new HandlerLogger.HandlerLoggerResponse());
+        router
+                .put("/api/v1/project/files/color/:ID")
+                .handler(BodyHandler
+                        .create()
+                        .setHandleFileUploads(false))
+                .handler(ControllerApiProjectFilesColorEdit.ProjectFilesColorValidation.validator(vertx))
+                .handler(ControllerApiValidation.ValidationControlID.validator(vertx))
+                .handler(new ProjectFileColorValidationExists())
+                .handler(new ControllerApiProjectFilesColorEdit())
+                .handler(new HandlerLogger.HandlerLoggerResponse());
+        router
+                .delete("/api/v1/project/files/color/:ID")
+                .handler(ControllerApiValidation.ValidationControlID.validator(vertx))
+                .handler(new ProjectFileColorValidationExists())
+                .handler(new ControllerApiProjectFilesColorDelete())
                 .handler(new HandlerLogger.HandlerLoggerResponse());
     }
 

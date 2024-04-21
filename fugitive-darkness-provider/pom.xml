@@ -17,6 +17,7 @@
   <modules>
     <module>fugitive-darkness-provider-docx</module>
     <module>fugitive-darkness-provider-git</module>
+    <module>fugitive-darkness-provider-project</module>
   </modules>
 
   <properties>
