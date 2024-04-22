@@ -4,6 +4,7 @@ import GitProvidersView from '@/views/git/GitProvidersView.vue';
 import GitShowFile from '@/views/git/GitShowFile.vue';
 import GitRepositoriesView from '@/views/git/GitRepositoriesView.vue';
 import GitMatcherNotesView from '@/views/git/GitMatcherNotesView.vue';
+import ProjectHome from '@/views/project/ProjectHome.vue';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -11,27 +12,50 @@ const router = createRouter({
     {
       path: '/git-search',
       name: 'git-search',
+      meta: {
+        module: 'git'
+      },
       component: () => GitSearchView
     },
     {
       path: '/git-repositories',
       name: 'git-repositories',
+      meta: {
+        module: 'git'
+      },
       component: () => GitRepositoriesView
     },
     {
       path: '/git-providers',
       name: 'git-providers',
+      meta: {
+        module: 'git'
+      },
       component: () => GitProvidersView
     },
     {
       path: '/git-file',
       name: 'git-show-file-from-git',
+      meta: {
+        module: 'git'
+      },
       component: () => GitShowFile
     },
     {
-      path: '/matcher-notes',
-      name: 'matcher-notes',
+      path: '/git-matcher-notes',
+      name: 'git-matcher-notes',
+      meta: {
+        module: 'git'
+      },
       component: () => GitMatcherNotesView
+    },
+    {
+      path: '/project',
+      name: 'project-home',
+      meta: {
+        module: 'project'
+      },
+      component: () => ProjectHome
     }
   ]
 });

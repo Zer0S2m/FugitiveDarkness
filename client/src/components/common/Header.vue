@@ -1,5 +1,25 @@
 <script setup lang="ts">
-import { RouterLink } from 'vue-router';
+import { RouterLink, useRouter } from 'vue-router';
+import SelectModule from '@/components/common/SelectModule.vue';
+import { useHeaderState } from '@/stores/useHeaderState';
+import { onMounted } from 'vue';
+
+const useHeaderStore = useHeaderState();
+
+const movingModule = async (module: string): Promise<void> => {
+  await useHeaderStore.changePageByActiveModule(module);
+  useHeaderStore.setActiveModule(module);
+};
+
+onMounted(async (): Promise<void> => {
+  const vueRouterStore = useRouter();
+  await vueRouterStore.isReady();
+
+  if (vueRouterStore.currentRoute.value.meta.module) {
+    // @ts-ignore
+    useHeaderStore.setActiveModule(vueRouterStore.currentRoute.value.meta.module);
+  }
+});
 </script>
 
 <template>
@@ -9,43 +29,27 @@ import { RouterLink } from 'vue-router';
         <span>FD</span>
       </div>
       <nav class="nav-items">
-        <div class="nav-item nav-item-1">
+        <div
+          :class="'nav-item'"
+          v-for="infoRoute in useHeaderStore.getInfoRoutersByActiveModule(
+            useHeaderStore.activeModule
+          )"
+        >
           <div class="nav-item__wrapper">
             <RouterLink
               class="nav-item__link"
-              :to="{ name: 'git-search' }"
-              >Search</RouterLink
-            >
-          </div>
-        </div>
-        <div class="nav-item nav-item-2">
-          <div class="nav-item__wrapper">
-            <RouterLink
-              class="nav-item__link"
-              :to="{ name: 'git-repositories' }"
-              >Repositories</RouterLink
-            >
-          </div>
-        </div>
-        <div class="nav-item nav-item-3">
-          <div class="nav-item__wrapper">
-            <RouterLink
-              class="nav-item__link"
-              :to="{ name: 'git-providers' }"
-              >Providers</RouterLink
-            >
-          </div>
-        </div>
-        <div class="nav-item nav-item-4">
-          <div class="nav-item__wrapper">
-            <RouterLink
-              class="nav-item__link"
-              :to="{ name: 'matcher-notes' }"
-              >Notes matcher</RouterLink
-            >
+              :to="{ name: infoRoute.nameRouter }"
+              >{{ infoRoute.titleRouter }}
+            </RouterLink>
           </div>
         </div>
       </nav>
+      <div class="nav__header--module">
+        <SelectModule
+          :selected="useHeaderStore.activeModule"
+          @moving-module="movingModule"
+        />
+      </div>
     </div>
   </header>
 </template>
@@ -88,13 +92,9 @@ import { RouterLink } from 'vue-router';
 
 .nav-item {
   border-left: 1px solid var(--color-border);
-  border-right: 1px solid var(--color-border);
 }
-
-.nav-item-1,
-.nav-item-2,
-.nav-item-3 {
-  border-right: 0;
+.nav-item:last-child {
+  border-right: 1px solid var(--color-border);
 }
 
 .nav-item__wrapper {
@@ -115,5 +115,11 @@ import { RouterLink } from 'vue-router';
 
 .nav-item__link.router-link-active {
   color: var(--color-secondary);
+}
+
+.nav__header--module {
+  display: flex;
+  align-items: center;
+  margin: 0 20px;
 }
 </style>
