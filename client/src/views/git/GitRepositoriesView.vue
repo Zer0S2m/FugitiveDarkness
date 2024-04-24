@@ -1,105 +1,107 @@
 <template>
-  <div class="git__local">
-    <div class="git-title--container">
-      <h2 class="title-container">Local repositories</h2>
-      <AddGitItemButton
-        @onClick="openModalAddGitRepository"
-        class="git-item__add"
-      />
-    </div>
-    <div>
+  <div class="git">
+    <div class="git__local">
+      <div class="git-title--container">
+        <h2 class="title-container">Local repositories</h2>
+        <AddGitItemButton
+          @onClick="openModalAddGitRepository"
+          class="git-item__add"
+        />
+      </div>
+      <div>
+        <div
+          class="git-local--groups"
+          v-if="!useGitRepositoryStore.isLoading"
+          v-for="gitRepositories in collectedRepositoriesByGroup"
+        >
+          <h4 class="git-local-group--title">{{ gitRepositories[0] }}</h4>
+          <GitRepositoryList
+            :items="gitRepositories[1]"
+            @open-modal-add-git-repository="openModalAddGitRepository"
+          />
+        </div>
+      </div>
       <div
-        class="git-local--groups"
-        v-if="!useGitRepositoryStore.isLoading"
-        v-for="gitRepositories in collectedRepositoriesByGroup"
+        class="loader-block"
+        v-if="useGitRepositoryStore.isLoading"
       >
-        <h4 class="git-local-group--title">{{ gitRepositories[0] }}</h4>
-        <GitRepositoryList
-          :items="gitRepositories[1]"
-          @open-modal-add-git-repository="openModalAddGitRepository"
+        <HalfCircleSpinner
+          :animation-duration="1000"
+          :size="60"
+          color="var(--color-secondary)"
         />
       </div>
     </div>
-    <div
-      class="loader-block"
-      v-if="useGitRepositoryStore.isLoading"
-    >
-      <HalfCircleSpinner
-        :animation-duration="1000"
-        :size="60"
-        color="var(--color-secondary)"
-      />
-    </div>
-  </div>
-  <div class="git-from__providers">
-    <h2 class="title-container">Repositories from providers</h2>
-    <div
-      class="loader-block"
-      v-if="useGitProviderStore.isLoading"
-    >
-      <HalfCircleSpinner
-        :animation-duration="1000"
-        :size="60"
-        color="var(--color-secondary)"
-      />
-    </div>
-    <ul
-      v-if="!useGitProviderStore.isLoading"
-      class="git-from__providers-items"
-    >
-      <li
-        class="git-from__providers-item"
-        v-for="gitProvider in useGitProviderStore.gitProviders"
+    <div class="git-from__providers">
+      <h2 class="title-container">Repositories from providers</h2>
+      <div
+        class="loader-block"
+        v-if="useGitProviderStore.isLoading"
       >
-        <div class="git-from__providers-item__container">
-          <h3 class="git-from__providers-item--title">
-            <a
-              :href="getLinkForTargetProvider(gitProvider)"
-              target="_blank"
-              >{{ gitProvider.target }}</a
-            >
-          </h3>
-          <IconGitlab v-if="gitProvider.type === GitProviderType.GITLAB" />
-          <IconGithub v-if="gitProvider.type === GitProviderType.GITHUB" />
-        </div>
-        <GitRepositoryInProviderList
-          :items="
-            useGitProviderStore.getRepositoryInProviderByTypeAndTarget(
-              gitProvider.type,
-              gitProvider.target
-            ).items
-          "
-          :error="
-            useGitProviderStore.getRepositoryInProviderByTypeAndTarget(
-              gitProvider.type,
-              gitProvider.target
-            ).error
-          "
-          v-if="
-            !useGitProviderStore.getIsLoadingRepositoryInProviderByTypeAndTarget(
-              gitProvider.type,
-              gitProvider.target
-            )
-          "
-          class="git-from__providers-item--list"
+        <HalfCircleSpinner
+          :animation-duration="1000"
+          :size="60"
+          color="var(--color-secondary)"
         />
-        <div
-          class="loader-block"
-          v-if="
-            useGitProviderStore.getIsLoadingRepositoryInProviderByTypeAndTarget(
-              gitProvider.type,
-              gitProvider.target
-            )
-          "
+      </div>
+      <ul
+        v-if="!useGitProviderStore.isLoading"
+        class="git-from__providers-items"
+      >
+        <li
+          class="git-from__providers-item"
+          v-for="gitProvider in useGitProviderStore.gitProviders"
         >
-          <HalfCircleSpinner
-            :animation-duration="1000"
-            :size="60"
-            color="var(--color-secondary)"
+          <div class="git-from__providers-item__container">
+            <h3 class="git-from__providers-item--title">
+              <a
+                :href="getLinkForTargetProvider(gitProvider)"
+                target="_blank"
+                >{{ gitProvider.target }}</a
+              >
+            </h3>
+            <IconGitlab v-if="gitProvider.type === GitProviderType.GITLAB" />
+            <IconGithub v-if="gitProvider.type === GitProviderType.GITHUB" />
+          </div>
+          <GitRepositoryInProviderList
+            :items="
+              useGitProviderStore.getRepositoryInProviderByTypeAndTarget(
+                gitProvider.type,
+                gitProvider.target
+              ).items
+            "
+            :error="
+              useGitProviderStore.getRepositoryInProviderByTypeAndTarget(
+                gitProvider.type,
+                gitProvider.target
+              ).error
+            "
+            v-if="
+              !useGitProviderStore.getIsLoadingRepositoryInProviderByTypeAndTarget(
+                gitProvider.type,
+                gitProvider.target
+              )
+            "
+            class="git-from__providers-item--list"
           />
-        </div>
-      </li>
-    </ul>
+          <div
+            class="loader-block"
+            v-if="
+              useGitProviderStore.getIsLoadingRepositoryInProviderByTypeAndTarget(
+                gitProvider.type,
+                gitProvider.target
+              )
+            "
+          >
+            <HalfCircleSpinner
+              :animation-duration="1000"
+              :size="60"
+              color="var(--color-secondary)"
+            />
+          </div>
+        </li>
+      </ul>
+    </div>
   </div>
 </template>
 
@@ -161,8 +163,9 @@ const openModalAddGitRepository = () => {
 </script>
 
 <style scoped>
-.git__local {
-  margin-bottom: 28px;
+.git {
+  overflow-y: auto;
+  height: 100%;
 }
 
 .git-title--container {
@@ -180,7 +183,7 @@ const openModalAddGitRepository = () => {
 }
 
 .git-from__providers {
-  padding-bottom: 20px;
+  padding-top: 20px;
 }
 
 .git-from__providers-item--title {
@@ -204,6 +207,7 @@ const openModalAddGitRepository = () => {
 .git-from__providers-item__container {
   display: flex;
   align-items: center;
+  margin-bottom: 12px;
 }
 
 .git-from__providers-item--list {

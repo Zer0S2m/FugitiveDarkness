@@ -10,7 +10,6 @@
 .block-item {
   border: 1px solid var(--color-border);
   width: 100%;
-  margin: 4px;
   border-radius: 4px;
 }
 

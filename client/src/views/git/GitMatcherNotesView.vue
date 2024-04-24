@@ -38,7 +38,8 @@ onMounted(async () => {
 
 <style scoped>
 .matcher-notes {
-  margin-bottom: 20px;
+  overflow-y: auto;
+  height: 100%;
 }
 
 .matcher-found--wrapper {

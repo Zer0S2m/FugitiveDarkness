@@ -4,7 +4,8 @@ import GitProvidersView from '@/views/git/GitProvidersView.vue';
 import GitShowFile from '@/views/git/GitShowFile.vue';
 import GitRepositoriesView from '@/views/git/GitRepositoriesView.vue';
 import GitMatcherNotesView from '@/views/git/GitMatcherNotesView.vue';
-import ProjectHome from '@/views/project/ProjectHome.vue';
+import ProjectDetailView from '@/views/project/ProjectDetailView.vue';
+import ProjectHomeView from '@/views/project/ProjectHomeView.vue';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -55,7 +56,15 @@ const router = createRouter({
       meta: {
         module: 'project'
       },
-      component: () => ProjectHome
+      component: () => ProjectHomeView
+    },
+    {
+      path: '/project/:id',
+      name: 'project-detail',
+      meta: {
+        module: 'project'
+      },
+      component: () => ProjectDetailView
     }
   ]
 });

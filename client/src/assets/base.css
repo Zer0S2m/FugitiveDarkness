@@ -41,6 +41,8 @@
   --color-match-find: rgba(255, 192, 120, 0.5);
 
   --section-gap: 160px;
+
+  --height-header: 40px;
 }
 
 *,

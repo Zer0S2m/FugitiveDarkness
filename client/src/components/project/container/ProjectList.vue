@@ -1,16 +1,20 @@
 <script setup lang="ts">
-import type { IGitRepository } from '@/types/gitRepository';
-import GitRepositoryItem from '@/components/git/widget/GitRepositoryItem.vue';
 import ContainerCardList from '@/components/common/ContainerCardList.vue';
+import type { IProject } from '@/types/project';
+import ProjectItem from '@/components/project/widget/ProjectItem.vue';
 
-defineProps<{ items: IGitRepository[] }>();
+defineProps<{
+  items: IProject[];
+}>();
 </script>
 
 <template>
   <ContainerCardList>
-    <GitRepositoryItem
+    <ProjectItem
       v-for="item in items"
       :item="item"
     />
   </ContainerCardList>
 </template>
+
+<style scoped></style>

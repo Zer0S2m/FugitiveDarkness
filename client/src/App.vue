@@ -22,7 +22,8 @@ import ModalSettingsGitRepository from '@/components/git/modals/ModalSettingsGit
 
 <style scoped>
 .app-wrapper {
-  height: 100%;
-  padding: 20px 20px 0 20px;
+  height: calc(100vh - var(--height-header));
+  padding: 12px;
+  overflow: hidden;
 }
 </style>

@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="git__providers">
     <h2 class="title-container">Git providers</h2>
     <GitProviderList
       v-if="!useGitProviderStore.isLoading"
@@ -50,3 +50,10 @@ const openModalAddGitProvider = () => {
   open();
 };
 </script>
+
+<style scoped>
+.git__providers {
+  overflow-y: auto;
+  height: 100%;
+}
+</style>

@@ -30,6 +30,7 @@ import type {
   IResponseCreateFilterSearch,
   IResponseGitFilterSearch
 } from '@/types/gitFilterSearch';
+import type { IResponseProjectItemFile } from '@/types/project';
 
 const apiClient: AxiosInstance = axios.create({
   baseURL: `${import.meta.env.VITE_FD_HOST_API}/api/v1`,
@@ -146,6 +147,13 @@ export default {
   ): Promise<AxiosResponse<IResponseCreateFilterSearch>> {
     return apiClient.post('/git/filter/search', {
       ...data
+    });
+  },
+
+  async getProjectFiles(id: number): Promise<AxiosResponse<IResponseProjectItemFile>> {
+    return await apiClient.post(`/project/files`, {
+      gitRepositoryId: id,
+      isTreeStructure: true
     });
   }
 };

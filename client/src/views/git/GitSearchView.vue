@@ -27,7 +27,7 @@
         </div>
       </div>
     </div>
-    <div>
+    <div style="overflow-y: auto; min-width: 360px">
       <SavedFiltersGit class="tools-wrapper__saved-filters" />
       <FilterSearchGitRepository class="tools-wrapper__filters" />
     </div>
@@ -110,7 +110,6 @@ onMounted(async () => {
 
 .tools-wrapper__base {
   width: 100%;
-  height: 92vh;
   margin-right: 20px;
   padding-right: 12px;
   overflow-y: scroll;
