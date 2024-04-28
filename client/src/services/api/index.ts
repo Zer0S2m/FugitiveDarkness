@@ -30,7 +30,15 @@ import type {
   IResponseCreateFilterSearch,
   IResponseGitFilterSearch
 } from '@/types/gitFilterSearch';
-import type { IResponseProjectItemFile } from '@/types/project';
+import type {
+  IResponseProjectFileCommit,
+  IResponseProjectItemFile,
+  IResponseProjectFileAllCommits,
+  IResponseProjectFileTodos,
+  IResponseProjectFileInfoCountFile,
+  IResponseProjectFileComment
+} from '@/types/project';
+import { TypeFileLineCode } from '@/enums/project';
 
 const apiClient: AxiosInstance = axios.create({
   baseURL: `${import.meta.env.VITE_FD_HOST_API}/api/v1`,
@@ -155,5 +163,59 @@ export default {
       gitRepositoryId: id,
       isTreeStructure: true
     });
+  },
+  async getProjectFileFirstCommit(
+    id: number,
+    file: string
+  ): Promise<AxiosResponse<IResponseProjectFileCommit>> {
+    return await apiClient.post(`/project/files/first-commit`, {
+      gitRepositoryId: id,
+      file: file
+    });
+  },
+  async getProjectFileLastCommit(
+    id: number,
+    file: string
+  ): Promise<AxiosResponse<IResponseProjectFileCommit>> {
+    return await apiClient.post(`/project/files/last-commit`, {
+      gitRepositoryId: id,
+      file: file
+    });
+  },
+  async getProjectFileAllCommit(
+    id: number,
+    file: string
+  ): Promise<AxiosResponse<IResponseProjectFileAllCommits>> {
+    return await apiClient.post(`/project/files/all-commit`, {
+      gitRepositoryId: id,
+      file: file
+    });
+  },
+  async getProjectFileTodos(
+    id: number,
+    filters: {
+      file: string;
+      isFile: boolean;
+      isDirectory: boolean;
+    }
+  ): Promise<AxiosResponse<IResponseProjectFileTodos>> {
+    return await apiClient.post(`/project/files/todo`, {
+      gitRepositoryId: id,
+      filters
+    });
+  },
+  async getProjectFileInfoCountLine(
+    id: number,
+    file: string,
+    type: TypeFileLineCode
+  ): Promise<AxiosResponse<IResponseProjectFileInfoCountFile>> {
+    return await apiClient.post(`/project/files/lines-code`, {
+      gitRepositoryId: id,
+      file: file,
+      type
+    });
+  },
+  async getProjectFileComments(): Promise<AxiosResponse<IResponseProjectFileComment>> {
+    return await apiClient.get('/project/files/comment');
   }
 };

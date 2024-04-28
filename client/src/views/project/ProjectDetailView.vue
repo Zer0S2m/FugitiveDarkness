@@ -4,6 +4,10 @@ import { useProjectState } from '@/stores/useProjectState';
 import { onMounted } from 'vue';
 import { HalfCircleSpinner } from 'epic-spinners';
 import ProjectItemTreeFileBrowser from '@/components/project/widget/ProjectItemTreeFileBrowser.vue';
+import ProjectItemCommit from '@/components/project/widget/ProjectItemCommit.vue';
+import ProjectPanelAllCommits from '@/components/project/widget/ProjectPanelAllCommits.vue';
+import ProjectItemTodoFile from '@/components/project/widget/ProjectItemTodoFile.vue';
+import ProjectItemCountLines from '@/components/project/widget/ProjectItemCountLines.vue';
 
 const route = useRoute();
 const useProjectStore = useProjectState();
@@ -11,7 +15,14 @@ const useProjectStore = useProjectState();
 onMounted(async (): Promise<void> => {
   useProjectStore.setActiveProject(parseInt(<string>route.params.id));
 
-  await useProjectStore.loadProjectFilesTree();
+  await Promise.all([
+    new Promise(() => {
+      useProjectStore.loadProjectFilesTree();
+    }),
+    new Promise(() => {
+      useProjectStore.loadProjectFileComments();
+    })
+  ]);
 });
 </script>
 
@@ -36,7 +47,40 @@ onMounted(async (): Promise<void> => {
           />
         </div>
       </div>
-      <div class="dashboard__statistics">Statistics</div>
+      <div class="dashboard__statistics">
+        <div class="dashboard__statistics--code-lines">
+          <ProjectItemCountLines
+            :is-loading="useProjectStore.isProjectFileCountLinesLoading"
+            :code-lines="useProjectStore.projectFileCountLines"
+          />
+        </div>
+        <div class="dashboard_statistics--commits">
+          <ProjectItemCommit
+            class="dashboard_statistics--commit"
+            :is-loading="useProjectStore.isProjectFileLastCommitLoading"
+            :commit="useProjectStore.projectFileLastCommit"
+            title="Last commit"
+          />
+          <ProjectItemCommit
+            class="dashboard_statistics--commit"
+            :is-loading="useProjectStore.isProjectFileFirstCommitLoading"
+            :commit="useProjectStore.projectFileFirstCommit"
+            title="First commit"
+          />
+        </div>
+        <div class="dashboard__statistics--panel-commits">
+          <ProjectPanelAllCommits
+            :is-loading="useProjectStore.isProjectFileAllCommitLoading"
+            :commits="useProjectStore.projectFileAllCommit"
+          />
+        </div>
+        <div class="dashboard__statistics--todo">
+          <ProjectItemTodoFile
+            :is-loading="useProjectStore.isProjectFileTodosLoading"
+            :todo="useProjectStore.projectFileTodos"
+          />
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -66,5 +110,25 @@ onMounted(async (): Promise<void> => {
 
 .dashboard__statistics {
   width: 74%;
+  overflow-y: auto;
+}
+
+.dashboard_statistics--commits {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 12px;
+}
+
+.dashboard_statistics--commit {
+  width: 49%;
+  max-width: 100%;
+}
+
+.dashboard__statistics--panel-commits {
+  margin-top: 12px;
+}
+
+.dashboard__statistics--todo {
+  margin-top: 12px;
 }
 </style>

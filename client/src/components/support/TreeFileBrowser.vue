@@ -7,6 +7,10 @@ const props = defineProps<{
   tree: ITree | undefined;
 }>();
 
+const emit = defineEmits<{
+  (e: 'selectFileObject', fileObject: ITree): void;
+}>();
+
 const sortedByDirectoryAndFile = computed((): ITree => {
   if (!props.tree) {
     // @ts-ignore
@@ -14,15 +18,10 @@ const sortedByDirectoryAndFile = computed((): ITree => {
   }
 
   const sortedTree: ITree = {
-    // @ts-ignore
     path: props.tree.path,
-    // @ts-ignore
     filename: props.tree.filename,
-    // @ts-ignore
     isFile: props.tree.isFile,
-    // @ts-ignore
-    isDirectory: props.tree?.isDirectory,
-    // @ts-ignore
+    isDirectory: props.tree.isDirectory,
     children: []
   };
 
@@ -46,11 +45,12 @@ const sortedByDirectoryAndFile = computed((): ITree => {
     v-if="tree"
     :tree="child"
     v-for="child in sortedByDirectoryAndFile.children"
+    @select-file-object="
+      (fileObject: ITree) => {
+        emit('selectFileObject', fileObject);
+      }
+    "
   />
 </template>
 
-<style scoped>
-.tree {
-  cursor: pointer;
-}
-</style>
+<style scoped></style>

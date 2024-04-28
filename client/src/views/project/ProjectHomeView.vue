@@ -3,10 +3,17 @@ import { HalfCircleSpinner } from 'epic-spinners';
 import { useGitRepositoryState } from '@/stores/useGitRepositoryState';
 import ProjectList from '@/components/project/container/ProjectList.vue';
 import { conversionGitRepositoryToProject } from '@/utils/conversion';
+import { onMounted } from 'vue';
+import { useProjectState } from '@/stores/useProjectState';
 
 const useGitRepositoryStore = useGitRepositoryState();
+const useProjectStore = useProjectState();
 
 useGitRepositoryStore.loadGitRepositories();
+
+onMounted((): void => {
+  useProjectStore.resetStatistics();
+});
 </script>
 
 <template>

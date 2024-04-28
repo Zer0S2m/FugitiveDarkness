@@ -10,7 +10,13 @@ const props = defineProps<{
   tree: ITree;
 }>();
 
+const emit = defineEmits<{
+  (e: 'selectFileObject', fileObject: ITree): void;
+}>();
+
 const openFolder = (): void => {
+  emit('selectFileObject', props.tree);
+
   isOpen.value = !isOpen.value;
 };
 
@@ -21,15 +27,10 @@ const sortedByDirectoryAndFile = computed((): ITree => {
   }
 
   const sortedTree: ITree = {
-    // @ts-ignore
     path: props.tree.path,
-    // @ts-ignore
     filename: props.tree.filename,
-    // @ts-ignore
     isFile: props.tree.isFile,
-    // @ts-ignore
-    isDirectory: props.tree?.isDirectory,
-    // @ts-ignore
+    isDirectory: props.tree.isDirectory,
     children: []
   };
 
@@ -59,6 +60,11 @@ const sortedByDirectoryAndFile = computed((): ITree => {
       <span>{{ tree?.filename }}</span>
     </div>
     <TreeFileBrowserNode
+      @select-file-object="
+        (fileObject: ITree) => {
+          emit('selectFileObject', fileObject);
+        }
+      "
       class="tree__children"
       v-if="sortedByDirectoryAndFile && isOpen"
       :tree="child"
@@ -71,17 +77,26 @@ const sortedByDirectoryAndFile = computed((): ITree => {
 .tree {
   cursor: pointer;
 }
+.tree:hover > .tree--child > span {
+  color: var(--color-secondary);
+}
+.tree:hover > .tree--child > svg {
+  fill: var(--color-secondary);
+}
 
 .tree__children {
-  margin-left: 4px;
+  margin-left: 8px;
 }
 
 .tree--child {
   display: flex;
   align-items: center;
+  margin-bottom: 2px;
 }
 
 .tree--child > svg {
+  min-width: 18px;
+  min-height: 18px;
   width: 18px;
   height: 18px;
 }
