@@ -108,5 +108,7 @@ onMounted(async () => {
 <style scoped>
 .file-content {
   margin-bottom: 20px;
+  overflow-y: auto;
+  height: 100%;
 }
 </style>

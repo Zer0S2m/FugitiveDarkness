@@ -87,7 +87,6 @@ onMounted(async (): Promise<void> => {
 .nav-items {
   width: 100%;
   display: flex;
-  align-content: center;
 }
 
 .nav-item {
@@ -98,7 +97,6 @@ onMounted(async (): Promise<void> => {
 }
 
 .nav-item__wrapper {
-  padding: 0 4px;
   display: flex;
   align-content: center;
   justify-content: center;

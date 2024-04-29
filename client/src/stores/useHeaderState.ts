@@ -88,9 +88,9 @@ export const useHeaderState = defineStore('header', () => {
     }
 
     if (module === 'git') {
-      await vueRouterStore.push('git-search');
+      await vueRouterStore.push({ path: '/git-search' });
     } else if (module === 'project') {
-      await vueRouterStore.push('project');
+      await vueRouterStore.push({ path: '/project' });
     }
   };
 
