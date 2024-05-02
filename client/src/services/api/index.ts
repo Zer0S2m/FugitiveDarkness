@@ -30,6 +30,21 @@ import type {
   IResponseCreateFilterSearch,
   IResponseGitFilterSearch
 } from '@/types/gitFilterSearch';
+import type {
+  IResponseProjectFileCommit,
+  IResponseProjectItemFile,
+  IResponseProjectFileAllCommits,
+  IResponseProjectFileTodos,
+  IResponseProjectFileInfoCountFile,
+  IResponseProjectFileComment
+} from '@/types/project';
+import { TypeFileLineCode } from '@/enums/project';
+import type {
+  IGitJobCreate,
+  IGitJobEdit,
+  IResponseGitJob,
+  IResponseGitJobCreate
+} from '@/types/gitJob';
 
 const apiClient: AxiosInstance = axios.create({
   baseURL: `${import.meta.env.VITE_FD_HOST_API}/api/v1`,
@@ -147,5 +162,83 @@ export default {
     return apiClient.post('/git/filter/search', {
       ...data
     });
+  },
+
+  async getAllGitJobs(): Promise<AxiosResponse<IResponseGitJob>> {
+    return await apiClient.get('/git/job');
+  },
+  async createGitJob(data: IGitJobCreate): Promise<AxiosResponse<IResponseGitJobCreate>> {
+    return await apiClient.post('/git/job', {
+      ...data
+    });
+  },
+  async editGitJob(id: number, data: IGitJobEdit): Promise<void> {
+    await apiClient.put(`/git/job/${id}`, {
+      ...data
+    });
+  },
+  async deleteGitJob(id: number): Promise<void> {
+    await apiClient.delete(`/git/job/${id}`);
+  },
+
+  async getProjectFiles(id: number): Promise<AxiosResponse<IResponseProjectItemFile>> {
+    return await apiClient.post(`/project/files`, {
+      gitRepositoryId: id,
+      isTreeStructure: true
+    });
+  },
+  async getProjectFileFirstCommit(
+    id: number,
+    file: string
+  ): Promise<AxiosResponse<IResponseProjectFileCommit>> {
+    return await apiClient.post(`/project/files/first-commit`, {
+      gitRepositoryId: id,
+      file: file
+    });
+  },
+  async getProjectFileLastCommit(
+    id: number,
+    file: string
+  ): Promise<AxiosResponse<IResponseProjectFileCommit>> {
+    return await apiClient.post(`/project/files/last-commit`, {
+      gitRepositoryId: id,
+      file: file
+    });
+  },
+  async getProjectFileAllCommit(
+    id: number,
+    file: string
+  ): Promise<AxiosResponse<IResponseProjectFileAllCommits>> {
+    return await apiClient.post(`/project/files/all-commit`, {
+      gitRepositoryId: id,
+      file: file
+    });
+  },
+  async getProjectFileTodos(
+    id: number,
+    filters: {
+      file: string;
+      isFile: boolean;
+      isDirectory: boolean;
+    }
+  ): Promise<AxiosResponse<IResponseProjectFileTodos>> {
+    return await apiClient.post(`/project/files/todo`, {
+      gitRepositoryId: id,
+      filters
+    });
+  },
+  async getProjectFileInfoCountLine(
+    id: number,
+    file: string,
+    type: TypeFileLineCode
+  ): Promise<AxiosResponse<IResponseProjectFileInfoCountFile>> {
+    return await apiClient.post(`/project/files/lines-code`, {
+      gitRepositoryId: id,
+      file: file,
+      type
+    });
+  },
+  async getProjectFileComments(): Promise<AxiosResponse<IResponseProjectFileComment>> {
+    return await apiClient.get('/project/files/comment');
   }
 };
