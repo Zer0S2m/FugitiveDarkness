@@ -39,6 +39,12 @@ import type {
   IResponseProjectFileComment
 } from '@/types/project';
 import { TypeFileLineCode } from '@/enums/project';
+import type {
+  IGitJobCreate,
+  IGitJobEdit,
+  IResponseGitJob,
+  IResponseGitJobCreate
+} from '@/types/gitJob';
 
 const apiClient: AxiosInstance = axios.create({
   baseURL: `${import.meta.env.VITE_FD_HOST_API}/api/v1`,
@@ -156,6 +162,23 @@ export default {
     return apiClient.post('/git/filter/search', {
       ...data
     });
+  },
+
+  async getAllGitJobs(): Promise<AxiosResponse<IResponseGitJob>> {
+    return await apiClient.get('/git/job');
+  },
+  async createGitJob(data: IGitJobCreate): Promise<AxiosResponse<IResponseGitJobCreate>> {
+    return await apiClient.post('/git/job', {
+      ...data
+    });
+  },
+  async editGitJob(id: number, data: IGitJobEdit): Promise<void> {
+    await apiClient.put(`/git/job/${id}`, {
+      ...data
+    });
+  },
+  async deleteGitJob(id: number): Promise<void> {
+    await apiClient.delete(`/git/job/${id}`);
   },
 
   async getProjectFiles(id: number): Promise<AxiosResponse<IResponseProjectItemFile>> {

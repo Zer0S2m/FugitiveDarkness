@@ -30,6 +30,10 @@ export const useHeaderState = defineStore('header', () => {
         {
           nameRouter: 'git-matcher-notes',
           titleRouter: 'Notes matcher'
+        },
+        {
+          nameRouter: 'git-jobs',
+          titleRouter: 'Jobs'
         }
       ]
     },

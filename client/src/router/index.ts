@@ -4,6 +4,7 @@ import GitProvidersView from '@/views/git/GitProvidersView.vue';
 import GitShowFile from '@/views/git/GitShowFile.vue';
 import GitRepositoriesView from '@/views/git/GitRepositoriesView.vue';
 import GitMatcherNotesView from '@/views/git/GitMatcherNotesView.vue';
+import GitJobs from '@/views/git/GitJobs.vue';
 import ProjectDetailView from '@/views/project/ProjectDetailView.vue';
 import ProjectHomeView from '@/views/project/ProjectHomeView.vue';
 
@@ -49,6 +50,14 @@ const router = createRouter({
         module: 'git'
       },
       component: () => GitMatcherNotesView
+    },
+    {
+      path: '/git-jobs',
+      name: 'git-jobs',
+      meta: {
+        module: 'git'
+      },
+      component: () => GitJobs
     },
     {
       path: '/project',

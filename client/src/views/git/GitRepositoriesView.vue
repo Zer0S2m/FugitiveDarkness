@@ -15,10 +15,7 @@
           v-for="gitRepositories in collectedRepositoriesByGroup"
         >
           <h4 class="git-local-group--title">{{ gitRepositories[0] }}</h4>
-          <GitRepositoryList
-            :items="gitRepositories[1]"
-            @open-modal-add-git-repository="openModalAddGitRepository"
-          />
+          <GitRepositoryList :items="gitRepositories[1]" />
         </div>
       </div>
       <div
@@ -118,7 +115,7 @@ import IconGithub from '@/assets/github-mark.svg';
 import IconGitlab from '@/assets/gitlab-mark.svg';
 import GitRepositoryInProviderList from '@/components/git/container/GitRepositoryInProviderList.vue';
 import { computed } from 'vue';
-import AddGitItemButton from '@/components/common/AddGitItemButton.vue';
+import AddGitItemButton from '@/components/common/AddItemButton.vue';
 import { getLinkForTargetProvider } from '@/utils/gitProviders';
 
 const useGitRepositoryStore = useGitRepositoryState();

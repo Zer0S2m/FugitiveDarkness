@@ -15,7 +15,7 @@
 import type { IGitProvider } from '@/types/gitProvider';
 import ContainerCardList from '@/components/common/ContainerCardList.vue';
 import GitProviderItem from '@/components/git/widget/GitProviderItem.vue';
-import AddGitItemButton from '@/components/common/AddGitItemButton.vue';
+import AddGitItemButton from '@/components/common/AddItemButton.vue';
 
 defineProps<{ items: IGitProvider[] }>();
 const emit = defineEmits(['openModalAddGitProvider']);
