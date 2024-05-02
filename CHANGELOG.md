@@ -4,6 +4,10 @@
 
 ### Added
 
+- The first prototype of the system is the file structure of the project:
+    - Viewing the file structure of the project.
+    - Viewing information about commits.
+    - View the number of todos in the project.
 - Improving the search engine:
     - Set the search areas - file or directory.
 - Scheduled tasks:
