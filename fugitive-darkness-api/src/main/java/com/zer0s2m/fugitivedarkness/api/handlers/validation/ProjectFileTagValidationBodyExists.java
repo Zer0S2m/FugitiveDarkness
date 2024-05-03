@@ -44,6 +44,8 @@ public final class ProjectFileTagValidationBodyExists implements Handler<Routing
                 .onFailure(error -> {
                     projectFileTagRepository.closeClient();
 
+                    logger.error("Failure (DB): " + error.fillInStackTrace());
+
                     event
                             .response()
                             .setStatusCode(HttpResponseStatus.INTERNAL_SERVER_ERROR.code())

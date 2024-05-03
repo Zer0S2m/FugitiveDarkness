@@ -87,8 +87,13 @@ public class ProjectManagerImpl implements ProjectManager {
     public FileCommitInfo lastCommitOfFile(Path sourceGitRepository, String file) {
         GitRepoManager gitRepoManager = GitRepoManager.create();
 
-        return infoCommitOfFile(gitRepoManager.gLastCommitOfFile(
-                sourceGitRepository, file));
+        RevCommit commit = gitRepoManager.gLastCommitOfFile(sourceGitRepository, file);
+
+        if (commit == null) {
+            return null;
+        }
+
+        return infoCommitOfFile(commit);
     }
 
     /**
@@ -102,8 +107,13 @@ public class ProjectManagerImpl implements ProjectManager {
     public FileCommitInfo firstCommitOfFile(Path sourceGitRepository, String file) {
         GitRepoManager gitRepoManager = GitRepoManager.create();
 
-        return infoCommitOfFile(gitRepoManager.gFirstCommitOfFile(
-                sourceGitRepository, file));
+        RevCommit commit = gitRepoManager.gFirstCommitOfFile(sourceGitRepository, file);
+
+        if (commit == null) {
+            return null;
+        }
+
+        return infoCommitOfFile(commit);
     }
 
     /**

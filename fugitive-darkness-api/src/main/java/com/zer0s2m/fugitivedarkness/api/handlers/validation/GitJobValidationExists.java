@@ -39,8 +39,6 @@ public class GitJobValidationExists implements Handler<RoutingContext> {
                     } else {
                         event.next();
                     }
-
-                    gitJobRepository.closeClient();
                 })
                 .onFailure(error -> {
                     gitJobRepository.closeClient();

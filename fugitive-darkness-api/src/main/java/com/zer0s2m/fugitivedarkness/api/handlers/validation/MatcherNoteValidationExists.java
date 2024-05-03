@@ -30,6 +30,8 @@ final public class MatcherNoteValidationExists implements Handler<RoutingContext
         noteRepository
                 .existsById(idMatcherNote)
                 .onSuccess(ar -> {
+                    noteRepository.closeClient();
+
                     if (!noteRepository.mapToExistsColumn(ar)) {
                         event.fail(
                                 HttpResponseStatus.NOT_FOUND.code(),

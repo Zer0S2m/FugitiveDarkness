@@ -58,13 +58,15 @@ onMounted(async (): Promise<void> => {
           <ProjectItemCommit
             class="dashboard_statistics--commit"
             :is-loading="useProjectStore.isProjectFileLastCommitLoading"
-            :commit="useProjectStore.projectFileLastCommit"
+            :commit="useProjectStore.projectFileLastCommit.data"
+            :error="useProjectStore.projectFileLastCommit.error"
             title="Last commit"
           />
           <ProjectItemCommit
             class="dashboard_statistics--commit"
             :is-loading="useProjectStore.isProjectFileFirstCommitLoading"
-            :commit="useProjectStore.projectFileFirstCommit"
+            :commit="useProjectStore.projectFileFirstCommit.data"
+            :error="useProjectStore.projectFileFirstCommit.error"
             title="First commit"
           />
         </div>

@@ -40,6 +40,8 @@ public final class ProjectFileColorValidationExists implements Handler<RoutingCo
                 .onFailure(error -> {
                     projectFileColorRepository.closeClient();
 
+                    logger.error("Failure (DB): " + error.fillInStackTrace());
+
                     event
                             .response()
                             .setStatusCode(HttpResponseStatus.INTERNAL_SERVER_ERROR.code())

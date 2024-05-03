@@ -79,6 +79,7 @@ public class ListenerGitJobPermanent implements Listener {
                                             ListenerGitJobUtils.collectProperties(gitJob));
                                 } catch (JobException e) {
                                     logger.error(e.getMessage());
+
                                     throw new RuntimeException(e);
                                 }
                             }
@@ -92,7 +93,11 @@ public class ListenerGitJobPermanent implements Listener {
                         }
                     });
                 })
-                .onFailure(error -> logger.error("Failure (DB) [get data]: " + error.getMessage()));
+                .onFailure(error -> {
+                    gitJobRepository.closeClient();
+
+                    logger.error("Failure (DB) [get data]: " + error.getMessage());
+                });
     }
 
 }

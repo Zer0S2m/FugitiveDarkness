@@ -65,8 +65,13 @@ public class ListenerGitJobOnetimeUse implements Listener {
                         if (gitJob.getNextRunAt() == null) {
                             gitJobRepository
                                     .updateNextRunAtById(nextRunAt, gitJob.getId())
-                                    .onFailure(error -> logger.error("Failure (DB) [update next run at]: "
-                                            + error.getMessage()));
+                                    .onSuccess(ar2 -> gitJobRepository.closeClient())
+                                    .onFailure(error -> {
+                                        gitJobRepository.closeClient();
+
+                                        logger.error("Failure (DB) [update next run at]: "
+                                                + error.getMessage());
+                                    });
                         } else {
                             if (currentDate.isAfter(gitJob.getNextRunAt())) {
                                 try {
@@ -84,13 +89,22 @@ public class ListenerGitJobOnetimeUse implements Listener {
 
                                 gitJobRepository
                                         .deleteById(gitJob.getId())
-                                        .onFailure(error -> logger.error("Failure (DB) [delete job]: "
-                                                + error.getMessage()));
+                                        .onSuccess(ar2 -> gitJobRepository.closeClient())
+                                        .onFailure(error -> {
+                                            gitJobRepository.closeClient();
+
+                                            logger.error("Failure (DB) [delete job]: "
+                                                    + error.getMessage());
+                                        });
                             }
                         }
                     });
                 })
-                .onFailure(error -> logger.error("Failure (DB) [get data]: " + error.getMessage()));
+                .onFailure(error -> {
+                    gitJobRepository.closeClient();
+
+                    logger.error("Failure (DB) [get data]: " + error.getMessage());
+                });
     }
 
 }

@@ -1,5 +1,6 @@
 package com.zer0s2m.fugitivedarkness.api.handlers;
 
+import com.zer0s2m.fugitivedarkness.api.exception.NotFoundException;
 import com.zer0s2m.fugitivedarkness.common.dto.ContainerControlCommitFileProject;
 import com.zer0s2m.fugitivedarkness.models.GitRepoModel;
 import com.zer0s2m.fugitivedarkness.provider.project.FileCommitInfo;
@@ -58,23 +59,29 @@ public final class ControllerApiProjectFilesFirstCommitFile implements Handler<R
                     FileCommitInfo firstCommitInfo = projectManager.firstCommitOfFile(
                             sourceGitRepo, commitFileProject.file());
 
-                    JsonObject object = new JsonObject();
-                    object.put("success", true);
-                    object.put("info", firstCommitInfo);
+                    if (firstCommitInfo == null) {
+                        event.fail(
+                                HttpResponseStatus.NOT_FOUND.code(),
+                                new NotFoundException("The commit was not found"));
+                    } else {
+                        JsonObject object = new JsonObject();
+                        object.put("success", true);
+                        object.put("info", firstCommitInfo);
 
-                    event
-                            .response()
-                            .setChunked(true)
-                            .putHeader(
-                                    HttpHeaders.CONTENT_LENGTH,
-                                    String.valueOf(object.toString().length()))
-                            .putHeader(HttpHeaders.CONTENT_TYPE, "application/json")
-                            .setStatusCode(HttpResponseStatus.OK.code())
-                            .write(object.toString());
+                        event
+                                .response()
+                                .setChunked(true)
+                                .putHeader(
+                                        HttpHeaders.CONTENT_LENGTH,
+                                        String.valueOf(object.toString().length()))
+                                .putHeader(HttpHeaders.CONTENT_TYPE, "application/json")
+                                .setStatusCode(HttpResponseStatus.OK.code())
+                                .write(object.toString());
 
-                    logger.info("The end of receiving the first commit of the file");
+                        logger.info("The end of receiving the first commit of the file");
 
-                    event.next();
+                        event.next();
+                    }
                 })
                 .onFailure(error -> {
                     gitRepoRepository.closeClient();

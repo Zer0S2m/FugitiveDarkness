@@ -39,6 +39,8 @@ public final class ProjectFileTagValidationExists implements Handler<RoutingCont
                 .onFailure(error -> {
                     projectFileTagRepository.closeClient();
 
+                    logger.error("Failure (DB): " + error.fillInStackTrace());
+
                     event
                             .response()
                             .setStatusCode(HttpResponseStatus.INTERNAL_SERVER_ERROR.code())

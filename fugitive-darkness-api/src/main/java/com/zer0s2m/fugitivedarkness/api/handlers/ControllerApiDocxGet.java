@@ -35,6 +35,8 @@ final public class ControllerApiDocxGet implements Handler<RoutingContext> {
         docxFileRepository
                 .findAll()
                 .onSuccess(ar -> {
+                    docxFileRepository.closeClient();
+
                     final JsonObject object = new JsonObject();
                     final List<DocxFileModel> docxFiles = docxFileRepository.mapTo(ar);
 

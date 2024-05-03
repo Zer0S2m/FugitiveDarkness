@@ -1,11 +1,14 @@
 <script setup lang="ts">
 import { HalfCircleSpinner } from 'epic-spinners';
 import type { IProjectFileCommit } from '@/types/project';
+import type { IError } from '@/types/api';
+import AlertError from '@/components/common/AlertError.vue';
 
 defineProps<{
   isLoading: boolean;
   title: string;
   commit: IProjectFileCommit | null;
+  error: IError | null;
 }>();
 </script>
 
@@ -25,7 +28,7 @@ defineProps<{
       </div>
       <div
         class="commit__body"
-        v-if="commit"
+        v-if="commit && !error"
       >
         <h6 class="commit--part commit--hash">
           <span>Hash</span><span>{{ commit.commit }}</span>
@@ -39,6 +42,12 @@ defineProps<{
         <h6 class="commit--part commit--body">
           <span>Body</span><span>{{ commit.bodyCommit }}</span>
         </h6>
+      </div>
+      <div
+        class="commit__error"
+        v-if="error"
+      >
+        <AlertError :error="error" />
       </div>
     </div>
   </div>
@@ -87,5 +96,10 @@ defineProps<{
   width: 64%;
   max-width: 100%;
   word-break: break-all;
+}
+
+.commit__error {
+  display: flex;
+  margin-top: 12px;
 }
 </style>

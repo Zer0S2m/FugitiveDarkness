@@ -57,16 +57,26 @@ final public class ControllerApiGitRepoCheckout implements Handler<RoutingContex
                                 containerGitRepoDelete.group(),
                                 containerGitRepoDelete.project(),
                                 true)
-                        .onFailure(error -> logger.error("Failure (DB): " + error.getCause()));
+                        .onFailure(error -> {
+                            gitRepoRepository.closeClient();
+
+                            logger.error("Failure (DB): " + error.getCause());
+                        });
             } catch (IOException | GitAPIException e) {
                 gitRepoRepository
                         .updateIsUnpackingByGroupAndProject(
                                 containerGitRepoDelete.group(),
                                 containerGitRepoDelete.project(),
                                 false)
-                        .onFailure(error -> logger.error("Failure (DB): " + error.getCause()));
+                        .onFailure(error -> {
+                            gitRepoRepository.closeClient();
+
+                            logger.error("Failure (DB): " + error.getCause());
+                        });
                 throw new RuntimeException(e);
             }
+
+            gitRepoRepository.closeClient();
 
             logger.info("The end of unpacking the git project [{}:{}]",
                     containerGitRepoDelete.group(), containerGitRepoDelete.project());

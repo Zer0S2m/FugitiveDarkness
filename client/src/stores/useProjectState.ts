@@ -18,6 +18,8 @@ import type { AxiosResponse } from 'axios';
 import type { ITree } from '@/types/tree';
 import type { ISearchFoundByGrepGitRepository } from '@/types/gitRepository';
 import { TypeFileLineCode } from '@/enums/project';
+import { instanceIResponseError } from '@/utils/defenders';
+import type { IError } from '@/types/api';
 
 export const useProjectState = defineStore('project', () => {
   const activeProjectId: Ref<number> = ref(0);
@@ -32,8 +34,20 @@ export const useProjectState = defineStore('project', () => {
   const projectFileComments: Ref<IProjectFileComment[]> = ref([]);
 
   // COMMITS
-  const projectFileFirstCommit: Ref<IProjectFileCommit | null> = ref(null);
-  const projectFileLastCommit: Ref<IProjectFileCommit | null> = ref(null);
+  const projectFileFirstCommit: Ref<{
+    data: IProjectFileCommit | null;
+    error: IError | null;
+  }> = ref({
+    data: null,
+    error: null
+  });
+  const projectFileLastCommit: Ref<{
+    data: IProjectFileCommit | null;
+    error: IError | null;
+  }> = ref({
+    data: null,
+    error: null
+  });
   const projectFileAllCommit: Ref<IProjectFileCommit[] | null> = ref(null);
   const isProjectFileFirstCommitLoading: Ref<boolean> = ref(false);
   const isProjectFileLastCommitLoading: Ref<boolean> = ref(false);
@@ -79,7 +93,24 @@ export const useProjectState = defineStore('project', () => {
       activeProjectFile.value.path
     );
 
-    projectFileFirstCommit.value = response.data.info;
+    if (response.status === 404) {
+      if (instanceIResponseError(response.data)) {
+        projectFileFirstCommit.value = {
+          data: null,
+          // @ts-ignore
+          error: response.data as IError
+        };
+      }
+
+      isProjectFileFirstCommitLoading.value = false;
+
+      return;
+    }
+
+    projectFileFirstCommit.value = {
+      data: response.data.info,
+      error: null
+    };
 
     isProjectFileFirstCommitLoading.value = false;
   };
@@ -97,7 +128,24 @@ export const useProjectState = defineStore('project', () => {
       activeProjectFile.value.path
     );
 
-    projectFileLastCommit.value = response.data.info;
+    if (response.status === 404) {
+      if (instanceIResponseError(response.data)) {
+        projectFileLastCommit.value = {
+          data: null,
+          // @ts-ignore
+          error: response.data as IError
+        };
+      }
+
+      isProjectFileLastCommitLoading.value = false;
+
+      return;
+    }
+
+    projectFileLastCommit.value = {
+      data: response.data.info,
+      error: null
+    };
 
     isProjectFileLastCommitLoading.value = false;
   };
@@ -181,8 +229,14 @@ export const useProjectState = defineStore('project', () => {
     isProjectFileAllCommitLoading.value = false;
     isProjectFileTodosLoading.value = false;
     isProjectFileCountLinesLoading.value = false;
-    projectFileFirstCommit.value = null;
-    projectFileLastCommit.value = null;
+    projectFileFirstCommit.value = {
+      data: null,
+      error: null
+    };
+    projectFileLastCommit.value = {
+      data: null,
+      error: null
+    };
     projectFileAllCommit.value = null;
     projectFileTodos.value = [];
     projectFileCountLines.value = [];

@@ -31,6 +31,8 @@ final public class ControllerApiGitJobEdit implements Handler<RoutingContext> {
         gitJobRepository
                 .updateCronById(containerGitJobEdit.cron(), idGitJob)
                 .onSuccess(ar -> {
+                    gitJobRepository.closeClient();
+
                     event
                             .response()
                             .setStatusCode(HttpResponseStatus.NO_CONTENT.code());

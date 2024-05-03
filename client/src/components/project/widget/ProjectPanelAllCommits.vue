@@ -3,6 +3,7 @@ import type { IProjectFileCommit } from '@/types/project';
 import { HalfCircleSpinner } from 'epic-spinners';
 import IconArrowBottom from '@/assets/icon-arrow-bottom.svg';
 import { type Ref, ref } from 'vue';
+import AlertError from '@/components/common/AlertError.vue';
 
 const openCommits: Ref<string[]> = ref([]);
 
@@ -39,7 +40,8 @@ const openInfoCommit = (hash: string): void => {
       </div>
       <ul
         class="panel--commits"
-        v-if="commits"
+        style="height: 202px"
+        v-if="commits && commits.length"
       >
         <li
           class="panel--commit"
@@ -72,6 +74,17 @@ const openInfoCommit = (hash: string): void => {
           </div>
         </li>
       </ul>
+      <div
+        class="panel--error"
+        v-if="(!commits || !commits.length) && !isLoading"
+      >
+        <AlertError
+          :error="{
+            type: 'NotFoundException',
+            message: '[Not Found] The commit was not found'
+          }"
+        />
+      </div>
     </div>
   </div>
 </template>
@@ -98,7 +111,6 @@ const openInfoCommit = (hash: string): void => {
 
 .panel--commits {
   margin-top: 8px;
-  height: 202px;
   overflow-y: auto;
 }
 
@@ -142,5 +154,10 @@ const openInfoCommit = (hash: string): void => {
 .commit--part > span:last-child {
   width: 80%;
   max-width: 100%;
+}
+
+.panel--error {
+  display: flex;
+  margin-top: 12px;
 }
 </style>

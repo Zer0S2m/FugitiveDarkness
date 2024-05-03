@@ -6,11 +6,15 @@ import com.zer0s2m.fugitivedarkness.repository.impl.ProjectCommentRepositoryImpl
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.vertx.core.Handler;
 import io.vertx.ext.web.RoutingContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Request handler for validation for the existence of a comment on a file object in the project.
  */
 public final class ProjectCommentValidationExists implements Handler<RoutingContext> {
+
+    static private final Logger logger = LoggerFactory.getLogger(ProjectCommentValidationExists.class);
 
     /**
      * Something has happened, so handle it.
@@ -37,6 +41,8 @@ public final class ProjectCommentValidationExists implements Handler<RoutingCont
                 })
                 .onFailure(error -> {
                     projectCommentRepository.closeClient();
+
+                    logger.error("Failure (DB): " + error.fillInStackTrace());
 
                     event
                             .response()
