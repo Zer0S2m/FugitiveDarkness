@@ -5,7 +5,6 @@ import com.zer0s2m.fugitivedarkness.provider.git.*;
 import com.zer0s2m.fugitivedarkness.provider.git.ContainerGitRepoMeta;
 import com.zer0s2m.fugitivedarkness.provider.git.ContainerInfoFileContent;
 import com.zer0s2m.fugitivedarkness.provider.git.FileSystemUtils;
-import com.zer0s2m.fugitivedarkness.provider.git.SearchEngineGitUtils;
 import org.eclipse.jgit.api.CloneCommand;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
@@ -13,7 +12,6 @@ import org.eclipse.jgit.lib.*;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.revwalk.RevSort;
 import org.eclipse.jgit.revwalk.RevWalk;
-import org.eclipse.jgit.treewalk.TreeWalk;
 import org.eclipse.jgit.treewalk.filter.PathFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -134,32 +132,16 @@ public class GitRepoManagerImpl implements GitRepoManager {
     /**
      * Open and get the contents of a file from a git repository by group and project name.
      *
-     * @param group   The name of the git repository group.
-     * @param project The name of the git repository project.
-     * @param file    File name.
+     * @param adapter    An adapter for running a reader of file content from different sources.
+     * @param properties Metadata for launching the adapter.
      * @return Collected file content from git repository.
      * @throws IOException If an IO error occurred.
      */
     @Override
-    public List<ContainerInfoFileContent> gShowFile(String group, String project, String file) throws IOException {
-        // TODO: Get the content of a file in a local project
-
-        final Path source = HelperGitRepo.getSourceGitRepository(group, project);
-
-        try (final Repository repository = Git.open(source.toFile())
-                .checkout()
-                .getRepository()) {
-            final ObjectId revision = SearchEngineGitUtils
-                    .getRevisionTree(repository, repository.getBranch());
-
-            try (final TreeWalk treeWalk = TreeWalk.forPath(repository, file, revision)) {
-                try (final ObjectReader objectReader = repository.newObjectReader()) {
-                    ObjectLoader objectLoader = objectReader.open(treeWalk.getObjectId(0));
-                    try (final InputStream stream = objectLoader.openStream()) {
-                        return gShowFileReadContent(stream);
-                    }
-                }
-            }
+    public List<ContainerInfoFileContent> gShowFile(
+            GitReaderContentFileAdapter adapter, Map<String, Object> properties) throws IOException {
+        try (final InputStream inputStream = adapter.read(properties)) {
+            return gShowFileReadContent(inputStream);
         }
     }
 

@@ -25,6 +25,10 @@
   is almost zero and an arithmetic error occurs (cannot be divided by zero)
 - Closing the client for the database.
 
+### Changed
+
+- Get the content of a file in a local project.
+
 ## [0.0.7] 2024-04-10
 
 ### Added

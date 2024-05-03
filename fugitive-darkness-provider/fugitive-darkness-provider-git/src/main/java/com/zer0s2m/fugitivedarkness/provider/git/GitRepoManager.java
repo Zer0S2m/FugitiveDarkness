@@ -111,13 +111,12 @@ public interface GitRepoManager {
     /**
      * Open and get the contents of a file from a git repository by group and project name.
      *
-     * @param group   The name of the git repository group.
-     * @param project The name of the git repository project.
-     * @param file    File name.
+     * @param adapter    An adapter for running a reader of file content from different sources.
+     * @param properties Metadata for launching the adapter.
      * @return Collected file content from git repository.
      * @throws IOException If an IO error occurred.
      */
-    List<ContainerInfoFileContent> gShowFile(String group, String project, String file) throws IOException;
+    List<ContainerInfoFileContent> gShowFile(GitReaderContentFileAdapter adapter, Map<String, Object> properties) throws IOException;
 
     /**
      * Search for matches in files in git repositories by pattern. Git grep command.

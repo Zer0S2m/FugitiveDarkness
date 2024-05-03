@@ -79,4 +79,5 @@ public interface GitRepoRepository extends Repository<RowSet<Row>, GitRepoModel>
      * @return Result.
      */
     Future<RowSet<Row>> findByGroupAndProject(String group, String project);
+
 }
