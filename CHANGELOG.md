@@ -14,6 +14,7 @@
     - Functionality for creating scheduled tasks.
     - Rules for running scheduled tasks.
 - Functionality for updating the repository in the form of scheduled tasks.
+- Automatic start of migrations at system startup.
 
 ### Security
 

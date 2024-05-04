@@ -46,6 +46,7 @@
     <maven-shade-plugin.version>3.2.4</maven-shade-plugin.version>
     <jackson-databind.version>2.16.0</jackson-databind.version>
     <jackson-datatype-jsr310.version>2.16.0</jackson-datatype-jsr310.version>
+    <flyway-core.version>10.2.0</flyway-core.version>
     <flyway-maven-plugin.version>10.2.0</flyway-maven-plugin.version>
     <flyway-database-postgresql.version>10.2.0</flyway-database-postgresql.version>
     <postgresql.version>42.7.3</postgresql.version>
@@ -137,6 +138,11 @@
         <groupId>org.flywaydb</groupId>
         <artifactId>flyway-database-postgresql</artifactId>
         <version>${flyway-database-postgresql.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.flywaydb</groupId>
+        <artifactId>flyway-core</artifactId>
+        <version>${flyway-core.version}</version>
       </dependency>
       <dependency>
         <groupId>org.postgresql</groupId>
