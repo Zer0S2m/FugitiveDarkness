@@ -8,7 +8,7 @@
       >
     </h5>
     <GitRepositorySearchMatherList
-      :matchers="item.found.slice(0, resultSearchByGrepGitRepositoriesLines + 1)"
+      :matchers="foundMatchers"
       :group-repository="item.group"
       :project-repository="item.project"
       class="result-search-git-repo__matchers"
@@ -25,10 +25,13 @@
 </template>
 
 <script setup lang="ts">
-import { type ISearchByGrepGitRepository } from '@/types/gitRepository';
+import {
+  type ISearchByGrepGitRepository,
+  type ISearchFoundByGrepGitRepository
+} from '@/types/gitRepository';
 import GitRepositorySearchMatherList from '@/components/git/container/GitRepositorySearchMatherList.vue';
 import { useGitRepositoryState } from '@/stores/useGitRepositoryState';
-import { computed, ref, type Ref } from 'vue';
+import { computed, onMounted, ref, type Ref, watch } from 'vue';
 import { ShowLinesResultSearch } from '@/enums/resultSearch';
 
 const useGitRepositoryStore = useGitRepositoryState();
@@ -36,11 +39,53 @@ const useGitRepositoryStore = useGitRepositoryState();
 const resultSearchByGrepGitRepositoriesLines: Ref<number> = ref(
   ShowLinesResultSearch.DEFAULT.valueOf()
 );
+const activeExtension: Ref<string[]> = ref([]);
+const foundMatchers: Ref<ISearchFoundByGrepGitRepository[]> = ref([]);
+const foundMatchersLength: Ref<number> = ref(0);
+
+watch(
+  [resultSearchByGrepGitRepositoriesLines, () => useGitRepositoryStore.filtersByExtensionFiles],
+  // TODO: Crutch - needed to track items on the page (linked to - show plus 50)
+  ([_, newFiltersByExtensionFiles]) => {
+    const repository = `${props.item.group}/${props.item.project}`;
+    if (newFiltersByExtensionFiles.has(repository)) {
+      const _activeExtension: Array<string> = [];
+
+      // @ts-ignore
+      newFiltersByExtensionFiles
+        .get(repository)
+        .forEach((filter: { extension: string; isActive: boolean }): void => {
+          if (filter.isActive) {
+            _activeExtension.push(filter.extension);
+          }
+        });
+
+      activeExtension.value = _activeExtension;
+
+      const foundFilterByExtension: Array<ISearchFoundByGrepGitRepository> = [];
+
+      props.item.found.forEach((found: ISearchFoundByGrepGitRepository): void => {
+        if (activeExtension.value.includes(found.extension)) {
+          foundFilterByExtension.push(found);
+        }
+      });
+
+      foundMatchers.value = foundFilterByExtension.slice(
+        0,
+        resultSearchByGrepGitRepositoriesLines.value + 1
+      );
+      foundMatchersLength.value = foundFilterByExtension.length;
+    }
+  },
+  {
+    deep: true
+  }
+);
 
 const isShowMoreMatchers = computed((): boolean => {
   return !(
-    props.item.found.length === 0 ||
-    props.item.found.length <= resultSearchByGrepGitRepositoriesLines.value
+    foundMatchersLength.value === 0 ||
+    foundMatchersLength.value <= resultSearchByGrepGitRepositoriesLines.value
   );
 });
 
@@ -51,6 +96,19 @@ const onClickShowMoreMatchers = (): void => {
 const props = defineProps<{
   item: ISearchByGrepGitRepository;
 }>();
+
+onMounted((): void => {
+  const _activeExtension: Array<string> = [];
+
+  props.item.extensionFiles.forEach((extensionFile: string): void => {
+    _activeExtension.push(extensionFile);
+  });
+
+  activeExtension.value = _activeExtension;
+
+  foundMatchers.value = props.item.found.slice(0, resultSearchByGrepGitRepositoriesLines.value + 1);
+  foundMatchersLength.value = props.item.found.length;
+});
 </script>
 
 <style scoped>

@@ -25,6 +25,7 @@
 - When collecting search statistics in the search engine, sometimes it occurs that the speed of search execution 
   is almost zero and an arithmetic error occurs (cannot be divided by zero)
 - Closing the client for the database.
+- When selecting file extensions in the filter, the functionality does not work - show plus 50.
 
 ### Changed
 
