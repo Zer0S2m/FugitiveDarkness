@@ -6,11 +6,11 @@
   <parent>
     <groupId>com.zer0s2m.fugitive-darkness</groupId>
     <artifactId>fugitive-darkness-provider</artifactId>
-    <version>0.0.7</version>
+    <version>0.0.8</version>
   </parent>
 
   <artifactId>fugitive-darkness-provider-project</artifactId>
-  <version>0.0.7</version>
+  <version>0.0.8</version>
 
   <properties>
     <maven.compiler.source>21</maven.compiler.source>

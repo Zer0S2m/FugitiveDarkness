@@ -111,5 +111,5 @@ mvn clean package
 Run server:
 
 ```shell
-java -jar ./fugitive-darkness-api/target/fugitive-darkness-api-0.0.7-fat.jar
+java -jar ./fugitive-darkness-api/target/fugitive-darkness-api-0.0.8-fat.jar
 ```
