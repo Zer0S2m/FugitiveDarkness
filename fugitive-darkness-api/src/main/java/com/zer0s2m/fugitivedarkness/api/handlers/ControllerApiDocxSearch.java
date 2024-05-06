@@ -27,7 +27,7 @@ import java.nio.file.Path;
 
 import static io.vertx.json.schema.common.dsl.Schemas.*;
 
-public class ControllerApiDocxSearch implements Handler<RoutingContext> {
+final public class ControllerApiDocxSearch implements Handler<RoutingContext> {
 
     static private final Logger logger = LoggerFactory.getLogger(ControllerApiDocxSearch.class);
 
@@ -50,6 +50,8 @@ public class ControllerApiDocxSearch implements Handler<RoutingContext> {
         docxFileRepository
                 .findById(idDocxFile)
                 .onSuccess(ar -> {
+                    docxFileRepository.closeClient();
+
                     final JsonObject object = new JsonObject();
                     final DocxFileModel docxFile = docxFileRepository.mapTo(ar).get(0);
 

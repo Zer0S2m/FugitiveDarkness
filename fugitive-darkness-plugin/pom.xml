@@ -6,14 +6,16 @@
   <parent>
     <groupId>com.zer0s2m.fugitive-darkness</groupId>
     <artifactId>fugitive-darkness</artifactId>
-    <version>0.0.7</version>
+    <version>0.0.8</version>
   </parent>
 
   <artifactId>fugitive-darkness-plugin</artifactId>
-  <version>0.0.7</version>
+  <version>0.0.8</version>
   <packaging>pom</packaging>
   <modules>
+    <module>fugitive-darkness-plugin-job</module>
     <module>fugitive-darkness-plugin-vertx-git-provider</module>
+    <module>fugitive-darkness-plugin-vertx-job</module>
   </modules>
 
   <properties>

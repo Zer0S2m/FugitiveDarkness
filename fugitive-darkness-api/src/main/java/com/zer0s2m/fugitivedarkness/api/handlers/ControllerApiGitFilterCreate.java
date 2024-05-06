@@ -54,6 +54,8 @@ final public class ControllerApiGitFilterCreate implements Handler<RoutingContex
         filterRepository
                 .save(newModel)
                 .onSuccess(ar -> {
+                    filterRepository.closeClient();
+
                     final GitFilterModel createdFilter = filterRepository.mapTo(ar).get(0);
                     final ContainerResponseGitFilter responseGitFilter = new ContainerResponseGitFilter(
                             createdFilter.getId(),

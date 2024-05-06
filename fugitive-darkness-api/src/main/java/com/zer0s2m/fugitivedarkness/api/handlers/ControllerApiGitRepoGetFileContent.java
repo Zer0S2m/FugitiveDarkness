@@ -2,8 +2,13 @@ package com.zer0s2m.fugitivedarkness.api.handlers;
 
 import com.zer0s2m.fugitivedarkness.api.exception.NotFoundException;
 import com.zer0s2m.fugitivedarkness.common.dto.ContainerGitRepoGetFile;
+import com.zer0s2m.fugitivedarkness.models.GitRepoModel;
+import com.zer0s2m.fugitivedarkness.provider.git.GitReaderContentFileAdapter;
 import com.zer0s2m.fugitivedarkness.provider.git.GitRepoManager;
-import com.zer0s2m.fugitivedarkness.provider.git.HelperGitRepo;
+import com.zer0s2m.fugitivedarkness.provider.git.impl.GitReaderContentFileAdapterGit;
+import com.zer0s2m.fugitivedarkness.provider.git.impl.GitReaderContentFileAdapterLocal;
+import com.zer0s2m.fugitivedarkness.repository.GitRepoRepository;
+import com.zer0s2m.fugitivedarkness.repository.impl.GitRepoRepositoryImpl;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
@@ -20,6 +25,10 @@ import io.vertx.json.schema.SchemaRouterOptions;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import static io.vertx.json.schema.common.dsl.Schemas.*;
 
@@ -43,53 +52,87 @@ final public class ControllerApiGitRepoGetFileContent implements Handler<Routing
                 .body()
                 .asJsonObject()
                 .mapTo(ContainerGitRepoGetFile.class);
-        boolean isExistsGitRepository = HelperGitRepo.existsGitRepository(
-                containerGitRepoDelete.group(), containerGitRepoDelete.project());
 
-        if (!isExistsGitRepository) {
-            event.fail(
-                    HttpResponseStatus.NOT_FOUND.code(),
-                    new NotFoundException("Object not found in the system"));
-        } else {
-            logger.info(String.format(
-                    "Start receiving file [%s:%s:%s]",
-                    containerGitRepoDelete.group(),
-                    containerGitRepoDelete.project(),
-                    containerGitRepoDelete.file()
-            ));
+        final GitRepoRepository gitRepoRepository = new GitRepoRepositoryImpl(event.vertx());
 
-            event
-                    .vertx()
-                    .executeBlocking(() -> gitRepo.gShowFile(
-                            containerGitRepoDelete.group(),
-                            containerGitRepoDelete.project(),
-                            containerGitRepoDelete.file()))
-                    .onSuccess((ar) -> {
-                        final JsonObject result = new JsonObject();
-                        result.put("success", true);
-                        result.put("content", ar);
+        gitRepoRepository
+                .findByGroupAndProject(containerGitRepoDelete.group(), containerGitRepoDelete.project())
+                .onSuccess(ar -> {
+                    final List<GitRepoModel> gitRepositories = gitRepoRepository.mapTo(ar);
 
-                        event.response()
-                                .setChunked(true)
-                                .putHeader(HttpHeaders.CONTENT_LENGTH, String.valueOf(result.toString().length()))
-                                .putHeader(HttpHeaders.CONTENT_TYPE, "application/json")
-                                .setStatusCode(HttpResponseStatus.OK.code())
-                                .write(result.toString());
+                    if (gitRepositories.isEmpty()) {
+                        event.fail(
+                                HttpResponseStatus.NOT_FOUND.code(),
+                                new NotFoundException("Git repository not found in the system"));
+                    } else {
+                        GitRepoModel gitRepoModel = gitRepositories.get(0);
 
-                        logger.info("Finish receiving file");
+                        logger.info(String.format(
+                                "Start receiving file [%s:%s:%s]",
+                                gitRepoModel.getGroup(),
+                                gitRepoModel.getProject(),
+                                containerGitRepoDelete.file()
+                        ));
 
-                        event.next();
-                    })
-                    .onFailure((cause) -> {
-                        logger.error("Failure (GIT): " + cause.getCause());
+                        final GitReaderContentFileAdapter gitReaderContentFileAdapter;
+                        final Map<String, Object> propertiesForAdapter = new HashMap<>();
+                        propertiesForAdapter.put("file", containerGitRepoDelete.file());
+                        if (gitRepoModel.getIsLocal()) {
+                            gitReaderContentFileAdapter = new GitReaderContentFileAdapterLocal();
+
+                            propertiesForAdapter.put("source", gitRepoModel.getSource());
+                        } else {
+                            gitReaderContentFileAdapter = new GitReaderContentFileAdapterGit();
+
+                            propertiesForAdapter.put("group", gitRepoModel.getGroup());
+                            propertiesForAdapter.put("project", gitRepoModel.getProject());
+                        }
 
                         event
-                                .response()
-                                .setStatusCode(HttpResponseStatus.INTERNAL_SERVER_ERROR.code())
-                                .end();
-                    });
-        }
+                                .vertx()
+                                .executeBlocking(() -> gitRepo.gShowFile(
+                                        gitReaderContentFileAdapter,
+                                        propertiesForAdapter))
+                                .onSuccess((ar2) -> {
+                                    final JsonObject result = new JsonObject();
+                                    result.put("success", true);
+                                    result.put("content", ar2);
 
+                                    event.response()
+                                            .setChunked(true)
+                                            .putHeader(HttpHeaders.CONTENT_LENGTH, String.valueOf(result.toString().length()))
+                                            .putHeader(HttpHeaders.CONTENT_TYPE, "application/json")
+                                            .setStatusCode(HttpResponseStatus.OK.code())
+                                            .write(result.toString());
+
+                                    logger.info(String.format(
+                                            "Finish receiving file [%s:%s:%s]",
+                                            gitRepoModel.getGroup(),
+                                            gitRepoModel.getProject(),
+                                            containerGitRepoDelete.file()
+                                    ));
+
+                                    event.next();
+                                })
+                                .onFailure((cause) -> {
+                                    logger.error("Failure (GIT): " + cause.getCause());
+
+                                    event
+                                            .response()
+                                            .setStatusCode(HttpResponseStatus.INTERNAL_SERVER_ERROR.code())
+                                            .end();
+                                });
+                    }
+                })
+                .onFailure(error -> {
+                    gitRepoRepository.closeClient();
+
+                    logger.error("Failure (SYSTEM): " + error.getMessage());
+
+                    event.response()
+                            .setStatusCode(HttpResponseStatus.INTERNAL_SERVER_ERROR.code())
+                            .end();
+                });
     }
 
     /**

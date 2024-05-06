@@ -275,4 +275,18 @@ public interface SearchEngineGrep extends SearchEngineGitUtils, SearchEngineGrep
      */
     ContainerGitRepoMeta getContainerGitRepoMeta();
 
+    /**
+     * Set the search area to a file or directory.
+     *
+     * @param areaFile The search area is a file or directory.
+     */
+    void setAreaFile(String areaFile);
+
+    /**
+     * Get the search area to a file or directory.
+     *
+     * @return The search area is a file or directory.
+     */
+    String getAreaFile();
+
 }

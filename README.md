@@ -9,6 +9,8 @@ Search engine from different sources:
 - Indexing git sources and searching.
 - DOCX Documents.
 
+## Development
+
 ### Development - Server
 
 Before starting, create an .env file and edit it:
@@ -17,7 +19,7 @@ Before starting, create an .env file and edit it:
 cp ./.env.example ./.env
 ```
 
-_[Parameter information](#env-params)_
+_[Parameter information](#env-params-server)_
 
 Run docker:
 
@@ -51,6 +53,14 @@ Go to working directory:
 cd ./client
 ```
 
+Before starting, create an .env file and edit it:
+
+```bash
+cp ./.env.example ./.env
+```
+
+_[Parameter information](#env-params-client)_
+
 Install dependencies:
 
 ```bash
@@ -63,7 +73,9 @@ Run system:
 npm run dev
 ```
 
-### Env params
+## Env params
+
+### Env params (Server)
 
 | Env param                  | Value                                                  | Example                                       |
 |----------------------------|--------------------------------------------------------|-----------------------------------------------|
@@ -76,7 +88,13 @@ npm run dev
 | **`FD_POSTGRES_USER`**     | Database user                                          | `my_db_user`                                  |
 | **`FD_POSTGRES_DB`**       | Database name                                          | `my_db`                                       |
 
-### Build
+### Env params (Client)
+
+| Env param              | Value                       | Example                 |
+|------------------------|-----------------------------|-------------------------|
+| **`VITE_FD_HOST_API`** | The host for the API module | `http://localhost:8080` |
+
+## Build
 
 Build client:
 
@@ -93,5 +111,5 @@ mvn clean package
 Run server:
 
 ```shell
-java -jar ./fugitive-darkness-api/target/fugitive-darkness-api-0.0.7-fat.jar
+java -jar ./fugitive-darkness-api/target/fugitive-darkness-api-0.0.8-fat.jar
 ```

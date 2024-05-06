@@ -58,6 +58,8 @@ final public class ControllerApiDocxUpload implements Handler<RoutingContext> {
                         docxFileRepository
                                 .save(docxFile)
                                 .onSuccess(rows -> {
+                                    docxFileRepository.closeClient();
+
                                     final JsonObject object = new JsonObject();
                                     final DocxFileModel docxFileCreated = docxFileRepository.mapTo(rows).get(0);
 
@@ -76,6 +78,7 @@ final public class ControllerApiDocxUpload implements Handler<RoutingContext> {
                                 })
                                 .onFailure(error -> {
                                     docxFileRepository.closeClient();
+
                                     logger.error("Failure (DB): " + error.fillInStackTrace());
 
                                     event
@@ -85,6 +88,8 @@ final public class ControllerApiDocxUpload implements Handler<RoutingContext> {
                                 });
                     })
                     .onFailure(error -> {
+                        docxFileRepository.closeClient();
+
                         logger.error("Failure (UPLOAD): " + error.fillInStackTrace());
 
                         event

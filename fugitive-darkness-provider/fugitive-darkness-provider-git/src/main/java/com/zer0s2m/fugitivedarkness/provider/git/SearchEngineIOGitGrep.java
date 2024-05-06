@@ -21,4 +21,32 @@ public interface SearchEngineIOGitGrep extends SearchEngineGrep {
      */
     Path getDirectory();
 
+    /**
+     * Set the indication that the search area is a file.
+     *
+     * @param areaIsFile Indicates that the search area is a file.
+     */
+    void setAreaIsFile(boolean areaIsFile);
+
+    /**
+     * Get the indication that the search area is a file.
+     *
+     * @return Indicates that the search area is a file.
+     */
+    boolean getAreaIsFile();
+
+    /**
+     * Get the indication that the search area is a file.
+     *
+     * @param areaIsDirectory Indicates that the search area is a directory.
+     */
+    void setAreaIsDirectory(boolean areaIsDirectory);
+
+    /**
+     * Get the indication that the search area is a file.
+     *
+     * @return Indicates that the search area is a directory.
+     */
+    boolean getAreaIsDirectory();
+
 }

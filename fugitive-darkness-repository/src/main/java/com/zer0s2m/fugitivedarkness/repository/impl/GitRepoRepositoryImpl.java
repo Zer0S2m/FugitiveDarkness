@@ -31,7 +31,7 @@ public class GitRepoRepositoryImpl extends RepositoryImpl implements GitRepoRepo
     @Override
     public Future<RowSet<Row>> findById(int id) {
         return sqlClient(vertx)
-                .preparedQuery("SELECT * FROM git_repositories WHERE id=$1")
+                .preparedQuery("SELECT * FROM git_repositories WHERE id = $1")
                 .execute(Tuple.of(id));
     }
 
@@ -143,7 +143,7 @@ public class GitRepoRepositoryImpl extends RepositoryImpl implements GitRepoRepo
     /**
      * Find an entity by group name and project.
      *
-     * @param group Project group.
+     * @param group   Project group.
      * @param project Name of the project.
      * @return Result.
      */

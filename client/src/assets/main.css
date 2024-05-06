@@ -41,3 +41,7 @@ pre.code {
   font-weight: 600;
   margin-bottom: 12px;
 }
+
+.h100 {
+  height: 100%;
+}

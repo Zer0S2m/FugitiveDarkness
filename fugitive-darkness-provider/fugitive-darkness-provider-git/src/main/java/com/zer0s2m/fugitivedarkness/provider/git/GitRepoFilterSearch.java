@@ -229,6 +229,62 @@ public interface GitRepoFilterSearch {
     int getContextAfter();
 
     /**
+     * Set a sign that what should be searched for only in a certain area
+     *
+     * @param isSearchOnlyInArea Search only in a certain area.
+     */
+    GitRepoFilterSearch setIsSearchOnlyInArea(boolean isSearchOnlyInArea);
+
+    /**
+     * Get a sign that you need to look for something only in a certain area
+     *
+     * @return Search only in a certain area.
+     */
+    boolean getIsSearchOnlyInArea();
+
+    /**
+     * Set the search area to a file or directory.
+     *
+     * @param areaFile The search area is a file or directory.
+     */
+    GitRepoFilterSearch setAreaFile(String areaFile);
+
+    /**
+     * Get the search area to a file or directory.
+     *
+     * @return The search area is a file or directory.
+     */
+    String getAreaFile();
+
+    /**
+     * Set the indication that the search area is a file.
+     *
+     * @param areaIsFile Indicates that the search area is a file.
+     */
+    GitRepoFilterSearch setAreaIsFile(boolean areaIsFile);
+
+    /**
+     * Get the indication that the search area is a file.
+     *
+     * @return Indicates that the search area is a file.
+     */
+    boolean getAreaIsFile();
+
+    /**
+     * Get the indication that the search area is a file.
+     *
+     * @param areaIsDirectory Indicates that the search area is a directory.
+     */
+    GitRepoFilterSearch setAreaIsDirectory(boolean areaIsDirectory);
+
+    /**
+     * Get the indication that the search area is a file.
+     *
+     * @return Indicates that the search area is a directory.
+     */
+    boolean getAreaIsDirectory();
+
+    /**
      * Clear information about repositories.
      * <p>Relevant when calling the cloning method {@link GitRepoFilterSearch#clone(GitRepoFilterSearch)}.</p>
      */
@@ -256,7 +312,11 @@ public interface GitRepoFilterSearch {
                 .setExcludeExtensionFile(real.getExcludeExtensionFile())
                 .setPatternForIncludeFile(real.getPatternForIncludeFile())
                 .setPatternForExcludeFile(real.getPatternForExcludeFile())
-                .setPattern(real.getPattern());
+                .setPattern(real.getPattern())
+                .setIsSearchOnlyInArea(real.getIsSearchOnlyInArea())
+                .setAreaFile(real.getAreaFile())
+                .setAreaIsFile(real.getAreaIsFile())
+                .setAreaIsDirectory(real.getAreaIsDirectory());
 
         real.getSources().forEach((source) -> newFilter.addGitMeta(source, real.getGitMeta(source)));
 

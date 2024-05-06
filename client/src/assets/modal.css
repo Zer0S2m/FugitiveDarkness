@@ -21,7 +21,9 @@
 }
 
 .modal-content--add-git-repository,
-.modal-content--add-git-provider {
+.modal-content--add-git-provider,
+.modal-content--add-git-job,
+.modal-content--edit-git-job {
   max-width: 400px;
   width: 100%;
 }

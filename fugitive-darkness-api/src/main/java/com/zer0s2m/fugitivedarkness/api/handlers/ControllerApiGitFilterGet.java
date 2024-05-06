@@ -36,6 +36,8 @@ final public class ControllerApiGitFilterGet implements Handler<RoutingContext> 
         filterRepository
                 .findAll()
                 .onSuccess(ar -> {
+                    filterRepository.closeClient();
+
                     final List<ContainerResponseGitFilter> responseGitFilters = new ArrayList<>();
                     final List<GitFilterModel> gitFilterModels = filterRepository.mapTo(ar);
                     final JsonObject object = new JsonObject();

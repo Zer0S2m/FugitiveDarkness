@@ -8,11 +8,15 @@ import io.netty.handler.codec.http.HttpResponseStatus;
 import io.vertx.core.Handler;
 import io.vertx.ext.web.RoutingContext;
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *  Validation before deleting a git provider - checks for the existence of an entry in the database.
  */
 final public class GitProviderValidationExists implements Handler<RoutingContext> {
+
+    static private final Logger logger = LoggerFactory.getLogger(GitProviderValidationExists.class);
 
     /**
      * Validation for the existence of a record in the database.
@@ -41,6 +45,16 @@ final public class GitProviderValidationExists implements Handler<RoutingContext
                     }
 
                     gitProviderRepository.closeClient();
+                })
+                .onFailure(error -> {
+                    gitProviderRepository.closeClient();
+
+                    logger.error("Failure (DB): " + error.fillInStackTrace());
+
+                    event
+                            .response()
+                            .setStatusCode(HttpResponseStatus.INTERNAL_SERVER_ERROR.code())
+                            .end();
                 });
     }
 

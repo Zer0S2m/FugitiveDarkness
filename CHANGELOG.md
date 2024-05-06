@@ -1,5 +1,36 @@
 # Change Log
 
+## [0.0.8] 2024-05-06
+
+### Added
+
+- The first prototype of the system is the file structure of the project:
+    - Viewing the file structure of the project.
+    - Viewing information about commits.
+    - View the number of todos in the project.
+- Improving the search engine:
+    - Set the search areas - file or directory.
+- Scheduled tasks:
+    - Functionality for creating scheduled tasks.
+    - Rules for running scheduled tasks.
+- Functionality for updating the repository in the form of scheduled tasks.
+- Automatic start of migrations at system startup.
+
+### Security
+
+- The postgresql package has been updated - CVE-2024-1597
+
+### Fixed
+
+- When collecting search statistics in the search engine, sometimes it occurs that the speed of search execution 
+  is almost zero and an arithmetic error occurs (cannot be divided by zero)
+- Closing the client for the database.
+- When selecting file extensions in the filter, the functionality does not work - show plus 50.
+
+### Changed
+
+- Get the content of a file in a local project.
+
 ## [0.0.7] 2024-04-10
 
 ### Added
